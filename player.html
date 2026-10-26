@@ -130,7 +130,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast, onDisconnect, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
@@ -154,7 +154,7 @@
   const roomId = (params.get('room') || '').toUpperCase();
   const teamId = parseInt(params.get('team') || 0);
 
-    const teamColors = {
+  const teamColors = {
     1: '#ef4444', 2: '#3b82f6', 3: '#22c55e', 4: '#a855f7',
     5: '#f97316', 6: '#14b8a6', 7: '#ec4899', 8: '#84cc16'
   };
@@ -169,38 +169,27 @@
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
   let lastTickSecond = -1;
+  let monitorInterval = null; // Interval untuk cek keberadaan pemain
 
-  // ==========================================
-  // SISTEM SUARA YANG LEBIH AGRESIF
-  // ==========================================
+  // SISTEM SUARA
   let actx;
   function initAudio() {
-    if (!actx) {
-      actx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (actx.state === 'suspended') {
-      actx.resume();
-    }
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
   }
 
   function playSound(freq = 880, dur = 0.15, vol = 1.0, type = 'sine') {
     try {
       initAudio();
       const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; 
-      o.frequency.value = freq;
-      o.connect(g); 
-      g.connect(actx.destination);
-      
-      // Volume Maksimal
+      o.type = type; o.frequency.value = freq;
+      o.connect(g); g.connect(actx.destination);
       g.gain.setValueAtTime(vol, actx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
-      
       o.start(); o.stop(actx.currentTime + dur);
-    } catch (e) { console.log('Audio error:', e); }
+    } catch (e) {}
   }
 
-  // Buka kunci audio pada interaksi pertama (Wajib untuk Chrome/Safari)
   document.addEventListener('click', initAudio, { once: true });
   document.addEventListener('touchstart', initAudio, { once: true });
 
@@ -235,7 +224,7 @@
     localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
     document.getElementById('nameView').style.display = 'none';
     
-    playSound(800, 0.2, 1.0, 'square'); // Bunyi masuk
+    playSound(800, 0.2, 1.0, 'square');
     try { await mulaiMain(); } catch (e) {}
   };
 
@@ -251,6 +240,32 @@
       const playerRef = ref(db, `rooms/${roomId}/players/${myPlayerKey}`);
       await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
       try { await onDisconnect(playerRef).remove(); } catch (e) {}
+
+      // ==========================================
+      // FITUR AUTO-LOGOUT JIKA DIHAPUS HOST (GHOST CLEANUP)
+      // ==========================================
+      if (monitorInterval) clearInterval(monitorInterval);
+      monitorInterval = setInterval(async () => {
+        try {
+          const snap = await get(playerRef);
+          if (!snap.exists()) {
+            // Jika data pemain tidak ada di database, paksa keluar
+            console.log('Pemain dihapus oleh Host. Auto-Logout.');
+            clearInterval(monitorInterval);
+            alert('Anda telah dikeluarkan dari room oleh Host.');
+            
+            // Bersihkan cache
+            localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
+            sessionStorage.clear();
+            
+            // Reload halaman agar kembali ke form nama
+            window.location.reload();
+          }
+        } catch (error) {
+          console.warn("Gagal cek koneksi:", error);
+        }
+      }, 3000); // Cek setiap 3 detik
+      // ==========================================
 
       if (!listenersAttached) {
         listenersAttached = true;
@@ -326,9 +341,6 @@
 
   document.getElementById('btn').addEventListener('click', () => window.tekan());
 
-  // ==========================================
-  // FUNGSI TIMER & SUARA DETAK JAM
-  // ==========================================
   function startCountdown(timer) {
     clearInterval(timerInterval);
     const el = document.getElementById('timerPlayer');
@@ -342,7 +354,6 @@
     
     const endAt = timer.startedAt + timer.duration * 1000;
     
-    // Visual Timer (Berjalan setiap 100ms)
     timerInterval = setInterval(() => {
       const remainingMs = Math.max(0, endAt - serverNow());
       el.textContent = (remainingMs / 1000).toFixed(1);
@@ -364,17 +375,10 @@
         return;
       }
 
-      // LOGIKA SUARA DETAK (Bunyi 1 kali setiap detik)
       if (remainingSec !== lastTickSecond) {
         lastTickSecond = remainingSec;
-        
-        if (remainingSec <= 10) {
-          // Bunyi detik bom (Nyaring & Tajam)
-          playSound(1200, 0.1, 1.0, 'sawtooth');
-        } else {
-          // Bunyi tik jam biasa
-          playSound(600, 0.05, 1.0, 'sine');
-        }
+        if (remainingSec <= 10) playSound(1200, 0.1, 1.0, 'sawtooth');
+        else playSound(600, 0.05, 1.0, 'sine');
       }
     }, 100);
   }
@@ -407,6 +411,7 @@
 
   window.exitGame = async () => {
     if (!confirm('Keluar dari permainan?')) return;
+    if (monitorInterval) clearInterval(monitorInterval);
     if (myPlayerKey) try { await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`)); } catch(e){}
     localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
     document.body.innerHTML = '<div class="center-panel"><h2>Anda telah keluar</h2></div>';
