@@ -152,6 +152,19 @@
     .row button{flex:1 1 auto;min-width:0;padding:9px 10px;font-size:13px}
     .qr-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
   }
+
+    .qr-canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .qr-canvas-container img, 
+  .qr-canvas-container canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
 </style>
 </head>
 <body>
@@ -453,16 +466,35 @@ function renderPlayers(){
 function renderQRs(){
   const c = document.getElementById('qrList');
   c.innerHTML = '';
+
+  // Cek apakah library lokal berhasil dimuat
+  if (typeof QRCode === 'undefined') {
+    c.innerHTML = '<div style="color:var(--red);grid-column:1/-1;padding:10px;">Gagal memuat library QR lokal (qrcode.min.js). Pastikan file sudah di-upload di folder yang sama.</div>';
+    return;
+  }
+
   const baseUrl = new URL('player.html', location.href);
+  
   for (let t=1; t<=teamCount; t++){
     const div = document.createElement('div');
     div.className = 'qr-item';
-    div.innerHTML = `<div class="qr-label">Tim ${t}</div><canvas></canvas>`;
+    // Kita siapkan div kosong tempat QR code akan digambar
+    div.innerHTML = `<div class="qr-label">Tim ${t}</div><div class="qr-canvas-container" id="qr-tim-${t}"></div>`;
     c.appendChild(div);
+    
     const url = new URL(baseUrl);
     url.searchParams.set('room', roomId);
     url.searchParams.set('team', t);
-    QRCode.toCanvas(div.querySelector('canvas'), url.toString(), {width:220, margin:1});
+    
+    // Generate QR menggunakan library lokal Anda
+    new QRCode(document.getElementById(`qr-tim-${t}`), {
+      text: url.toString(),
+      width: 200,
+      height: 200,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
   }
 }
 function renderChat(msgs){
