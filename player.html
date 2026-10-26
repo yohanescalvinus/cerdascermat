@@ -149,17 +149,17 @@
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // ============ KONFIGURASI ============
-const firebaseConfig = {
-  apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
-  authDomain: "cerdascermat-a3206.firebaseapp.com",
-  databaseURL: "https://cerdascermat-a3206-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "cerdascermat-a3206",
-  storageBucket: "cerdascermat-a3206.firebasestorage.app",
-  messagingSenderId: "1098230358098",
-  appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
-};
-  // =====================================
+  // ============ KONFIGURASI (SUDAH DIISI OTOMATIS) ============
+  const firebaseConfig = {
+    apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
+    authDomain: "cerdascermat-a3206.firebaseapp.com",
+    databaseURL: "https://cerdascermat-a3206-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "cerdascermat-a3206",
+    storageBucket: "cerdascermat-a3206.firebasestorage.app",
+    messagingSenderId: "1098230358098",
+    appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
+  };
+  // ===========================================================
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -189,8 +189,8 @@ const firebaseConfig = {
   let state = 'idle';
   let timerInterval = null;
   let stateData = null;
-  let isStarting = false;   // guard agar mulaiMain tidak dobel
-  let authHandled = false;  // guard onAuthStateChanged
+  let isStarting = false;
+  let authHandled = false;
   let listenersAttached = false;
 
   // ============ AUTH ============
@@ -200,11 +200,10 @@ const firebaseConfig = {
   });
 
   onAuthStateChanged(auth, u => {
-    console.log('[AUTH] state changed:', u ? u.uid : 'null');
     user = u;
     if (!u) return;
-    if (myPlayerKey) return;   // sudah main
-    if (authHandled) return;   // sudah pernah init
+    if (myPlayerKey) return;
+    if (authHandled) return;
     authHandled = true;
 
     const saved = localStorage.getItem(`cc_name_${roomId}_${teamId}`);
@@ -219,7 +218,7 @@ const firebaseConfig = {
 
   window.simpanNama = async () => {
     if (!user) { alert('Belum terhubung. Tunggu sebentar…'); return; }
-    if (isStarting || myPlayerKey) return;  // guard double click
+    if (isStarting || myPlayerKey) return;
 
     const name = document.getElementById('nameInput').value.trim();
     if (!name) { alert('Nama wajib diisi'); return; }
@@ -231,57 +230,44 @@ const firebaseConfig = {
 
     try {
       await mulaiMain();
-    } catch (e) {
-      // sudah di-handle di dalam mulaiMain
-    }
+    } catch (e) {}
   };
 
   // ============ MAIN ============
   async function mulaiMain() {
-    if (isStarting) { console.log('[MAIN] already starting, skip'); return; }
-    if (myPlayerKey) { console.log('[MAIN] already registered, skip'); return; }
-    if (!myName) { console.warn('[MAIN] no name, abort'); return; }
+    if (isStarting) return;
+    if (myPlayerKey) return;
+    if (!myName) return;
 
     isStarting = true;
-    console.log('[MAIN] starting for', myName, 'team', teamId, 'room', roomId);
 
     try {
       document.getElementById('mainView').style.display = 'flex';
       document.getElementById('identity').textContent = `Tim ${teamId} • ${myName}`;
 
-      // Register player
       const playerRef = push(ref(db, `rooms/${roomId}/players`));
       myPlayerKey = playerRef.key;
-      console.log('[MAIN] registering player', myPlayerKey);
 
       await set(playerRef, {
         team: teamId,
         name: myName,
         joinedAt: serverTimestamp()
       });
-      console.log('[MAIN] player registered OK');
 
       try {
         await onDisconnect(playerRef).remove();
-      } catch (e) {
-        console.warn('[MAIN] onDisconnect failed (non-fatal):', e.message);
-      }
+      } catch (e) {}
 
-      // Attach listeners (sekali saja)
       if (!listenersAttached) {
         listenersAttached = true;
 
         onValue(ref(db, `rooms/${roomId}/state`), snap => {
           stateData = snap.val();
           updateStateFromServer();
-        }, err => {
-          console.error('[STATE] listen error:', err);
         });
 
         onValue(ref(db, `rooms/${roomId}/timer`), snap => {
           startCountdown(snap.val());
-        }, err => {
-          console.error('[TIMER] listen error:', err);
         });
 
         onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
@@ -290,26 +276,19 @@ const firebaseConfig = {
             .map(([k, v]) => ({ key: k, ...v }))
             .sort((a, b) => (a.ts || 0) - (b.ts || 0));
           renderChat(msgs);
-        }, err => {
-          console.error('[CHAT] listen error:', err);
         });
       }
 
       ui();
-      console.log('[MAIN] ready');
     } catch (e) {
       console.error('[MAIN] FAILED:', e);
       myPlayerKey = null;
-      // Kembali ke form nama
       document.getElementById('mainView').style.display = 'none';
       document.getElementById('nameView').style.display = 'flex';
 
       let msg = e.message || String(e);
       if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
-        msg = 'Izin Firebase ditolak (PERMISSION_DENIED).\n\n' +
-              'Pastikan Firebase Rules mengizinkan write ke:\n' +
-              'rooms/' + roomId + '/players\n\n' +
-              'Cek Firebase Console → Realtime Database → Rules.';
+        msg = 'Izin Firebase ditolak (PERMISSION_DENIED).\n\nPastikan Firebase Rules mengizinkan write ke:\nrooms/' + roomId + '/players';
       }
       alert('Gagal bergabung:\n\n' + msg);
     } finally {
@@ -325,7 +304,6 @@ const firebaseConfig = {
       }
       return;
     }
-    // Locked - who won?
     if (stateData.playerKey === myPlayerKey) {
       if (state !== 'winner') { state = 'winner'; ui(); beep(1400); }
     } else {
@@ -357,14 +335,8 @@ const firebaseConfig = {
   window.tekan = async () => {
     if (state !== 'idle') return;
     if (!myPlayerKey) {
-      // Coba init ulang kalau belum terdaftar
-      if (!isStarting && myName && user) {
-        await mulaiMain();
-      }
-      if (!myPlayerKey) {
-        console.warn('[TEKAN] not connected yet');
-        return;
-      }
+      if (!isStarting && myName && user) await mulaiMain();
+      if (!myPlayerKey) return;
     }
 
     state = 'pressed';
@@ -374,7 +346,7 @@ const firebaseConfig = {
     const stateRef = ref(db, `rooms/${roomId}/state`);
     try {
       const result = await runTransaction(stateRef, current => {
-        if (current) return;  // abort jika sudah ada yang menang
+        if (current) return;
         return {
           locked: true,
           team: teamId,
@@ -383,19 +355,12 @@ const firebaseConfig = {
           ts: Date.now()
         };
       });
-
-      if (!result.committed) {
-        console.log('[TEKAN] transaction aborted — sudah ada yang lebih cepat');
-        // listener state akan update
-      }
     } catch (e) {
       console.error('[TEKAN] transaction error:', e.message);
     }
 
-    // Timeout fallback jika state listener tidak konfirmasi
     setTimeout(() => {
       if (state === 'pressed') {
-        // Cek stateData manual
         if (stateData && stateData.locked) {
           updateStateFromServer();
         } else {
@@ -435,7 +400,7 @@ const firebaseConfig = {
 
   // ============ CHAT ============
   window.kirimChat = async () => {
-    if (!myName) { alert('Isi nama dulu'); return; }
+    if (!myName) return;
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
     if (!text) return;
@@ -451,7 +416,6 @@ const firebaseConfig = {
       input.value = '';
     } catch (e) {
       console.error('[CHAT] send error:', e);
-      alert('Gagal kirim chat: ' + e.message);
     }
   };
 
@@ -476,9 +440,7 @@ const firebaseConfig = {
     if (myPlayerKey) {
       try {
         await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`));
-      } catch (e) {
-        console.warn('[EXIT] remove failed:', e.message);
-      }
+      } catch (e) {}
     }
     localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
     document.body.innerHTML = '<div class="center-panel"><h2>Anda telah keluar</h2><p>Tutup tab ini atau scan QR lagi untuk bergabung.</p></div>';
@@ -498,11 +460,6 @@ const firebaseConfig = {
       o.start(); o.stop(actx.currentTime + dur);
     } catch (e) {}
   }
-
-  // Resume audio context saat user interaksi (mobile requirement)
-  document.addEventListener('click', () => {
-    if (actx && actx.state === 'suspended') actx.resume();
-  }, { once: false });
 </script>
 </body>
 </html>
