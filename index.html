@@ -8,206 +8,240 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
   :root {
-    --bg-main: #f1f5f9; --bg-panel: #ffffff; --bg-card: #f8fafc;
-    --text-main: #0f172a; --text-muted: #475569; --border-color: #cbd5e1;
+    --bg-main: #e2e8f0; /* Latar belakang abu kebiruan */
+    --bg-panel: rgba(255, 255, 255, 0.7); /* Efek kaca */
+    --bg-card: #ffffff;
+    --text-main: #1e293b; --text-muted: #64748b; --border-color: #cbd5e1;
     --tim1: #ef4444; --tim2: #3b82f6; --tim3: #22c55e; --tim4: #a855f7;
     --tim5: #f97316; --tim6: #14b8a6; --tim7: #ec4899; --tim8: #84cc16;
+    --blue-theme: #0ea5e9;
   }
 
-  html, body {
+  /* Efek Background Awan / Gradient */
+  body {
     height: 100vh; width: 100vw; overflow: hidden; 
-    font-family: system-ui, -apple-system, sans-serif;
-    background: var(--bg-main); color: var(--text-main);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #e0f2fe 0%, #f1f5f9 50%, #fae8ff 100%);
+    color: var(--text-main);
   }
 
   /* LAYAR SETUP ROOM */
   #setupScreen {
     display: none; flex-direction: column; align-items: center; justify-content: center;
-    height: 100vh; width: 100vw; padding: 20px; background: var(--bg-main);
+    height: 100vh; width: 100vw; padding: 20px; background: rgba(255,255,255,0.8);
     position: fixed; top: 0; left: 0; z-index: 1000;
   }
   .login-box {
-    background: var(--bg-panel); padding: 30px; border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--border-color);
-    width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 15px;
+    background: #ffffff; padding: 30px; border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5);
+    width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px;
   }
-  .login-box h1 { text-align: center; color: #3b82f6; margin-bottom: 5px; font-size: 28px;}
-  .login-box p { text-align: center; font-size: 16px; color: var(--text-muted); margin-bottom: 10px; }
+  .login-box h1 { text-align: center; color: var(--blue-theme); margin-bottom: 5px; font-size: 28px;}
   .login-box input {
-    padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
-    font-size: 20px; font-weight: bold; background: var(--bg-main); color: var(--text-main); outline: none; text-align: center; letter-spacing: 2px;
+    padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);
+    font-size: 20px; font-weight: bold; background: #f8fafc; color: var(--text-main); outline: none; text-align: center; letter-spacing: 2px;
   }
-  .login-box input:focus { border-color: #3b82f6; }
   .login-box button {
-    padding: 14px; border-radius: 8px; border: none; background: #3b82f6; color: white;
+    padding: 14px; border-radius: 10px; border: none; background: var(--blue-theme); color: white;
     font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s;
   }
-  .login-box button:hover { background: #2563eb; }
-  .btn-logout-setup { background: #ef4444 !important; margin-top: 10px; font-size: 16px !important;}
-  .team-info-badge { text-align: center; font-size: 16px; font-weight: bold; color: #0f172a; background: #e0e7ff; padding: 10px; border-radius: 6px; margin-bottom: 5px;}
+  .btn-logout-setup { background: #ef4444 !important; margin-top: 10px; font-size: 14px !important;}
+  .team-info-badge { text-align: center; font-size: 14px; font-weight: bold; color: #0284c7; background: #e0f2fe; padding: 10px; border-radius: 6px; }
 
   /* PANEL HOST UTAMA */
   #appContainer { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
   
+  /* HEADER GAYA BARU */
   .header {
     display: flex; justify-content: space-between; align-items: center;
-    background: var(--bg-panel); padding: 12px 20px; border-radius: 10px; flex-shrink: 0;
-    border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 10;
+    background: var(--bg-panel); backdrop-filter: blur(10px);
+    padding: 10px 20px; border-radius: 16px; flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.02); z-index: 10;
   }
-  .header h1 { font-size: 22px; margin: 0; display: flex; align-items: center; gap: 10px; font-weight: 800; }
-  .header-actions { display: flex; gap: 8px; align-items: center; }
-  .btn-sm { padding: 8px 16px; font-size: 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: 700; color: white; transition: 0.2s;}
-  .btn-blue { background: #3b82f6; } .btn-red { background: #ef4444; } .btn-gray { background: #64748b; } .btn-orange { background: #f59e0b; }
-  .btn-sm:active { transform: scale(0.95); }
+  .header h1 { font-size: 20px; margin: 0; display: flex; align-items: center; gap: 10px; font-weight: 800; color: #334155;}
+  .header h1 span { color: var(--blue-theme); }
   
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  /* Tombol header dengan ikon dan teks di bawahnya */
+  .btn-header { 
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: transparent; border: none; cursor: pointer; font-weight: 600; 
+    color: #64748b; font-size: 11px; gap: 4px; padding: 6px 10px; border-radius: 8px; transition: 0.2s;
+  }
+  .btn-header:hover { background: rgba(255,255,255,0.5); color: var(--blue-theme); }
+  .btn-header i { font-size: 18px; font-style: normal; }
+  .btn-header.logout { color: #ef4444; }
+  .btn-header.logout:hover { background: #fee2e2; }
+
   .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
   .column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+  
+  /* GAYA PANEL KACA */
   .panel {
-    background: var(--bg-panel); border-radius: 10px; padding: 16px;
+    background: var(--bg-panel); backdrop-filter: blur(10px);
+    border-radius: 16px; padding: 16px;
     display: flex; flex-direction: column; gap: 10px; position: relative;
-    border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.02);
   }
-  .panel-title { font-size: 14px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;}
+  .panel-title { font-size: 13px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;}
 
-  .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 16px; color: #fff; transition: 0.2s;}
-  .btn:active { transform: scale(0.96); }
-  .btn-primary { background: #3b82f6; } .btn-success { background: #22c55e; } .btn-warning { background: #f59e0b; } .btn-danger { background: #ef4444; }
-
-  /* ========================================== */
-  /* TIMER PANEL (JAM, MENIT, DETIK)            */
-  /* ========================================== */
+  /* TIMER PANEL GAYA BARU */
   .timer-panel { flex: 0 0 auto; }
   
   .btn-maximize {
-    position: absolute; top: 12px; right: 12px;
-    background: #e2e8f0; color: #475569; border: none;
-    width: 32px; height: 32px; border-radius: 6px;
-    cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
-    transition: 0.2s;
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(255,255,255,0.5); color: #475569; border: 1px solid rgba(255,255,255,0.8);
+    width: 32px; height: 32px; border-radius: 8px; cursor: pointer; 
+    font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
   }
-  .btn-maximize:hover { background: #cbd5e1; color: #0f172a; }
+  .btn-maximize:hover { background: #ffffff; color: var(--blue-theme); }
 
-  /* Desain Input Waktu */
-  .time-input-group { 
-    display: flex; gap: 10px; align-items: center; justify-content: center; 
-    margin: 10px 0; 
+  /* Container untuk menampilkan Timer di Panel */
+  .main-timer-display {
+    text-align: center; font-size: 64px; font-weight: 900; color: var(--text-main);
+    font-variant-numeric: tabular-nums; letter-spacing: 2px; line-height: 1;
+    margin: 10px 0 5px 0;
   }
+  .time-labels { 
+    display: flex; justify-content: center; gap: 25px; font-size: 11px; 
+    font-weight: 800; color: #94a3b8; letter-spacing: 1px; margin-bottom: 15px;
+  }
+
+  /* Input Waktu (Disembunyikan, muncul saat edit) */
+  .time-input-group { display: none; gap: 10px; justify-content: center; margin-bottom: 15px; }
   .time-input-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .time-input-box input {
-    width: 65px; height: 60px; text-align: center; font-size: 28px; font-weight: 900;
-    border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-card); color: var(--text-main);
+    width: 60px; height: 50px; text-align: center; font-size: 24px; font-weight: 900;
+    border-radius: 8px; border: 1px solid var(--border-color); background: #ffffff; color: var(--text-main);
   }
-  .time-input-box input:focus { border-color: #3b82f6; }
-  .time-input-box span { font-size: 12px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
+  .time-input-box span { font-size: 11px; font-weight: bold; color: var(--text-muted); }
 
-  /* Tombol Ikon Play, Pause, Stop */
+  /* Tombol Ikon Play, Pause, Stop (Gaya Glass) */
+  .timer-controls { display: flex; gap: 12px; justify-content: center; }
   .btn-icon {
-    width: 50px; height: 50px; border-radius: 10px; border: none; cursor: pointer;
-    font-size: 20px; color: white; display: flex; align-items: center; justify-content: center;
-    transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 60px; height: 45px; border-radius: 12px; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   }
-  .btn-icon:active { transform: scale(0.9); }
-  .btn-icon.play { background: #22c55e; } .btn-icon.play:hover { background: #16a34a; }
-  .btn-icon.pause { background: #f59e0b; } .btn-icon.pause:hover { background: #d97706; }
-  .btn-icon.stop { background: #ef4444; } .btn-icon.stop:hover { background: #dc2626; }
+  .btn-icon:active { transform: scale(0.95); }
+  
+  .btn-icon.play { background: #34d399; color: white; }
+  .btn-icon.pause { background: #fbbf24; color: white; }
+  .btn-icon.stop { background: #f87171; color: white; }
+  
+  /* Ikon SVG sederhana */
+  .icon-svg { width: 20px; height: 20px; fill: currentColor; }
 
-  /* BUZZER */
+  /* BUZZER GAYA BARU */
   .buzzer-panel { flex: 0 0 auto; }
-  .buzzer-status { text-align: center; font-size: 20px; font-weight: 900; padding: 12px; border-radius: 8px; border: 2px dashed var(--border-color); transition: 0.3s; letter-spacing: 1px;}
-  .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: #fee2e2; }
-  .buzzer-status.open { color: #16a34a; border-color: #22c55e; background: #dcfce7; }
-  .btn-group-top { display: flex; gap: 10px; width: 100%; margin-top: 5px;}
-  .btn-group-top .btn { flex: 1; }
+  .buzzer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;}
+  .buzzer-status { font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; text-transform: uppercase;}
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .buzzer-status.open { color: #059669; } .buzzer-status.open .dot { background: #10b981; box-shadow: 0 0 5px #10b981;}
+  .buzzer-status.locked { color: #dc2626; } .buzzer-status.locked .dot { background: #ef4444; }
 
-  /* PEMAIN */
+  .btn-group-top { display: flex; gap: 10px; width: 100%; }
+  .btn-ctrl { 
+    flex: 1; padding: 12px; border-radius: 10px; border: none; cursor: pointer; 
+    font-weight: 800; font-size: 15px; color: white; display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .btn-ctrl:active { transform: scale(0.97); }
+  .btn-ctrl.buka { background: #34d399; }
+  .btn-ctrl.tutup { background: #fbbf24; }
+  .btn-ctrl.reset { background: #f87171; }
+
+  /* PEMAIN GAYA BARU */
   .player-panel { flex: 1; overflow: hidden; }
-  .player-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 6px; flex: 1;}
-  .player-row { background: var(--bg-card); padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; border: 1px solid var(--border-color); border-left: 6px solid transparent; }
-  .player-row.t1 { border-left-color: var(--tim1); } .player-row.t2 { border-left-color: var(--tim2); }
-  .player-row.t3 { border-left-color: var(--tim3); } .player-row.t4 { border-left-color: var(--tim4); }
-  .player-row.t5 { border-left-color: var(--tim5); } .player-row.t6 { border-left-color: var(--tim6); }
-  .player-row.t7 { border-left-color: var(--tim7); } .player-row.t8 { border-left-color: var(--tim8); }
-  .device-count { font-size: 13px; background: var(--border-color); padding: 4px 10px; border-radius: 12px; color: var(--text-main); white-space: nowrap; font-weight: 800;}
-  .btn-del-player { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 13px; margin-left: 8px; font-weight: bold;}
+  .player-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 6px; flex: 1; margin-top: 5px;}
+  .player-row { background: rgba(255,255,255,0.6); padding: 10px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; border: 1px solid rgba(255,255,255,0.9); }
+  .player-row.t1 { border-left: 5px solid var(--tim1); } .player-row.t2 { border-left: 5px solid var(--tim2); }
+  .player-row.t3 { border-left: 5px solid var(--tim3); } .player-row.t4 { border-left: 5px solid var(--tim4); }
+  .player-row.t5 { border-left: 5px solid var(--tim5); } .player-row.t6 { border-left: 5px solid var(--tim6); }
+  .player-row.t7 { border-left: 5px solid var(--tim7); } .player-row.t8 { border-left: 5px solid var(--tim8); }
+  
+  .device-count { font-size: 12px; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 6px; color: #475569; font-weight: 800;}
+  .btn-del-player { background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 16px; margin-left: 8px; font-weight: bold;}
+  .btn-del-player:hover { color: #b91c1c; }
 
-  /* QR CODE */
+  /* QR CODE & CHAT */
   .qr-panel { flex-shrink: 0; }
   .qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; }
-  .qr-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
-  .qr-card h3 { margin: 0; font-size: 14px; }
-  .qr-wrapper { background: #ffffff; padding: 6px; border-radius: 8px; display: inline-block; border: 1px solid #e2e8f0;}
-  .qr-wrapper canvas, .qr-wrapper img { width: 70px !important; height: 70px !important; cursor: pointer; display: block;}
-  .btn-zoom { background: #64748b; color: white; font-size: 12px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%; font-weight: bold;}
+  .qr-card { background: #ffffff; padding: 12px; border-radius: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: none;}
+  .qr-card h3 { margin: 0; font-size: 13px; color: #1e293b; font-weight: 800;}
+  .qr-wrapper { background: #ffffff; padding: 4px; border-radius: 6px; display: inline-block;}
+  .qr-wrapper canvas, .qr-wrapper img { width: 65px !important; height: 65px !important; display: block;}
+  .btn-zoom { background: rgba(241, 245, 249, 0.8); color: #475569; font-size: 11px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%; font-weight: bold;}
 
-  #qrModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.9); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;}
-  #qrModal .qr-wrapper { padding: 20px; border-radius: 12px; }
-  #qrModal canvas, #qrModal img { width: 350px !important; height: 350px !important;}
-  #qrModal h2 { color: white; margin: 0; font-size: 36px;}
+  #qrModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;}
+  #qrModal .qr-wrapper { padding: 20px; border-radius: 12px; background: white;}
+  #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important;}
+  #qrModal h2 { color: white; margin: 0; font-size: 32px;}
 
-  /* POP-UP PEMENANG */
+  .chat-panel { flex: 1; min-height: 0; }
+  .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px; }
+  .chat-msg { background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; font-size: 14px; max-width: 90%; border: 1px solid rgba(255,255,255,0.9);}
+  .chat-msg.host { background: rgba(224, 231, 255, 0.8); color: #1e3a8a; align-self: flex-end; text-align: right; border: 1px solid #c7d2fe;}
+  .chat-who { font-size: 11px; color: #64748b; margin-bottom: 4px; font-weight: 800;}
+  .chat-input { display: flex; gap: 8px; margin-top: 8px; flex-shrink: 0;}
+  .chat-input input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6); color: var(--text-main); font-size: 14px; outline: none;}
+  .chat-input button { border-radius: 8px; border: none; background: var(--blue-theme); color: white; padding: 0 20px; font-weight: bold; cursor: pointer;}
+
+  /* ========================================== */
+  /* POP-UP PEMENANG & TIMER                    */
+  /* ========================================== */
   #winnerPopup {
     display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background: #ffffff; padding: 40px 60px; border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 5px solid #fbbf24;
+    background: #ffffff; padding: 40px 60px; border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 4px solid #fbbf24;
     z-index: 1000; text-align: center; flex-direction: column; align-items: center; gap: 20px;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   @keyframes popIn { from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-  .winner-title { font-size: 32px; color: #64748b; font-weight: 800; letter-spacing: 2px; }
-  .winner-name { font-size: 72px; font-weight: 900; margin: 10px 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
-  .winner-team { font-size: 28px; font-weight: 700; color: #475569; }
-  .btn-close-winner { background: #ef4444; color: white; border: none; padding: 15px 40px; font-size: 24px; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 20px; transition: 0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
+  .winner-title { font-size: 28px; color: #64748b; font-weight: 800; letter-spacing: 2px; }
+  .winner-name { font-size: 68px; font-weight: 900; margin: 10px 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
+  .winner-team { font-size: 24px; font-weight: 800; color: #475569; }
+  .btn-close-winner { background: #ef4444; color: white; border: none; padding: 15px 40px; font-size: 22px; font-weight: bold; border-radius: 12px; cursor: pointer; margin-top: 20px; transition: 0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
   .btn-close-winner:hover { background: #dc2626; transform: scale(1.05); }
 
-  /* ========================================== */
-  /* POP-UP TIMER (AUTO-RESIZE TEXT)            */
-  /* ========================================== */
   #timerOverlay {
     display: none; position: fixed; top: 20%; left: 20%;
-    width: 400px; height: 250px; 
-    background: rgba(255, 255, 255, 0.98); z-index: 500;
-    flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #cbd5e1; border-radius: 12px; 
+    width: 350px; height: 250px; 
+    background: rgba(255, 255, 255, 0.95); z-index: 500;
+    flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 2px solid #cbd5e1; border-radius: 16px; 
     overflow: hidden; resize: both;
   }
   #timerHeader {
-    width: 100%; padding: 8px 12px; background: #e2e8f0; cursor: grab;
+    width: 100%; padding: 8px 12px; background: #f1f5f9; cursor: grab;
     display: flex; justify-content: space-between; align-items: center;
-    position: absolute; top: 0; left: 0; font-weight: bold; color: #475569; font-size: 14px; border-bottom: 1px solid #cbd5e1; user-select: none;
+    position: absolute; top: 0; left: 0; font-weight: bold; color: #475569; font-size: 13px; border-bottom: 1px solid #e2e8f0; user-select: none;
   }
   #timerHeader:active { cursor: grabbing; }
   
-  .header-controls { display: flex; gap: 8px; }
+  .header-controls { display: flex; gap: 6px; }
   .btn-header-ctrl {
     background: #cbd5e1; color: #475569; border: none; 
-    width: 28px; height: 28px; border-radius: 4px;
+    width: 26px; height: 26px; border-radius: 6px;
     font-size: 14px; font-weight: bold; cursor: pointer; 
     display: flex; align-items: center; justify-content: center; transition: 0.2s;
   }
   .btn-header-ctrl:hover { background: #94a3b8; color: white; }
   .btn-header-ctrl.close:hover { background: #ef4444; color: white; }
 
-  .timer-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding-top: 30px; overflow: hidden; }
-  
-  /* AUTO-RESIZE FONT UNTUK JJ:MM:SS */
+  .timer-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding-top: 20px; overflow: hidden; }
   #popupTimerValue { 
-    font-size: clamp(3rem, 12vw, 8rem); 
-    width: 100%; text-align: center;
-    font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; 
-    letter-spacing: 2px;
+    font-size: clamp(3rem, 12vw, 8rem); width: 100%; text-align: center;
+    font-weight: 900; color: var(--blue-theme); font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: 2px;
   }
   #timerOverlay.urgent #popupTimerValue { color: #ef4444; animation: pulse 1s infinite alternate; }
   @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
 
-  /* CHAT */
-  .chat-panel { flex: 1; min-height: 0; }
-  .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px; }
-  .chat-msg { background: var(--bg-card); padding: 10px 14px; border-radius: 6px; font-size: 15px; max-width: 90%; border: 1px solid var(--border-color);}
-  .chat-msg.host { background: #e0e7ff; color: #1e3a8a; align-self: flex-end; text-align: right; border-color: #c7d2fe;}
-  .chat-who { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 800;}
-  .chat-msg.host .chat-who { color: #4338ca; }
-  .chat-input { display: flex; gap: 8px; margin-top: 8px; flex-shrink: 0;}
-  .chat-input input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 15px;}
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(203, 213, 225, 0.8); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.8); }
 </style>
 </head>
 <body>
@@ -215,10 +249,9 @@
 <!-- LAYAR SETUP ROOM -->
 <div id="setupScreen">
   <div class="login-box">
-    <h1>📝 Buat Room</h1>
-    <p>Masukkan ID Room (tanpa spasi)</p>
-    <div class="team-info-badge" id="setupTeamInfo">Menunggu data tim...</div>
-    <input type="text" id="newRoomId" placeholder="CONTOH: CCA2026" value="CCA2026" style="text-transform: uppercase;">
+    <h1>Buat Room</h1>
+    <div class="team-info-badge" id="setupTeamInfo">...</div>
+    <input type="text" id="newRoomId" placeholder="ID ROOM (MISAL: CCA2026)" value="CCA2026" style="text-transform: uppercase;">
     <button onclick="buatRoom()">Buat & Mulai Kuis</button>
     <button class="btn-logout-setup" onclick="logoutHost()">Logout</button>
   </div>
@@ -227,24 +260,41 @@
 <!-- PANEL HOST UTAMA -->
 <div id="appContainer">
   <div class="header">
-    <h1>Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
+    <h1><span style="font-size:24px; font-weight:900; color:#0ea5e9;">HP</span> Host Panel <span style="color:#cbd5e1; margin:0 10px;">|</span> <span style="font-size:16px; color:#64748b;">Room: <span style="color:#0ea5e9; font-weight:bold;" id="roomIdLabel">...</span></span></h1>
     <div class="header-actions">
-      <button class="btn-sm btn-orange" onclick="paksaSinkron(event)">🔄 Paksa Sinkron</button>
-      <button class="btn-sm btn-blue" onclick="hapusChat()">Hapus Chat</button>
-      <button class="btn-sm btn-red" onclick="resetTotal()">Reset Total</button>
-      <button class="btn-sm btn-gray" onclick="logoutHost()">Logout</button>
+      <button class="btn-header" onclick="paksaSinkron(event)">
+        <i>🔄</i> Sinkron
+      </button>
+      <button class="btn-header" onclick="hapusChat()">
+        <i>🗑️</i> Hapus Chat
+      </button>
+      <button class="btn-header" onclick="resetTotal()">
+        <i>↺</i> Reset Total
+      </button>
+      <button class="btn-header logout" onclick="logoutHost()">
+        <i>⏻</i> Logout
+      </button>
     </div>
   </div>
 
   <div class="grid-container">
     <div class="column">
       
-      <!-- TIMER PANEL DENGAN JAM, MENIT, DETIK -->
+      <!-- TIMER PANEL GAYA BARU -->
       <div class="panel timer-panel">
-        <button class="btn-maximize" onclick="tampilkanTimer()" title="Tampilkan Pop-up Timer">⛶</button>
+        <button class="btn-maximize" onclick="tampilkanTimer()" title="Tampilkan Pop-up">⛶</button>
         <p class="panel-title">⏱ Timer Kuis</p>
         
-        <div class="time-input-group">
+        <!-- Tampilan Angka Timer (Berjalan Mundur) -->
+        <div class="main-timer-display" id="mainTimerDisplay">00:00:30</div>
+        <div class="time-labels">
+          <span>JAM</span>
+          <span>MENIT</span>
+          <span>DETIK</span>
+        </div>
+        
+        <!-- Input Waktu (Tersembunyi, hanya muncul jika diklik) -->
+        <div class="time-input-group" id="timeInputGroup">
           <div class="time-input-box">
             <input type="number" id="timerHour" value="0" min="0" max="99">
             <span>Jam</span>
@@ -259,21 +309,31 @@
           </div>
         </div>
         
-        <div class="input-group" style="gap: 15px; margin-top: 5px;">
-          <button class="btn-icon play" onclick="startTimer()" title="Play">▶</button>
-          <button class="btn-icon pause" onclick="pauseTimer()" title="Pause">⏸</button>
-          <button class="btn-icon stop" onclick="stopTimer()" title="Stop / Reset">⏹</button>
+        <div class="timer-controls">
+          <button class="btn-icon play" onclick="startTimer()" title="Play">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="btn-icon pause" onclick="pauseTimer()" title="Pause">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <button class="btn-icon stop" onclick="stopTimer()" title="Stop / Reset">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+          </button>
         </div>
       </div>
 
-      <!-- BUZZER PANEL -->
+      <!-- BUZZER PANEL GAYA BARU -->
       <div class="panel buzzer-panel">
-        <p class="panel-title">🔔 Tombol Cepat (Buzzer)</p>
-        <div class="buzzer-status" id="buzzerStatus">STATUS: —</div>
+        <div class="buzzer-header">
+          <p class="panel-title" style="margin:0;">⚠ Tombol Cepat (Buzzer)</p>
+          <div class="buzzer-status locked" id="buzzerStatus">
+            <span>STATUS: TERKUNCI</span> <div class="dot"></div>
+          </div>
+        </div>
         <div class="btn-group-top">
-          <button class="btn btn-success" onclick="bukaBuzzer()">Buka</button>
-          <button class="btn btn-warning" onclick="tutupBuzzer()">Tutup</button>
-          <button class="btn btn-danger" onclick="resetBuzzer()">Reset</button>
+          <button class="btn-ctrl buka" onclick="bukaBuzzer()">▶ Buka</button>
+          <button class="btn-ctrl tutup" onclick="tutupBuzzer()">🔒 Tutup</button>
+          <button class="btn-ctrl reset" onclick="resetBuzzer()">↺ Reset</button>
         </div>
       </div>
 
@@ -295,8 +355,8 @@
         <p class="panel-title">💬 Live Chat & Broadcast</p>
         <div class="chat-list" id="chatList"></div>
         <div class="chat-input">
-          <input id="hostChatInput" placeholder="Ketik pesan untuk semua pemain..." onkeypress="if(event.key==='Enter')kirimChatHost()">
-          <button class="btn btn-primary" onclick="kirimChatHost()">Kirim</button>
+          <input id="hostChatInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')kirimChatHost()">
+          <button onclick="kirimChatHost()">Kirim</button>
         </div>
       </div>
     </div>
@@ -321,7 +381,7 @@
     </div>
   </div>
   <div class="timer-content">
-    <div id="popupTimerValue">00:00</div>
+    <div id="popupTimerValue">00:00:30</div>
   </div>
 </div>
 
@@ -329,7 +389,7 @@
 <div id="qrModal" onclick="tutupModalQR()">
   <h2 id="qrModalTitle">Tim 1</h2>
   <div class="qr-wrapper" id="qrModalTarget"></div>
-  <p style="color:#cbd5e1; font-size:20px;">Klik di mana saja untuk menutup</p>
+  <p style="color:#cbd5e1; font-size:18px;">Klik di mana saja untuk menutup</p>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -440,7 +500,7 @@
     document.getElementById('appContainer').style.display = 'flex';
     
     const headerTitle = document.querySelector('.header h1');
-    if(headerTitle) headerTitle.innerHTML = `Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">${roomId}</span> <span style="color:var(--text-muted); font-size: 18px; margin-left: 10px;">(${teamCount} Tim)</span>`;
+    if(headerTitle) headerTitle.innerHTML = `<span style="font-size:24px; font-weight:900; color:#0ea5e9;">HP</span> Host Panel <span style="color:#cbd5e1; margin:0 10px;">|</span> <span style="font-size:16px; color:#64748b;">Room: <span style="color:#0ea5e9; font-weight:bold;" id="roomIdLabel">${roomId}</span></span>`;
 
     onValue(ref(db, '.info/serverTimeOffset'), snap => { serverOffset = snap.val() || 0; });
     const serverNow = () => Date.now() + serverOffset;
@@ -464,14 +524,14 @@
       const isLocked = state && state.locked;
 
       if (!isLocked) {
-        statusEl.textContent = 'STATUS: TERBUKA';
+        statusEl.innerHTML = '<span>STATUS: TERBUKA</span> <div class="dot"></div>';
         statusEl.className = 'buzzer-status open';
         if (isPopupVisible) {
           document.getElementById('winnerPopup').style.display = 'none';
           isPopupVisible = false;
         }
       } else {
-        statusEl.textContent = 'STATUS: TERKUNCI';
+        statusEl.innerHTML = '<span>STATUS: TERKUNCI</span> <div class="dot"></div>';
         statusEl.className = 'buzzer-status locked';
         if (state.name !== 'Ditutup Host') {
           const winnerId = `Tim${state.team}_${state.name}`;
@@ -488,7 +548,7 @@
       clearInterval(timerInterval);
       const overlay = document.getElementById('timerOverlay');
       
-      isPaused = false; // Reset pause saat ada perubahan database
+      isPaused = false; 
       
       if (!timer || !timer.running) { 
         overlay.style.display = 'none'; 
@@ -522,12 +582,15 @@
            timeString = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
         
+        // UPDATE MAIN PANEL TIMER & POPUP
+        document.getElementById('mainTimerDisplay').textContent = timeString;
         document.getElementById('popupTimerValue').textContent = timeString;
 
         if (remainingMs <= 10000) overlay.classList.add('urgent');
 
         if (remainingMs <= 0) {
           clearInterval(timerInterval);
+          document.getElementById('mainTimerDisplay').textContent = (h > 0) ? '00:00:00' : '00:00';
           document.getElementById('popupTimerValue').textContent = (h > 0) ? '00:00:00' : '00:00';
           playSound(200, 0.8, 1.0, 'sawtooth');
           return;
@@ -577,8 +640,8 @@
   };
 
   window.paksaSinkron = async (e) => {
-    const btn = e ? e.target : document.activeElement;
-    if(btn) { btn.textContent = '⏳ Memuat...'; btn.disabled = true; }
+    const btn = e ? e.currentTarget : document.activeElement;
+    if(btn) { btn.innerHTML = '<i>⏳</i> Memuat'; btn.disabled = true; }
     try {
       const playersRef = ref(db, `rooms/${roomId}/players`);
       const snapshot = await get(playersRef);
@@ -590,7 +653,7 @@
       }
     } catch(err) { console.error(err); }
     loadDataPemain();
-    setTimeout(() => { if(btn) { btn.textContent = '🔄 Paksa Sinkron'; btn.disabled = false; } }, 800);
+    setTimeout(() => { if(btn) { btn.innerHTML = '<i>🔄</i> Sinkron'; btn.disabled = false; } }, 800);
   };
 
   window.minimizeTimer = () => {
@@ -653,11 +716,11 @@
       
       for (let i = 1; i <= teamCount; i++) {
         const namesHTML = teams[i].length > 0 
-          ? teams[i].map(p => `<span style="font-size:16px; color:var(--text-main); font-weight:700;">${p.name}</span> <button class="btn-del-player" onclick="hapusPemain('${p.key}')">✕</button>`).join(', ')
+          ? teams[i].map(p => `<span style="font-size:15px; color:var(--text-main); font-weight:700;">${p.name}</span> <button class="btn-del-player" onclick="hapusPemain('${p.key}')">✕</button>`).join(', ')
           : '-';
         listEl.innerHTML += `
           <div class="player-row t${i}">
-            <span style="color:var(--tim${i}); min-width:60px; font-weight:900;">TIM ${i}</span>
+            <span style="color:var(--tim${i}); min-width:50px; font-weight:900;">TIM ${i}</span>
             <span style="flex:1; text-align:left; padding:0 10px;">${namesHTML}</span>
             <span class="device-count">${teams[i].length} device</span>
           </div>
@@ -712,7 +775,6 @@
     location.reload();
   };
 
-  // --- LOGIKA TIMER (PLAY, PAUSE, STOP) DENGAN FORMAT JJ:MM:SS ---
   window.startTimer = async () => {
     const h = parseInt(document.getElementById('timerHour').value) || 0;
     const m = parseInt(document.getElementById('timerMin').value) || 0;
@@ -723,6 +785,11 @@
     
     if (actx && actx.state === 'suspended') actx.resume();
     
+    // Sembunyikan input, tampilkan timer berjalan
+    document.getElementById('timeInputGroup').style.display = 'none';
+    document.getElementById('mainTimerDisplay').style.display = 'block';
+    document.querySelector('.time-labels').style.display = 'flex';
+
     if (isPaused) {
       const newStartedAt = Date.now() + serverOffset - (dur * 1000) + pausedTimeRemaining;
       await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: newStartedAt, duration: dur });
@@ -756,6 +823,13 @@
     await remove(ref(db, `rooms/${roomId}/timer`));
     minimizeTimer(); 
     isPaused = false;
+    
+    // Kembalikan tampilan ke input waktu
+    document.getElementById('mainTimerDisplay').style.display = 'none';
+    document.querySelector('.time-labels').style.display = 'none';
+    document.getElementById('timeInputGroup').style.display = 'flex';
+
+    document.getElementById('mainTimerDisplay').textContent = '00:00';
     document.getElementById('popupTimerValue').textContent = '00:00';
   };
 
@@ -787,7 +861,7 @@
       card.className = 'qr-card';
       card.innerHTML = `<h3 style="color:var(--tim${i}); font-weight:900;">TIM ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
       grid.appendChild(card);
-      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 70, height: 70, colorDark: "#000000", colorLight: "#ffffff" });
+      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 65, height: 65, colorDark: "#000000", colorLight: "#ffffff" });
     }
   }
 
