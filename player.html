@@ -191,8 +191,8 @@
       o.frequency.value = freq;
       o.connect(g); 
       g.connect(actx.destination);
-      g.gain.setValueAtTime(0.2, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+      g.gain.setValueAtTime(1.2, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
       o.start(); o.stop(actx.currentTime + dur);
     } catch (e) { console.log('Audio error:', e); }
   }
