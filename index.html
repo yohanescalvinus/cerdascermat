@@ -43,6 +43,7 @@
   }
   .login-box button:hover { background: #2563eb; }
   .btn-logout-setup { background: #ef4444 !important; margin-top: 10px; font-size: 14px !important;}
+  .team-info-badge { text-align: center; font-size: 14px; font-weight: bold; color: #0f172a; background: #e0e7ff; padding: 8px; border-radius: 6px; margin-bottom: 10px;}
 
   /* PANEL HOST UTAMA */
   #appContainer { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
@@ -89,7 +90,7 @@
   .btn-del-player { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 11px; margin-left: 6px; }
 
   .qr-panel { flex-shrink: 0; }
-  .qr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; }
   .qr-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
   .qr-card h3 { margin: 0; font-size: 13px; }
   .qr-wrapper { background: #ffffff; padding: 8px; border-radius: 8px; display: inline-block; border: 1px solid #e2e8f0;}
@@ -135,6 +136,10 @@
   <div class="login-box">
     <h1>📝 Buat Room</h1>
     <p>Masukkan ID Room (tanpa spasi)</p>
+    
+    <!-- Tampilkan jumlah tim di sini -->
+    <div class="team-info-badge" id="setupTeamInfo">Menunggu data tim...</div>
+
     <input type="text" id="newRoomId" placeholder="Contoh: CCA2026" value="CCA2026" style="text-transform: uppercase;">
     <button onclick="buatRoom()">Buat & Mulai Kuis</button>
     <button class="btn-logout-setup" onclick="logoutHost()">Logout</button>
@@ -236,24 +241,30 @@
   const db = getDatabase(app);
 
   let roomId = '';
+  let teamCount = 4; 
   let serverOffset = 0;
   let timerInterval = null;
   let lastTickSecond = -1;
   let playerListenerRef = null;
   let isTimerHidden = false;
 
-  // ==========================================
-  // CEK SESI LOGIN (Mencegah akses langsung)
-  // ==========================================
   onAuthStateChanged(auth, (user) => {
     if (!user) {
-      // Jika tidak ada sesi Firebase Auth, tendang ke login.html
       window.location.href = 'login.html';
       return;
     }
 
-    // Cek apakah Room ID ada di session browser
     const savedRoom = sessionStorage.getItem('hostRoomId');
+    const savedTeamCount = sessionStorage.getItem('hostTeamCount');
+    
+    // BACA JUMLAH TIM DARI LOGIN
+    if (savedTeamCount) {
+      teamCount = parseInt(savedTeamCount);
+    }
+
+    // Tampilkan info di layar setup
+    document.getElementById('setupTeamInfo').textContent = `Kuis akan dimainkan oleh ${teamCount} Tim`;
+
     if (savedRoom) {
       roomId = savedRoom;
       document.getElementById('setupScreen').style.display = 'none';
@@ -264,13 +275,12 @@
     }
   });
 
-  // Logout: Hapus semua memori lokal, hapus sesi Firebase, lalu tendang ke login.html
   window.logoutHost = () => {
     if (confirm('Logout dari Host? (Sesi Room akan berakhir)')) {
-      sessionStorage.clear(); // HAPUS SEMUA CACHE SESI
-      localStorage.clear();   // HAPUS SEMUA LOCAL STORAGE
+      sessionStorage.clear();
+      localStorage.clear();
       signOut(auth).then(() => {
-        window.location.href = 'login.html'; // Redirect paksa ke halaman login
+        window.location.href = 'login.html';
       });
     }
   };
@@ -280,17 +290,18 @@
     if (!newId) { alert('ID Room tidak boleh kosong!'); return; }
     
     roomId = newId;
-    sessionStorage.setItem('hostRoomId', roomId); // Simpan ID room
+    sessionStorage.setItem('hostRoomId', roomId);
     document.getElementById('setupScreen').style.display = 'none';
     mulaiHost();
   };
 
-  // ==========================================
-  // LOGIKA HOST UTAMA
-  // ==========================================
   function mulaiHost() {
     document.getElementById('appContainer').style.display = 'flex';
     document.getElementById('roomIdLabel').textContent = roomId;
+
+    // SUNTIKKAN INFORMASI JUMLAH TIM DI HEADER
+    const headerTitle = document.querySelector('.header h1');
+    if(headerTitle) headerTitle.innerHTML = `Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">${roomId}</span> <span style="color:var(--text-muted); font-size: 14px; margin-left: 10px;">(${teamCount} Tim)</span>`;
 
     onValue(ref(db, '.info/serverTimeOffset'), snap => { serverOffset = snap.val() || 0; });
     const serverNow = () => Date.now() + serverOffset;
@@ -385,7 +396,7 @@
     });
   }
 
-  // ... (Fungsi sound, qr, dll sama seperti sebelumnya)
+  // ... fungsi bantuan suara & QR tetap sama
   window.sembunyikanTimer = () => {
     document.getElementById('timerOverlay').style.display = 'none';
     document.getElementById('btnShowTimer').style.display = 'inline-block';
@@ -445,7 +456,9 @@
       
       const listEl = document.getElementById('playerList');
       listEl.innerHTML = '';
-      for (let i = 1; i <= 4; i++) {
+      
+      // LOOPING SESUAI JUMLAH TIM YANG DIPILIH
+      for (let i = 1; i <= teamCount; i++) {
         const namesHTML = teams[i].length > 0 
           ? teams[i].map(p => `${p.name} <button class="btn-del-player" onclick="hapusPemain('${p.key}')">✕</button>`).join(', ')
           : '-';
@@ -523,7 +536,9 @@
     const baseUrl = getPlayerBaseUrl();
     const grid = document.getElementById('qrGrid');
     grid.innerHTML = '';
-    for (let i = 1; i <= 4; i++) {
+    
+    // LOOPING SESUAI JUMLAH TIM YANG DIPILIH
+    for (let i = 1; i <= teamCount; i++) {
       const card = document.createElement('div');
       card.className = 'qr-card';
       card.innerHTML = `<h3 style="color:var(--tim${i}); font-weight:800;">Tim ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
