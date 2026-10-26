@@ -130,7 +130,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast, onDisconnect, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
@@ -169,9 +169,7 @@
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
   let lastTickSecond = -1;
-  let monitorInterval = null; // Interval untuk cek keberadaan pemain
 
-  // SISTEM SUARA
   let actx;
   function initAudio() {
     if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -238,34 +236,21 @@
       identityEl.style.color = teamColors[teamId];
 
       const playerRef = ref(db, `rooms/${roomId}/players/${myPlayerKey}`);
+      
+      // Daftarkan Pemain
       await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
-      try { await onDisconnect(playerRef).remove(); } catch (e) {}
-
-      // ==========================================
-      // FITUR AUTO-LOGOUT JIKA DIHAPUS HOST (GHOST CLEANUP)
-      // ==========================================
-      if (monitorInterval) clearInterval(monitorInterval);
-      monitorInterval = setInterval(async () => {
-        try {
-          const snap = await get(playerRef);
-          if (!snap.exists()) {
-            // Jika data pemain tidak ada di database, paksa keluar
-            console.log('Pemain dihapus oleh Host. Auto-Logout.');
-            clearInterval(monitorInterval);
-            alert('Anda telah dikeluarkan dari room oleh Host.');
-            
-            // Bersihkan cache
-            localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
-            sessionStorage.clear();
-            
-            // Reload halaman agar kembali ke form nama
-            window.location.reload();
-          }
-        } catch (error) {
-          console.warn("Gagal cek koneksi:", error);
+      
+      // FITUR ONVALUE: Deteksi langsung jika Host menghapus pemain
+      // Kita pantau apakah data pemain ini masih ada di Firebase
+      onValue(playerRef, (snap) => {
+        if (!snap.exists()) {
+          // Jika data tiba-tiba hilang (Host menekan tombol X)
+          alert('Anda telah dikeluarkan dari room oleh Host.');
+          localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
+          sessionStorage.clear();
+          window.location.reload();
         }
-      }, 3000); // Cek setiap 3 detik
-      // ==========================================
+      });
 
       if (!listenersAttached) {
         listenersAttached = true;
@@ -411,7 +396,6 @@
 
   window.exitGame = async () => {
     if (!confirm('Keluar dari permainan?')) return;
-    if (monitorInterval) clearInterval(monitorInterval);
     if (myPlayerKey) try { await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`)); } catch(e){}
     localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
     document.body.innerHTML = '<div class="center-panel"><h2>Anda telah keluar</h2></div>';
