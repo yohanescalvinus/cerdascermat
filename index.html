@@ -88,12 +88,24 @@
 
   .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
   .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
-    padding:8px;text-align:center}
-  .qr-label{font-weight:700;margin-bottom:4px;font-size:12px}
+    padding:8px;display:flex;flex-direction:column;align-items:center;}
+  .qr-label{font-weight:700;margin-bottom:4px;font-size:13px;width:100%;text-align:center;}
   
-  .qr-canvas-container { display: flex; justify-content: center; align-items: center; }
+  .qr-canvas-container { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 100px;}
   .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; border-radius: 4px; }
 
+  .qr-toggle-btn {
+    margin-top: 8px;
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+    transition: 0.2s;
+  }
+  
   .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -252,22 +264,10 @@
         </div>
       </section>
 
-      <!-- FITUR BARU: TOMBOL SHOW/HIDE QR -->
-      <section class="panel" style="margin-bottom:0; flex:1; position:relative;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h2 style="margin:0;">📱 QR Code Registrasi</h2>
-          <button id="toggleQrBtn" class="primary" style="font-size:11px; padding:6px 10px; margin-bottom:8px;" onclick="toggleQRVisibility()">Tampilkan QR</button>
-        </div>
-        
-        <!-- Area QR yang bisa disembunyikan -->
-        <div id="qrContainer" style="display:none; padding-top:10px;">
-          <div id="qrList" class="qr-grid"></div>
-        </div>
-        
-        <!-- Pesan saat QR disembunyikan -->
-        <div id="qrHiddenMsg" style="text-align:center; color:var(--muted); font-size:13px; padding:20px 0; font-style:italic;">
-          QR Code disembunyikan.<br>Klik "Tampilkan QR" untuk memandu registrasi tim.
-        </div>
+      <section class="panel" style="margin-bottom:0; flex:1;">
+        <h2>📱 QR Code Registrasi</h2>
+        <!-- Grid QR Code, Toggle per Masing-masing ada di dalam JS -->
+        <div id="qrList" class="qr-grid"></div>
       </section>
     </div>
   </div>
@@ -322,7 +322,7 @@ let wasLocked = false;
 let listenersReady = false;
 let lastChatCount = 0;
 let isTickSoundOn = true;
-let isQrVisible = false; // Fitur Toggle QR Default: False (Sembunyi)
+let qrVisibleState = {}; // Menyimpan status tampil/sembunyi per tim
 
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
@@ -381,41 +381,22 @@ async function showHostView(){
      await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
   }
 
+  // Inisialisasi status QR default jadi tertutup semua
+  qrVisibleState = {};
+  for(let i=1; i<=teamCount; i++) qrVisibleState[i] = false;
+
   renderQRs();
   
-  // Pastikan status QR kembali ke default (sembunyi) saat masuk halaman
-  isQrVisible = false;
-  updateQRVisibilityUI();
-
   if (!listenersReady){ initListeners(); listenersReady = true; }
   renderPlayers();
   renderFastest();
   renderBuzzerStatus();
 }
 
-// FITUR TAMBAHAN: LOGIKA SHOW/HIDE QR
-window.toggleQRVisibility = () => {
-  isQrVisible = !isQrVisible;
-  updateQRVisibilityUI();
+window.toggleSingleQR = (teamId) => {
+  qrVisibleState[teamId] = !qrVisibleState[teamId];
+  renderQRs(); // Render ulang untuk update tampilan
 };
-
-function updateQRVisibilityUI(){
-  const container = document.getElementById('qrContainer');
-  const msg = document.getElementById('qrHiddenMsg');
-  const btn = document.getElementById('toggleQrBtn');
-  
-  if (isQrVisible){
-    container.style.display = 'block';
-    msg.style.display = 'none';
-    btn.textContent = 'Sembunyikan QR';
-    btn.className = 'danger'; // Tombol jadi merah
-  } else {
-    container.style.display = 'none';
-    msg.style.display = 'block';
-    btn.textContent = 'Tampilkan QR';
-    btn.className = 'primary'; // Tombol jadi biru
-  }
-}
 
 window.saveSettings = async () => {
   const msg = document.getElementById('settingsMsg');
@@ -509,6 +490,7 @@ function renderPlayers(){
   });
   document.getElementById('playersList').innerHTML = html.join('');
 }
+
 function renderQRs(){
   const c = document.getElementById('qrList');
   c.innerHTML = '';
@@ -523,23 +505,40 @@ function renderQRs(){
   for (let t=1; t<=teamCount; t++){
     const div = document.createElement('div');
     div.className = 'qr-item';
-    div.innerHTML = `<div class="qr-label">Tim ${t}</div><div class="qr-canvas-container" id="qr-tim-${t}"></div>`;
+    
+    const isVisible = qrVisibleState[t];
+    const btnText = isVisible ? 'Sembunyikan' : 'Tampilkan';
+    const btnClass = isVisible ? 'danger' : 'primary';
+    const displayStyle = isVisible ? 'flex' : 'none';
+
+    // Render tombol dan wadah canvas
+    div.innerHTML = `
+      <div class="qr-label">Tim ${t}</div>
+      <button class="qr-toggle-btn ${btnClass}" onclick="toggleSingleQR(${t})">${btnText} QR</button>
+      <div class="qr-canvas-container" id="qr-canvas-${t}" style="display: ${displayStyle}; margin-top:6px;">
+        <!-- QR akan digambar di sini -->
+      </div>
+    `;
     c.appendChild(div);
     
-    const url = new URL(baseUrl);
-    url.searchParams.set('room', roomId);
-    url.searchParams.set('team', t);
-    
-    new QRCode(document.getElementById(`qr-tim-${t}`), {
-      text: url.toString(),
-      width: 150,
-      height: 150,
-      colorDark : "#000000",
-      colorLight : "#ffffff",
-      correctLevel : QRCode.CorrectLevel.M
-    });
+    // Hanya gambar QR jika sedang terlihat (menghemat proses render)
+    if (isVisible) {
+      const url = new URL(baseUrl);
+      url.searchParams.set('room', roomId);
+      url.searchParams.set('team', t);
+      
+      new QRCode(document.getElementById(`qr-canvas-${t}`), {
+        text: url.toString(),
+        width: 150,
+        height: 150,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.M
+      });
+    }
   }
 }
+
 function renderChat(msgs){
   const el = document.getElementById('chatList');
   if (!el) return;
