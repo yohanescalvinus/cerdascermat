@@ -568,8 +568,13 @@ function renderQRs(){
     return;
   }
 
-  const baseUrl = new URL('player.html', window.location.href);
-  baseUrl.search = ''; // Memastikan tidak ada parameter nyasar dari URL host
+  // --- PERBAIKAN URL DI SINI ---
+  // Ambil direktori tempat index.html berada, lalu tambahkan player.html
+  const currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+  const playerPageUrl = window.location.origin + currentPath + 'player.html';
+  const baseUrl = new URL(playerPageUrl);
+  // -----------------------------
+  
   let adaYangTampil = false;
 
   for (let t=1; t<=teamCount; t++){
@@ -606,6 +611,14 @@ function renderQRs(){
       });
     }
   }
+
+  const qrPanel = document.getElementById('qrPanel');
+  if (adaYangTampil) {
+    qrPanel.style.minHeight = '250px'; 
+  } else {
+    qrPanel.style.minHeight = 'auto'; 
+  }
+}
 
   const qrPanel = document.getElementById('qrPanel');
   if (adaYangTampil) {
