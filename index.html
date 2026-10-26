@@ -114,12 +114,14 @@
     border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
   }
   
+  /* LAYOUT DINAMIS */
   .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;}
   
   .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; }
   
   .chat-panel { display: flex; flex-direction: column; flex: 1; min-height: 150px; transition: flex 0.3s ease; }
-  /* QR Panel selalu ada, tapi mengecil jika tidak ada isinya */
+  
+  /* QR Panel: Tinggi dinamis, selalu tampil */
   .qr-panel { display: flex; flex-direction: column; flex-shrink: 0; transition: all 0.3s ease; }
 
   .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
@@ -283,7 +285,7 @@
         </div>
       </section>
 
-      <!-- Panel QR selalu ada, namun tingginya dinamis -->
+      <!-- Panel QR SELALU ada. Tombol Tampilkan tetap bisa diakses -->
       <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0;">
         <div class="panel-header-row">
           <h2>📱 QR Code Registrasi</h2>
@@ -572,11 +574,16 @@ function renderQRs(){
 
   const baseUrl = new URL('player.html', location.href);
   
+  // Variabel untuk menyimpan apakah ada QR yang sedang tampil
+  let adaYangTampil = false;
+
   for (let t=1; t<=teamCount; t++){
     const div = document.createElement('div');
     div.className = 'qr-item';
     
     const isVisible = qrVisibleState[t];
+    if(isVisible) adaYangTampil = true;
+
     const btnText = isVisible ? 'Sembunyikan' : 'Tampilkan';
     const btnClass = isVisible ? 'danger' : 'primary';
     const displayStyle = isVisible ? 'flex' : 'none';
@@ -605,16 +612,12 @@ function renderQRs(){
     }
   }
 
-  // Logika Lebar/Tinggi Dinamis (Live Chat vs QR)
+  // Atur tinggi panel QR secara dinamis tanpa menghilangkannya
   const qrPanel = document.getElementById('qrPanel');
-  const qrCanvasCount = document.querySelectorAll('.qr-canvas-container[style*="display: flex"]').length;
-  
-  if (qrCanvasCount === 0) {
-    // Jika semua QR tertutup, panel QR mengecil (hanya menyisakan tombolnya saja)
-    qrPanel.style.minHeight = 'auto';
+  if (adaYangTampil) {
+    qrPanel.style.minHeight = '250px'; // Jika ada yang tampil, beri ruang
   } else {
-    // Jika ada QR yang terbuka, panel QR membesar
-    qrPanel.style.minHeight = '200px';
+    qrPanel.style.minHeight = 'auto'; // Jika tertutup semua, panel mengecil (hanya judul & tombol)
   }
 }
 
