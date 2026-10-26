@@ -58,6 +58,7 @@
   .header-actions { display: flex; gap: 8px; align-items: center; }
   .btn-sm { padding: 8px 16px; font-size: 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: 700; color: white; transition: 0.2s;}
   .btn-blue { background: #3b82f6; } .btn-red { background: #ef4444; } .btn-gray { background: #64748b; } .btn-orange { background: #f59e0b; }
+  .btn-sm:active { transform: scale(0.95); }
   
   .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
   .column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
@@ -73,22 +74,26 @@
   .btn:active { transform: scale(0.96); }
   .btn-primary { background: #3b82f6; } .btn-success { background: #22c55e; } .btn-warning { background: #f59e0b; } .btn-danger { background: #ef4444; }
 
-  /* TIMER (COMPACT) */
+  /* TIMER */
   .timer-panel { flex: 0 0 auto; }
   .input-group { display: flex; gap: 10px; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-wrap: wrap;}
   .input-group input { padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); width: 80px; text-align: center; font-size: 22px; font-weight: 800;}
 
-  /* BUZZER (COMPACT & RAPAT) */
+  /* BUZZER (LAYOUT BARU: TOMBOL DI ATAS STATUS) */
   .buzzer-panel { flex: 0 0 auto; }
   .winner-box { font-size: 22px; font-weight: 900; text-align: center; color: #d97706; min-height: 30px;}
-  /* Menghilangkan jarak ekstra antara status dan tombol */
-  .buzzer-content { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 0; }
-  .buzzer-status { flex: 1; text-align: center; font-size: 22px; font-weight: 900; padding: 12px; border-radius: 8px; border: 3px dashed var(--border-color); transition: 0.3s; letter-spacing: 1px;}
+  .buzzer-content { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+  
+  /* Tombol di atas, rata kanan-kiri */
+  .btn-group-top { display: flex; gap: 10px; width: 100%; }
+  .btn-group-top .btn { flex: 1; } /* Tombol membagi rata lebar layar */
+  
+  /* Status di bawah tombol */
+  .buzzer-status { text-align: center; font-size: 22px; font-weight: 900; padding: 12px; border-radius: 8px; border: 3px dashed var(--border-color); transition: 0.3s; letter-spacing: 1px;}
   .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: #fee2e2; }
   .buzzer-status.open { color: #16a34a; border-color: #22c55e; background: #dcfce7; }
-  .btn-group { display: flex; gap: 8px; flex-direction: column; }
 
-  /* PEMAIN (FLEXIBLE, MENGISI SISA RUANG) */
+  /* PEMAIN */
   .player-panel { flex: 1; overflow: hidden; }
   .player-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 6px; flex: 1;}
   .player-row { background: var(--bg-card); padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; border: 1px solid var(--border-color); border-left: 6px solid transparent; }
@@ -115,7 +120,7 @@
   #qrModal canvas, #qrModal img { width: 350px !important; height: 350px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 36px;}
 
-  /* POP-UP TIMER OVERLAY */
+  /* TIMER OVERLAY */
   #timerOverlay {
     display: none; position: fixed; top: 0; left: 0; width: 65vw; height: 100vh; 
     background: rgba(255, 255, 255, 0.98); z-index: 500;
@@ -166,7 +171,7 @@
     <h1>Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
     <div class="header-actions">
       <button class="btn-sm btn-orange" onclick="paksaSinkron()">🔄 Paksa Sinkron</button>
-      <button class="btn-sm btn-blue" onclick="if(confirm('Hapus semua chat?')) remove(ref(db, 'rooms/'+roomId+'/chat'))">Hapus Chat</button>
+      <button class="btn-sm btn-blue" onclick="hapusChat()">Hapus Chat</button>
       <button class="btn-sm btn-red" onclick="resetTotal()">Reset Total</button>
       <button class="btn-sm btn-gray" onclick="logoutHost()">Logout</button>
     </div>
@@ -192,12 +197,12 @@
         <p class="panel-title">🔔 Tombol Cepat (Buzzer)</p>
         <div class="winner-box" id="winnerDisplay"></div>
         <div class="buzzer-content">
-          <div class="buzzer-status" id="buzzerStatus">STATUS: —</div>
-          <div class="btn-group">
+          <div class="btn-group-top">
             <button class="btn btn-success" onclick="bukaBuzzer()">Buka</button>
             <button class="btn btn-warning" onclick="tutupBuzzer()">Tutup</button>
             <button class="btn btn-danger" onclick="resetBuzzer()">Reset</button>
           </div>
+          <div class="buzzer-status" id="buzzerStatus">STATUS: —</div>
         </div>
       </div>
 
@@ -482,12 +487,32 @@
     });
   }
 
-  window.paksaSinkron = () => {
-    const btn = event.target;
-    btn.textContent = '⏳ Memuat...';
+  // ==========================================
+  // PERBAIKAN BUG: PAKSA SINKRON & HAPUS CHAT
+  // ==========================================
+  window.paksaSinkron = (e) => {
+    // Menggunakan e.target atau document.activeElement agar tidak error
+    const btn = e ? e.target : document.activeElement;
+    if(btn) btn.textContent = '⏳ Memuat...';
+    
     loadDataPemain();
-    setTimeout(() => { btn.textContent = '🔄 Paksa Sinkron'; }, 800);
+    
+    setTimeout(() => { 
+      if(btn) btn.textContent = '🔄 Paksa Sinkron'; 
+    }, 800);
   };
+
+  window.hapusChat = async () => {
+    if(confirm('Hapus semua chat di room ini?')) {
+      try {
+        await remove(ref(db, `rooms/${roomId}/chat`));
+      } catch (error) {
+        alert('Gagal menghapus chat: ' + error.message);
+      }
+    }
+  };
+
+  // ==========================================
 
   window.bukaBuzzer = async () => { 
     await remove(ref(db, `rooms/${roomId}/state`)); 
