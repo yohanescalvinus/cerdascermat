@@ -81,13 +81,12 @@
 
   /* BUZZER */
   .buzzer-panel { flex: 0 0 auto; }
-  .winner-box { font-size: 22px; font-weight: 900; text-align: center; color: #d97706; min-height: 30px;}
-  .buzzer-content { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-  .btn-group-top { display: flex; gap: 10px; width: 100%; }
-  .btn-group-top .btn { flex: 1; }
-  .buzzer-status { text-align: center; font-size: 22px; font-weight: 900; padding: 12px; border-radius: 8px; border: 3px dashed var(--border-color); transition: 0.3s; letter-spacing: 1px;}
+  /* Tampilan status di panel utama dibuat lebih kecil karena popup sudah menangani */
+  .buzzer-status { text-align: center; font-size: 20px; font-weight: 900; padding: 12px; border-radius: 8px; border: 2px dashed var(--border-color); transition: 0.3s; letter-spacing: 1px;}
   .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: #fee2e2; }
   .buzzer-status.open { color: #16a34a; border-color: #22c55e; background: #dcfce7; }
+  .btn-group-top { display: flex; gap: 10px; width: 100%; margin-top: 5px;}
+  .btn-group-top .btn { flex: 1; }
 
   /* PEMAIN */
   .player-panel { flex: 1; overflow: hidden; }
@@ -115,62 +114,67 @@
   #qrModal h2 { color: white; margin: 0; font-size: 36px;}
 
   /* ========================================== */
-  /* POP-UP TIMER WINDOW (BISA DIGESER & RESIZE) */
+  /* POP-UP PEMENANG (MUNCUL DI TENGAH LAYAR)   */
   /* ========================================== */
-  #timerOverlay {
-    display: none; 
-    position: fixed; 
-    top: 15%; left: 15%; /* Posisi awal di tengah kiri */
-    width: 35vw; height: 40vh; /* Ukuran 50% lebih kecil */
-    background: rgba(255, 255, 255, 0.98); 
-    z-index: 500;
-    flex-direction: column; align-items: center; justify-content: center; 
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    border: 2px solid #cbd5e1;
-    border-radius: 12px;
-    overflow: hidden;
-    resize: both; /* Fitur agar bisa di-resize */
+  #winnerPopup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 40px 60px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 5px solid #fbbf24;
+    z-index: 1000; /* Di atas segalanya */
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  /* Header untuk drag */
+  
+  @keyframes popIn {
+    from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  }
+
+  .winner-title { font-size: 32px; color: #64748b; font-weight: 800; letter-spacing: 2px; }
+  .winner-name { font-size: 72px; font-weight: 900; margin: 10px 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
+  .winner-team { font-size: 28px; font-weight: 700; color: #475569; }
+  
+  /* Tombol Tutup Pop-up */
+  .btn-close-winner {
+    background: #ef4444; color: white; border: none; padding: 15px 40px; font-size: 24px; 
+    font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 20px; transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+  }
+  .btn-close-winner:hover { background: #dc2626; transform: scale(1.05); }
+  /* ========================================== */
+
+  /* POP-UP TIMER WINDOW */
+  #timerOverlay {
+    display: none; position: fixed; top: 15%; left: 15%;
+    width: 35vw; height: 40vh; background: rgba(255, 255, 255, 0.98); z-index: 500;
+    flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #cbd5e1; border-radius: 12px; overflow: hidden; resize: both;
+  }
   #timerHeader {
     width: 100%; padding: 10px 15px; background: #e2e8f0; cursor: grab;
     display: flex; justify-content: space-between; align-items: center;
-    position: absolute; top: 0; left: 0;
-    font-weight: bold; color: #475569; font-size: 14px; border-bottom: 1px solid #cbd5e1;
-    user-select: none;
+    position: absolute; top: 0; left: 0; font-weight: bold; color: #475569; font-size: 14px; border-bottom: 1px solid #cbd5e1; user-select: none;
   }
   #timerHeader:active { cursor: grabbing; }
-  
   .btn-close-overlay {
-    background: #ef4444; color: white; border: none;
-    width: 30px; height: 30px; border-radius: 50%;
-    font-size: 16px; font-weight: bold; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%;
+    font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
   }
-  .btn-close-overlay:hover { background: #dc2626; }
-
-  /* Konten Timer di dalam Pop-up */
-  .timer-content {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    width: 100%; height: 100%; padding-top: 30px; /* Spasi untuk header */
-    overflow: hidden;
-  }
+  .timer-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding-top: 30px; overflow: hidden; }
   #timerOverlay h1 { font-size: 24px; color: var(--text-muted); margin-bottom: -5px; font-weight: 800; letter-spacing: 2px;}
-  #popupTimerValue { 
-    font-size: 10vw; /* Akan menyesuaikan saat di-resize */
-    max-width: 90%;
-    font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; 
-  }
+  #popupTimerValue { font-size: 10vw; max-width: 90%; font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; }
   #timerOverlay.urgent #popupTimerValue { color: #ef4444; transform: scale(1.05); animation: pulse 1s infinite alternate; }
   @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
-  
-  /* Tombol Hentikan Waktu */
-  #btnHentikanTimer {
-    margin-top: 15px; padding: 10px 20px; font-size: 16px; border-radius: 8px;
-    background: #ef4444; color: white; border: none; cursor: pointer; font-weight: bold;
-  }
-  #btnHentikanTimer:hover { background: #dc2626; }
+  #btnHentikanTimer { margin-top: 15px; padding: 10px 20px; font-size: 16px; border-radius: 8px; background: #ef4444; color: white; border: none; cursor: pointer; font-weight: bold; }
 
   /* CHAT */
   .chat-panel { flex: 1; min-height: 0; }
@@ -190,9 +194,7 @@
   <div class="login-box">
     <h1>📝 Buat Room</h1>
     <p>Masukkan ID Room (tanpa spasi)</p>
-    
     <div class="team-info-badge" id="setupTeamInfo">Menunggu data tim...</div>
-
     <input type="text" id="newRoomId" placeholder="CONTOH: CCA2026" value="CCA2026" style="text-transform: uppercase;">
     <button onclick="buatRoom()">Buat & Mulai Kuis</button>
     <button class="btn-logout-setup" onclick="logoutHost()">Logout</button>
@@ -214,8 +216,6 @@
   <div class="grid-container">
     <!-- KOLOM KIRI -->
     <div class="column">
-      
-      <!-- TIMER -->
       <div class="panel timer-panel">
         <p class="panel-title">⏱ Timer Kuis</p>
         <div class="input-group">
@@ -226,21 +226,16 @@
         </div>
       </div>
 
-      <!-- BUZZER -->
       <div class="panel buzzer-panel">
         <p class="panel-title">🔔 Tombol Cepat (Buzzer)</p>
-        <div class="winner-box" id="winnerDisplay"></div>
-        <div class="buzzer-content">
-          <div class="btn-group-top">
-            <button class="btn btn-success" onclick="bukaBuzzer()">Buka</button>
-            <button class="btn btn-warning" onclick="tutupBuzzer()">Tutup</button>
-            <button class="btn btn-danger" onclick="resetBuzzer()">Reset</button>
-          </div>
-          <div class="buzzer-status" id="buzzerStatus">STATUS: —</div>
+        <div class="buzzer-status" id="buzzerStatus">STATUS: —</div>
+        <div class="btn-group-top">
+          <button class="btn btn-success" onclick="bukaBuzzer()">Buka</button>
+          <button class="btn btn-warning" onclick="tutupBuzzer()">Tutup</button>
+          <button class="btn btn-danger" onclick="resetBuzzer()">Reset</button>
         </div>
       </div>
 
-      <!-- PEMAIN -->
       <div class="panel player-panel">
         <p class="panel-title">👥 Pemain Terhubung</p>
         <div class="player-list" id="playerList"></div>
@@ -267,15 +262,21 @@
 </div>
 
 <!-- ========================================== -->
-<!-- WINDOW MELAYANG: TIMER OVERLAY -->
+<!-- MODAL POP-UP PEMENANG -->
 <!-- ========================================== -->
+<div id="winnerPopup">
+  <div class="winner-title">🏆 PEMENANGNYA ADALAH</div>
+  <div class="winner-team" id="popupTeam"></div>
+  <div class="winner-name" id="popupName"></div>
+  <button class="btn-close-winner" onclick="tutupWinnerPopup()">✕ Tutup & Reset</button>
+</div>
+
+<!-- WINDOW MELAYANG: TIMER OVERLAY -->
 <div id="timerOverlay">
-  <!-- Header untuk Drag -->
   <div id="timerHeader">
     <span>⏱ TIMER KUIS</span>
     <button class="btn-close-overlay" onclick="sembunyikanTimer()">✕</button>
   </div>
-  
   <div class="timer-content">
     <div id="popupTimerValue">—</div>
     <button id="btnHentikanTimer" onclick="stopTimer()">■ Hentikan Waktu</button>
@@ -317,6 +318,9 @@
   let playerListenerRef = null;
   let isTimerHidden = false;
 
+  // State untuk mengecek apakah popup sudah ditampilkan
+  let popupWinnerShown = false;
+
   const isLoggedIn = sessionStorage.getItem('isHostLoggedIn');
   
   if (!isLoggedIn) {
@@ -338,40 +342,6 @@
       document.getElementById('appContainer').style.display = 'none';
     }
   }
-
-  // ==========================================
-  // FITUR DRAG (GESER) UNTUK POP-UP TIMER
-  // ==========================================
-  const dragItem = document.getElementById('timerOverlay');
-  const dragHandle = document.getElementById('timerHeader');
-  let active = false;
-  let currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
-  dragHandle.addEventListener("mousedown", dragStart);
-  document.addEventListener("mouseup", dragEnd);
-  document.addEventListener("mousemove", drag);
-
-  function dragStart(e) {
-    if (e.target.classList.contains('btn-close-overlay')) return;
-    initialX = e.clientX - xOffset;
-    initialY = e.clientY - yOffset;
-    if (e.target === dragHandle || e.target.parentElement === dragHandle) active = true;
-  }
-  function dragEnd() { active = false; }
-  function drag(e) {
-    if (active) {
-      e.preventDefault();
-      currentX = e.clientX - initialX;
-      currentY = e.clientY - initialY;
-      xOffset = currentX;
-      yOffset = currentY;
-      setTranslate(currentX, currentY, dragItem);
-    }
-  }
-  function setTranslate(xPos, yPos, el) {
-    el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
-  }
-  // ==========================================
 
   window.logoutHost = () => {
     if (confirm('Logout dari Host? (Sesi Room akan berakhir)')) {
@@ -408,10 +378,8 @@
     onValue(ref(db, `rooms/${roomId}/state`), snap => {
       const state = snap.val();
       const statusEl = document.getElementById('buzzerStatus');
-      const winnerEl = document.getElementById('winnerDisplay');
       const isLocked = state && state.locked;
 
-      // JIKA DATA STATE KOSONG (BARU MASUK), PAKSA JADI TERTUTUP
       if (state === null) {
         set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' });
         return;
@@ -420,14 +388,23 @@
       if (!isLocked) {
         statusEl.textContent = 'STATUS: TERBUKA';
         statusEl.className = 'buzzer-status open';
-        winnerEl.innerHTML = '';
+        
+        // Jika sebelumnya ada pemenang, kita jangan tutup popup, user yang tutup manual
+        // Tapi kalau status jadi terbuka karena ditekan buka, pastikan popup hilang
+        if (state.name !== 'Ditutup Host') {
+           tutupWinnerPopup(); 
+        }
+        
+        popupWinnerShown = false;
+
       } else {
         statusEl.textContent = 'STATUS: TERKUNCI';
         statusEl.className = 'buzzer-status locked';
-        if (state.name === 'Ditutup Host') {
-          winnerEl.innerHTML = `🔒 Buzzer Ditutup Manual`;
-        } else {
-          winnerEl.innerHTML = `🏆 <span style="color:var(--tim${state.team}); font-weight:900;">TIM ${state.team}</span> (${state.name})!`;
+        
+        // JIKA ADA PEMENANG DAN POPUP BELUM MUNCUL
+        if (state.name !== 'Ditutup Host' && !popupWinnerShown) {
+          popupWinnerShown = true;
+          showWinnerPopup(state.team, state.name);
         }
       }
     });
@@ -490,6 +467,29 @@
     });
   }
 
+  // ==========================================
+  // FITUR POP-UP PEMENANG
+  // ==========================================
+  function showWinnerPopup(team, name) {
+    const popup = document.getElementById('winnerPopup');
+    document.getElementById('popupTeam').textContent = `TIM ${team}`;
+    document.getElementById('popupTeam').style.color = `var(--tim${team})`;
+    
+    document.getElementById('popupName').textContent = name;
+    document.getElementById('popupName').style.color = `var(--tim${team})`;
+    
+    popup.style.display = 'flex';
+    playHorn(); // Bunyikan suara
+  }
+
+  window.tutupWinnerPopup = () => {
+    document.getElementById('winnerPopup').style.display = 'none';
+    popupWinnerShown = false; // Reset status
+    // Klik tutup juga otomatis me-reset sistem (kembali ke default terbuka)
+    resetBuzzer(); 
+  };
+  // ==========================================
+
   window.sembunyikanTimer = () => {
     document.getElementById('timerOverlay').style.display = 'none';
     document.getElementById('btnShowTimer').style.display = 'inline-block';
@@ -517,6 +517,20 @@
       g.gain.setValueAtTime(vol, actx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
       o.start(); o.stop(actx.currentTime + dur);
+    } catch (e) {}
+  }
+
+  function playHorn() {
+    try {
+      if (!actx) return;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sawtooth'; 
+      o.frequency.setValueAtTime(600, actx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(300, actx.currentTime + 0.4);
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(1.0, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.5);
+      o.start(); o.stop(actx.currentTime + 0.5);
     } catch (e) {}
   }
 
@@ -564,8 +578,8 @@
     }
   };
 
-  // LOGIKA TOMBOL BUZZER & TIMER
   window.bukaBuzzer = async () => { 
+    tutupWinnerPopup(); // Pastikan popup hilang
     await remove(ref(db, `rooms/${roomId}/state`)); 
     await set(ref(db, `rooms/${roomId}/buzzer`), { armed: false });
   };
@@ -576,6 +590,7 @@
   };
 
   window.resetBuzzer = async () => { 
+    tutupWinnerPopup(); // Pastikan popup hilang
     await remove(ref(db, `rooms/${roomId}/state`)); 
     await remove(ref(db, `rooms/${roomId}/buzzer`));
   };
@@ -594,17 +609,12 @@
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
     if (actx && actx.state === 'suspended') actx.resume();
     isTimerHidden = false;
-    // Mengatur reset posisi pop-up ke tengah setiap start timer
-    dragItem.style.transform = `translate3d(0px, 0px, 0px)`;
-    xOffset = 0; yOffset = 0;
-
     await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: Date.now() + serverOffset, duration: dur });
   };
   
-  // TOMBOL STOP MENUTUP POP-UP & MENGHENTIKAN TIMER
   window.stopTimer = async () => { 
     await remove(ref(db, `rooms/${roomId}/timer`));
-    sembunyikanTimer(); // Sembunyikan setelah stop
+    sembunyikanTimer(); 
   };
 
   window.kirimChatHost = async () => {
