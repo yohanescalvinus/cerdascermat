@@ -69,7 +69,6 @@
   }
   .panel-title { font-size: 14px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;}
 
-  /* TOMBOL UMUM */
   .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 16px; color: #fff; transition: 0.2s;}
   .btn:active { transform: scale(0.96); }
   .btn-primary { background: #3b82f6; } .btn-success { background: #22c55e; } .btn-warning { background: #f59e0b; } .btn-danger { background: #ef4444; }
@@ -112,44 +111,20 @@
   #qrModal canvas, #qrModal img { width: 350px !important; height: 350px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 36px;}
 
-  /* ========================================== */
-  /* POP-UP PEMENANG (MUNCUL DI TENGAH LAYAR)   */
-  /* ========================================== */
+  /* POP-UP PEMENANG */
   #winnerPopup {
-    display: none;
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffffff;
-    padding: 40px 60px;
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    border: 5px solid #fbbf24;
-    z-index: 1000; /* Di atas segalanya */
-    text-align: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+    display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: #ffffff; padding: 40px 60px; border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 5px solid #fbbf24;
+    z-index: 1000; text-align: center; flex-direction: column; align-items: center; gap: 20px;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  
-  @keyframes popIn {
-    from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  }
-
+  @keyframes popIn { from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
   .winner-title { font-size: 32px; color: #64748b; font-weight: 800; letter-spacing: 2px; }
   .winner-name { font-size: 72px; font-weight: 900; margin: 10px 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
   .winner-team { font-size: 28px; font-weight: 700; color: #475569; }
-  
-  /* Tombol Tutup Pop-up */
-  .btn-close-winner {
-    background: #ef4444; color: white; border: none; padding: 15px 40px; font-size: 24px; 
-    font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 20px; transition: 0.2s;
-    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
-  }
+  .btn-close-winner { background: #ef4444; color: white; border: none; padding: 15px 40px; font-size: 24px; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 20px; transition: 0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
   .btn-close-winner:hover { background: #dc2626; transform: scale(1.05); }
-  /* ========================================== */
 
   /* POP-UP TIMER WINDOW */
   #timerOverlay {
@@ -158,16 +133,9 @@
     flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #cbd5e1; border-radius: 12px; overflow: hidden; resize: both;
   }
-  #timerHeader {
-    width: 100%; padding: 10px 15px; background: #e2e8f0; cursor: grab;
-    display: flex; justify-content: space-between; align-items: center;
-    position: absolute; top: 0; left: 0; font-weight: bold; color: #475569; font-size: 14px; border-bottom: 1px solid #cbd5e1; user-select: none;
-  }
+  #timerHeader { width: 100%; padding: 10px 15px; background: #e2e8f0; cursor: grab; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 0; left: 0; font-weight: bold; color: #475569; font-size: 14px; border-bottom: 1px solid #cbd5e1; user-select: none; }
   #timerHeader:active { cursor: grabbing; }
-  .btn-close-overlay {
-    background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%;
-    font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
-  }
+  .btn-close-overlay { background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
   .timer-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding-top: 30px; overflow: hidden; }
   #timerOverlay h1 { font-size: 24px; color: var(--text-muted); margin-bottom: -5px; font-weight: 800; letter-spacing: 2px;}
   #popupTimerValue { font-size: 10vw; max-width: 90%; font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; }
@@ -213,7 +181,6 @@
   </div>
 
   <div class="grid-container">
-    <!-- KOLOM KIRI -->
     <div class="column">
       <div class="panel timer-panel">
         <p class="panel-title">⏱ Timer Kuis</p>
@@ -241,7 +208,6 @@
       </div>
     </div>
 
-    <!-- KOLOM KANAN -->
     <div class="column">
       <div class="panel qr-panel">
         <p class="panel-title">📱 QR Code Registrasi Tim</p>
@@ -260,9 +226,7 @@
   </div>
 </div>
 
-<!-- ========================================== -->
 <!-- MODAL POP-UP PEMENANG -->
-<!-- ========================================== -->
 <div id="winnerPopup">
   <div class="winner-title">🏆 PEMENANGNYA ADALAH</div>
   <div class="winner-team" id="popupTeam"></div>
@@ -293,7 +257,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref, onValue, set, remove, push, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, onValue, set, remove, push, serverTimestamp, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
@@ -317,9 +281,8 @@
   let playerListenerRef = null;
   let isTimerHidden = false;
 
-  // Variabel bantu untuk melacak state
-  let currentPopupTeam = "";
-  let currentPopupName = "";
+  // Variabel untuk melacak Pop-up
+  let currentWinnerKey = ""; 
   let isPopupVisible = false;
 
   const isLoggedIn = sessionStorage.getItem('isHostLoggedIn');
@@ -375,15 +338,19 @@
     generateQRs();
     loadDataPemain();
 
-    // PEMANTAU STATUS BUZZER
+    // PEMANTAU STATUS BUZZER (DIPERBAIKI)
+    let isFirstLoad = true;
     onValue(ref(db, `rooms/${roomId}/state`), snap => {
       const state = snap.val();
       const statusEl = document.getElementById('buzzerStatus');
-      
-      // JIKA DATA KOSONG (BARU MASUK), PAKSA JADI TERTUTUP
-      if (state === null) {
-        set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' });
-        return;
+
+      // Hanya paksa tutup JIKA ini load pertama dan data memang tidak ada
+      if (isFirstLoad) {
+        isFirstLoad = false;
+        if (state === null) {
+          set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' });
+          return;
+        }
       }
 
       const isLocked = state && state.locked;
@@ -392,7 +359,7 @@
         statusEl.textContent = 'STATUS: TERBUKA';
         statusEl.className = 'buzzer-status open';
         
-        // JIKA POPUP MASIH TERBUKA SAAT HOST BUKA BUZZER, TUTUP POPUP
+        // JIKA POPUP MASIH TERBUKA, TUTUP POPUP
         if (isPopupVisible) {
           document.getElementById('winnerPopup').style.display = 'none';
           isPopupVisible = false;
@@ -401,15 +368,19 @@
         statusEl.textContent = 'STATUS: TERKUNCI';
         statusEl.className = 'buzzer-status locked';
         
-        // TAMPILKAN POPUP JIKA ADA PEMENANG (BUKAN DITUTUP MANUAL)
+        // TAMPILKAN POPUP JIKA ADA PEMENANG
         if (state.name !== 'Ditutup Host') {
-          if (!isPopupVisible || currentPopupTeam !== state.team || currentPopupName !== state.name) {
+          const winnerId = `Tim${state.team}_${state.name}`;
+          // Cek apakah pop-up untuk pemenang ini belum ditampilkan
+          if (!isPopupVisible || currentWinnerKey !== winnerId) {
+             currentWinnerKey = winnerId;
              showWinnerPopup(state.team, state.name);
           }
         }
       }
     });
 
+    // TIMER
     onValue(ref(db, `rooms/${roomId}/timer`), snap => {
       const timer = snap.val();
       clearInterval(timerInterval);
@@ -454,6 +425,7 @@
       }, 100);
     });
 
+    // CHAT
     onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
       const data = snap.val() || {};
       const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
@@ -468,12 +440,8 @@
     });
   }
 
-  // ==========================================
-  // FITUR POP-UP PEMENANG (LOGIK BARU BEBAS ERROR)
-  // ==========================================
+  // FITUR POP-UP PEMENANG
   function showWinnerPopup(team, name) {
-    currentPopupTeam = team;
-    currentPopupName = name;
     isPopupVisible = true;
 
     const popup = document.getElementById('winnerPopup');
@@ -490,6 +458,7 @@
   window.tutupWinnerPopup = async () => {
     document.getElementById('winnerPopup').style.display = 'none';
     isPopupVisible = false;
+    currentWinnerKey = "";
     
     // Tutup popup = Hapus State di database (Kembali kosong)
     try {
@@ -497,7 +466,32 @@
       await remove(ref(db, `rooms/${roomId}/buzzer`));
     } catch (e) { console.log(e); }
   };
-  // ==========================================
+  
+  // PERBAIKAN FITUR PAKSA SINKRON (HAPUS PEMAIN GHOST)
+  window.paksaSinkron = async (e) => {
+    const btn = e ? e.target : document.activeElement;
+    if(btn) { btn.textContent = '⏳ Memuat...'; btn.disabled = true; }
+    
+    try {
+      // Cek koneksi pemain (Firebase akan otomatis menghapus pemain yang sudah mati koneksinya)
+      const playersRef = ref(db, `rooms/${roomId}/players`);
+      const snapshot = await get(playersRef);
+      
+      if (snapshot.exists()) {
+        const players = snapshot.val();
+        for (const [key, p] of Object.entries(players)) {
+          // Trik memaksa Firebase memperbarui status koneksi: 
+          // (Pemain yang mati koneksinya tidak akan terupdate, Host yang membersihkan)
+          await set(ref(db, `rooms/${roomId}/players/${key}`), p);
+        }
+      }
+    } catch(err) {
+      console.error(err);
+    }
+
+    loadDataPemain();
+    setTimeout(() => { if(btn) { btn.textContent = '🔄 Paksa Sinkron'; btn.disabled = false; } }, 800);
+  };
 
   window.sembunyikanTimer = () => {
     document.getElementById('timerOverlay').style.display = 'none';
@@ -574,20 +568,12 @@
     });
   }
 
-  window.paksaSinkron = (e) => {
-    const btn = e ? e.target : document.activeElement;
-    if(btn) btn.textContent = '⏳ Memuat...';
-    loadDataPemain();
-    setTimeout(() => { if(btn) btn.textContent = '🔄 Paksa Sinkron'; }, 800);
-  };
-
   window.hapusChat = async () => {
     if(confirm('Hapus semua chat di room ini?')) {
       try { await remove(ref(db, `rooms/${roomId}/chat`)); } catch (error) { alert('Gagal: ' + error.message); }
     }
   };
 
-  // FUNGSI TOMBOL BAWAH
   window.bukaBuzzer = async () => { 
     if (isPopupVisible) await tutupWinnerPopup();
     await remove(ref(db, `rooms/${roomId}/state`)); 
