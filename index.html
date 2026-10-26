@@ -41,7 +41,6 @@
   .center-panel button:disabled{opacity:.5;cursor:not-allowed}
   .hint{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px;line-height:1.4}
   .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
-  .ok{color:var(--green);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
 
   header{display:flex;justify-content:space-between;align-items:center;gap:12px;
     flex-wrap:wrap;padding:10px 16px;background:var(--card);border-radius:14px;
@@ -114,14 +113,12 @@
     border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
   }
   
-  /* LAYOUT DINAMIS */
-  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;}
+  /* --- LAYOUT KANAN DINAMIS (CHAT MEMBESAR SAAT QR TUTUP) --- */
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch;}
   
-  .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; }
+  .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; min-height: 500px;}
   
-  .chat-panel { display: flex; flex-direction: column; flex: 1; min-height: 150px; transition: flex 0.3s ease; }
-  
-  /* QR Panel: Tinggi dinamis, selalu tampil */
+  .chat-panel { display: flex; flex-direction: column; flex: 1; transition: flex 0.3s ease; }
   .qr-panel { display: flex; flex-direction: column; flex-shrink: 0; transition: all 0.3s ease; }
 
   .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
@@ -165,7 +162,7 @@
 
   @media (max-width: 900px){
     .dashboard-grid { grid-template-columns: 1fr; }
-    .right-column { height: auto; }
+    .right-column { height: auto; min-height: auto;}
     .chat-panel { height: 300px; flex: none; }
   }
 </style>
@@ -285,7 +282,7 @@
         </div>
       </section>
 
-      <!-- Panel QR SELALU ada. Tombol Tampilkan tetap bisa diakses -->
+      <!-- Panel QR SELALU ada. -->
       <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0;">
         <div class="panel-header-row">
           <h2>📱 QR Code Registrasi</h2>
@@ -293,6 +290,7 @@
         <div id="qrList" class="qr-grid"></div>
       </section>
     </div>
+
   </div>
 </div>
 
@@ -395,7 +393,7 @@ window.clearChat = async () => {
     await set(ref(db, `rooms/${roomId}/chat`), null);
     document.getElementById('chatList').innerHTML = '';
   } catch(e) {
-    alert("Gagal menghapus chat. Periksa Firebase Rules Anda.");
+    alert("Gagal menghapus chat. Pastikan aturan Firebase Rules mengizinkan penghapusan data.");
   }
 };
 
@@ -573,8 +571,6 @@ function renderQRs(){
   }
 
   const baseUrl = new URL('player.html', location.href);
-  
-  // Variabel untuk menyimpan apakah ada QR yang sedang tampil
   let adaYangTampil = false;
 
   for (let t=1; t<=teamCount; t++){
@@ -612,12 +608,11 @@ function renderQRs(){
     }
   }
 
-  // Atur tinggi panel QR secara dinamis tanpa menghilangkannya
   const qrPanel = document.getElementById('qrPanel');
   if (adaYangTampil) {
-    qrPanel.style.minHeight = '250px'; // Jika ada yang tampil, beri ruang
+    qrPanel.style.minHeight = '250px'; 
   } else {
-    qrPanel.style.minHeight = 'auto'; // Jika tertutup semua, panel mengecil (hanya judul & tombol)
+    qrPanel.style.minHeight = 'auto'; 
   }
 }
 
