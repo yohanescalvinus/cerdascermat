@@ -1,810 +1,318 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Host • Cerdas Cermat</title>
-<script src="qrcode.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Host - Cerdas Cermat</title>
 <style>
-  :root, [data-theme="dark"]{
-    --bg:#0b1120; --bg-grad-1:#1e293b; --bg-grad-2:#0b1120;
-    --card:#1e293b; --card-2:#0b1120; --line:#334155;
-    --text:#e2e8f0; --muted:#94a3b8;
-    --blue:#38bdf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 16px;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    display: flex; flex-direction: column; gap: 16px; min-height: 100vh;
   }
-  [data-theme="light"]{
-    --bg:#e5e7eb; --bg-grad-1:#f3f4f6; --bg-grad-2:#d1d5db;
-    --card:#f9fafb; --card-2:#f3f4f6; --line:#d1d5db;
-    --text:#1f2937; --muted:#6b7280;
-    --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #1e293b; padding: 12px 20px; border-radius: 10px;
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;
-    padding:clamp(10px,2vw,16px);
-    background:radial-gradient(circle at top,var(--bg-grad-1),var(--bg-grad-2) 70%);
-    color:var(--text);min-height:100dvh;transition:background .3s,color .3s; overflow-x: hidden;}
-  
-  h1{font-size:clamp(18px,2.5vw,22px);margin:0 0 4px}
-  h2{font-size:clamp(11px,1.4vw,13px);margin:0 0 10px;color:var(--muted);
-    text-transform:uppercase;letter-spacing:1px; font-weight: 700;}
-
-  .center-panel{max-width:420px;margin:8vh auto;background:var(--card);
-    padding:28px;border-radius:16px;border:1px solid var(--line);transition:.3s}
-  .center-panel label{display:block;font-size:13px;color:var(--muted);
-    margin-bottom:6px;font-weight:600;letter-spacing:.5px}
-  .center-panel input{width:100%;margin-bottom:14px;padding:12px;border-radius:10px;
-    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:15px;font-family:inherit}
-  .center-panel input.mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:1px;text-transform:lowercase}
-  .center-panel input:focus{outline:2px solid var(--blue);outline-offset:0}
-  .center-panel button{width:100%;padding:12px;border-radius:10px;border:none;
-    background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
-  .center-panel button:disabled{opacity:.5;cursor:not-allowed}
-  .hint{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px;line-height:1.4}
-  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
-
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px;
-    flex-wrap:wrap;padding:10px 16px;background:var(--card);border-radius:14px;
-    border:1px solid var(--line);margin-bottom:12px}
-  header .room-wrap{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-  header .room{font-family:ui-monospace,Consolas,monospace;
-    font-size:clamp(16px,2.4vw,20px);font-weight:900;letter-spacing:2px;color:var(--blue)}
-  header .team-count{font-size:13px;color:var(--muted)}
-  header button{padding:8px 14px;border-radius:9px;border:1px solid var(--line);
-    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px; transition:.15s}
-  header button:hover{filter:brightness(1.15)}
-  header button.btn-reset { background: var(--red); color: white; border: none; }
-
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
-    padding:clamp(10px,1.5vw,14px);margin-bottom:12px;transition:.3s}
-  
-  .panel-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;}
-  .panel-header-row h2 { margin: 0; }
-  .controls-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  
-  .input-time { width: 60px; padding: 8px; border-radius: 8px; border: 1px solid var(--line);
-    background: var(--card-2); color: var(--text); font-size: 14px; text-align: center; font-weight: bold; }
-  
-  .panel button{padding:8px 12px;border-radius:8px;border:1px solid var(--line);
-    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px;transition:.15s;
-    display: flex; align-items: center; justify-content: center; gap: 4px;}
-  .panel button:hover{filter:brightness(1.15)}
-  .panel button.primary{background:var(--blue);color:#fff;border:none}
-  .panel button.success{background:var(--green);color:#fff;border:none}
-  .panel button.danger{background:var(--red);color:#fff;border:none}
-  .panel button:disabled{opacity:.4;cursor:not-allowed;filter:none}
-
-  .timer-display-wrapper { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 12px; padding: 12px; background: var(--card-2); border-radius: 12px; border: 1px solid var(--line);}
-  .timer-display{font-family:ui-monospace,Consolas,monospace;
-    font-size:clamp(32px,5vw,48px);font-weight:900;text-align:center;
-    color:var(--green);letter-spacing:2px; line-height: 1;}
-  .timer-display.urgent{color:var(--amber)}
-  .timer-display.done{color:var(--red);font-size:clamp(24px,4vw,32px)}
-  
-  .btn-show-timer {
-    background: var(--card); color: var(--blue); border: 2px solid var(--blue); border-radius: 8px;
-    padding: 8px 16px; font-size: 13px; font-weight: bold; cursor: pointer; display: none; 
+  .header h1 { margin: 0; font-size: 20px; }
+  .grid-container {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; flex: 1;
   }
-  .btn-show-timer:hover { background: var(--blue); color: white; }
-
-  .buzzer-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-    padding:10px 14px;border-radius:10px;background:var(--card-2);
-    border:2px dashed var(--line);font-weight:700;margin-bottom:12px; font-size: 13px;}
-  .buzzer-status.armed{border-color:var(--green);color:var(--green);animation:pulse 2s ease-in-out infinite}
-  .buzzer-status.locked{border-color:var(--amber);color:var(--amber)}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
-
-  .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
-    padding:10px;margin-bottom:6px; display: flex; justify-content: space-between; align-items: center;}
-  .team-title{font-weight:700;font-size:14px;}
-  .team-title .badge{font-size:11px;background:var(--line);padding:2px 8px;
-    border-radius:20px;margin-left:6px;font-weight:600}
-  .team-members{color:var(--muted);font-size:12px; text-align: right; max-width: 60%;}
-
-  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-  .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
-    padding:10px;display:flex;flex-direction:column;align-items:center;}
-  .qr-label{font-weight:700;margin-bottom:8px;font-size:13px;width:100%;text-align:center;}
-  
-  .qr-canvas-container { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 120px; background: #ffffff; border-radius: 8px; padding: 8px;}
-  .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; }
-
-  .qr-toggle-btn {
-    margin-top: 10px; padding: 6px 8px; font-size: 11px; border-radius: 6px;
-    border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
+  .panel {
+    background: #1e293b; border-radius: 10px; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
   }
+  .panel-title { font-size: 14px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin: 0 0 8px 0; letter-spacing: 1px; }
   
-  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;}
+  /* Timer */
+  .timer-display { font-size: 48px; font-weight: 800; text-align: center; color: #3b82f6; font-variant-numeric: tabular-nums; margin: 10px 0; }
+  .timer-controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; color: #fff; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: #3b82f6; }
+  .btn-success { background: #22c55e; }
+  .btn-danger { background: #ef4444; }
+  .btn-warning { background: #f59e0b; }
   
-  .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; min-height: 500px;}
+  /* Buzzer */
+  .buzzer-status { text-align: center; font-size: 20px; font-weight: 800; padding: 12px; border-radius: 8px; border: 2px dashed #475569; }
+  .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+  .buzzer-status.open { color: #22c55e; border-color: #22c55e; background: rgba(34, 197, 94, 0.1); }
   
-  .chat-panel { display: flex; flex-direction: column; flex: 1; transition: flex 0.3s ease; }
-  .qr-panel { display: flex; flex-direction: column; flex-shrink: 0; transition: all 0.3s ease; }
+  .winner-box { font-size: 24px; font-weight: bold; text-align: center; color: #fbbf24; padding: 20px; min-height: 80px; }
 
-  .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
-    border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px}
-  .chat-msg{padding:6px 0;border-bottom:1px solid var(--line)}
-  .chat-msg:last-child{border-bottom:none}
-  .chat-who{font-weight:700;color:var(--blue);font-size:11px;margin-bottom:2px; display:flex; justify-content: space-between;}
-  .chat-time{font-size:9px;color:var(--muted);font-weight:normal;}
-  .chat-text{color:var(--text)}
-  .chat-input{display:flex;gap:6px}
-  .chat-input input{flex:1;padding:10px;border-radius:8px;border:1px solid var(--line);
-    background:var(--card-2);color:var(--text);font-size:13px;min-width:0}
-  .chat-input button{padding:10px 16px;border-radius:8px;border:none;
-    background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:13px;flex-shrink:0}
+  /* Players */
+  .player-list { display: flex; flex-direction: column; gap: 8px; }
+  .player-row { background: #0f172a; padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+  .device-count { font-size: 12px; background: #334155; padding: 2px 8px; border-radius: 12px; color: #cbd5e1; }
+
+  /* QR */
+  .qr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .qr-card { background: #0f172a; padding: 12px; border-radius: 8px; text-align: center; }
+  .qr-card h3 { margin: 0 0 10px 0; font-size: 14px; }
+  #qr-team1, #qr-team2, #qr-team3, #qr-team4 { display: flex; justify-content: center; margin-bottom: 8px; }
+  .qr-card button { width: 100%; font-size: 12px; padding: 6px; }
+
+  /* Chat */
+  .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 8px; }
+  .chat-msg { background: #0f172a; padding: 8px 12px; border-radius: 6px; font-size: 14px; }
+  .chat-msg.host { background: #1e3a8a; text-align: right; }
+  .chat-who { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+  .chat-input { display: flex; gap: 8px; margin-top: 8px; }
+  .chat-input input { flex: 1; padding: 10px; border-radius: 6px; border: none; background: #0f172a; color: white; }
   
-  .btn-clear-chat {
-    padding:4px 8px; font-size:11px; border-radius:6px; background:var(--red);
-    color:white; border:none; cursor:pointer; font-weight:bold;
-  }
-  .btn-clear-chat:hover { filter: brightness(1.2); }
-
-  .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-    background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
-  .popup.show{display:flex}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .popup-content{background:var(--card);padding:clamp(24px,4vw,40px);
-    border-radius:24px;text-align:center;max-width:min(92vw,560px);width:100%;
-    border:3px solid var(--green);box-shadow:0 20px 60px rgba(34,197,94,.4);
-    animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
-  @keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-  .popup-trophy{font-size:clamp(60px,12vw,90px);margin-bottom:8px;animation:bounce 1s ease-in-out infinite}
-  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-  .popup-label{font-size:clamp(13px,2vw,16px);color:var(--muted);
-    text-transform:uppercase;letter-spacing:3px;font-weight:700}
-  .popup-team{font-size:clamp(26px,5vw,38px);font-weight:900;color:var(--blue);margin:10px 0 6px}
-  .popup-name{font-size:clamp(34px,7vw,52px);font-weight:900;color:var(--green);margin-bottom:24px;line-height:1.1}
-  .popup-btn{padding:16px 32px;border-radius:14px;border:none;
-    background:var(--green);color:#fff;font-size:clamp(16px,2.5vw,20px);font-weight:800;
-    cursor:pointer;letter-spacing:1px;box-shadow:0 8px 24px rgba(34,197,94,.4);transition:.15s}
-  .popup-btn:hover{transform:scale(1.05)}
-
-  @media (max-width: 900px){
-    .dashboard-grid { grid-template-columns: 1fr; }
-    .right-column { height: auto; min-height: auto;}
-    .chat-panel { height: 300px; flex: none; }
-  }
+  .input-group { display: flex; gap: 8px; align-items: center; }
+  .input-group input { padding: 8px; border-radius: 6px; border: none; background: #0f172a; color: white; width: 80px; text-align: center; font-size: 16px; }
 </style>
 </head>
 <body>
 
-<div id="loginView" class="center-panel">
-  <h1 style="text-align:center">🎯 Host Login</h1>
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <div style="text-align: center; margin-top: 12px;">
-    <a href="#" onclick="lupaPassword()" style="font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 600;">Lupa Password?</a>
-  </div>
-  <div id="loginMsg" class="err"></div>
+<div class="header">
+  <h1>Host Panel • Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
 </div>
 
-<div id="settingsView" class="center-panel" style="display:none">
-  <h1 style="text-align:center">⚙ Settings Room</h1>
-  <label for="settingRoomId">Room ID (huruf kecil & angka, 3–20 karakter)</label>
-  <input id="settingRoomId" class="mono" maxlength="20" placeholder="contoh: cerdas2025"
-         oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9]/g, '')">
-  <div class="hint">URL QR: <code>...?room=<span id="previewRoom">…</span></code></div>
-  <label for="settingTeamCount">Jumlah Tim</label>
-  <input id="settingTeamCount" type="number" min="1" max="20" value="4">
-  <div class="hint">QR dibuat untuk Tim 1 s.d. Tim N. Jumlah pemain per tim <strong>bebas</strong>.</div>
-  <button onclick="saveSettings()">💾 Simpan &amp; Lanjutkan</button>
-  <div id="settingsMsg" class="err"></div>
-</div>
-
-<div id="hostView" style="display:none;max-width:1400px;margin:0 auto">
-  
-  <header>
-    <div class="room-wrap">
-      <span>Room:</span><span class="room" id="roomId">-</span>
-      <span class="team-count" id="teamCountLabel">- tim</span>
-    </div>
-    <div class="controls-group" style="flex:unset; justify-content:flex-end; margin-top:0;">
-      <button onclick="toggleTheme()" id="themeBtn">☀ Light</button>
-      <button onclick="openSettings()">⚙ Settings</button>
-      <button onclick="resetAllAndLogout()" class="btn-reset" title="Hapus semua state, chat, & cache lalu Logout">⚠ Reset Total</button>
-      <button onclick="logout()">Logout</button>
-    </div>
-  </header>
-
-  <div id="timerModal" class="popup" style="display:none; z-index: 10000;">
-    <div class="popup-content" style="border-color:var(--blue); max-width: 800px; padding: 40px;">
-      <div class="popup-label" style="color:var(--blue); font-size: 20px; margin-bottom: 20px;">WAKTU TERSISA</div>
-      <div id="modalTimerText" style="font-family:ui-monospace,Consolas,monospace; font-size:clamp(80px, 15vw, 180px); font-weight:900; color:var(--green); line-height: 1; margin-bottom: 30px; letter-spacing: 5px;">
-        30.0
-      </div>
-      <button class="popup-btn" onclick="tutupPopupTimer()" style="background:var(--red); box-shadow:0 8px 24px rgba(239,68,68,.4); font-size:18px; padding:16px 32px;">Sembunyikan Timer</button>
-    </div>
-  </div>
-
-  <div class="dashboard-grid">
+<div class="grid-container">
+  <!-- KOLOM KIRI -->
+  <div style="display: flex; flex-direction: column; gap: 16px;">
     
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      
-      <section class="panel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>⏱ Timer Quiz</h2>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;color:var(--muted);">
-            <input type="checkbox" id="tickSoundToggle" checked onchange="toggleTickSound()"> Suara Tik
-          </label>
+    <!-- Panel Timer -->
+    <div class="panel">
+      <p class="panel-title">⏱ Timer Kuis</p>
+      <div class="timer-display" id="hostTimer">—</div>
+      <div class="timer-controls">
+        <div class="input-group">
+          <input type="number" id="timerInput" value="30" min="1" max="300"> <span>detik</span>
         </div>
-        <div class="controls-group">
-          <input id="duration" class="input-time" type="number" min="5" max="600" value="30"> <span style="font-size:13px;color:var(--muted);">detik</span>
-          <button class="primary" onclick="startTimer()">▶ Start</button>
-          <button onclick="stopTimer()">⏸ Stop</button>
-          <button class="danger" onclick="resetTimer()">↺ Reset</button>
-        </div>
-        
-        <div class="timer-display-wrapper">
-          <div style="width: 120px; display:flex; justify-content:flex-start;">
-            <button class="btn-show-timer" id="btnShowTimer" onclick="bukaPopupTimer()">🔍 Munculkan</button>
-          </div>
-          <div id="timerDisplay" class="timer-display" style="text-align: center;">—</div>
-          <div style="width: 120px;"></div>
-        </div>
-      </section>
-
-      <section class="panel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>🔔 Tombol Cepat</h2>
-        </div>
-        <div id="buzzerStatus" class="buzzer-status">Status: <span id="buzzerText">TERTUTUP</span></div>
-        <div class="controls-group">
-          <button class="success" onclick="armBuzzer()">🔓 Buka</button>
-          <button onclick="disarmBuzzer()">🔒 Tutup</button>
-          <button class="danger" onclick="resetState()">↺ Reset</button>
-        </div>
-      </section>
-
-      <section class="panel" style="margin-bottom:0; flex:1;">
-        <div class="panel-header-row">
-          <h2>👥 Pemain</h2>
-        </div>
-        <div id="playersList" style="max-height:250px;overflow-y:auto;padding-right:5px;"></div>
-      </section>
+        <button class="btn btn-primary" onclick="startTimer()">▶ Start</button>
+        <button class="btn btn-danger" onclick="stopTimer()">■ Stop</button>
+      </div>
     </div>
 
-    <div class="right-column">
-      
-      <section class="panel chat-panel" id="chatPanel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>💬 Live Chat</h2>
-          <button class="btn-clear-chat" onclick="clearChat()">Hapus Chat</button>
-        </div>
-        <div id="chatList" class="chat-list"></div>
-        <div class="chat-input">
-          <input id="chatInput" placeholder="Broadcast pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
-          <button onclick="kirimChat()">➤</button>
-        </div>
-      </section>
+    <!-- Panel Buzzer -->
+    <div class="panel">
+      <p class="panel-title">🔔 Tombol Cepat (Buzzer)</p>
+      <div class="buzzer-status" id="buzzerStatus">STATUS: MENUNGGU</div>
+      <div class="winner-box" id="winnerDisplay"></div>
+      <div class="timer-controls" style="margin-top: 10px;">
+        <button class="btn btn-success" onclick="bukaBuzzer()">Buka Buzzer</button>
+        <button class="btn btn-warning" onclick="tutupBuzzer()">Tutup & Reset</button>
+      </div>
+    </div>
 
-      <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>📱 QR Code Registrasi</h2>
-        </div>
-        <div id="qrList" class="qr-grid"></div>
-      </section>
+    <!-- Panel Pemain -->
+    <div class="panel">
+      <p class="panel-title">👥 Pemain Terhubung</p>
+      <div class="player-list" id="playerList">
+        <!-- Diisi oleh JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- KOLOM KANAN -->
+  <div style="display: flex; flex-direction: column; gap: 16px;">
+    
+    <!-- Panel QR Code -->
+    <div class="panel">
+      <p class="panel-title">📱 QR Code Registrasi</p>
+      <div class="qr-grid">
+        <div class="qr-card"><h3>Tim 1</h3><div id="qr-team1"></div></div>
+        <div class="qr-card"><h3>Tim 2</h3><div id="qr-team2"></div></div>
+        <div class="qr-card"><h3>Tim 3</h3><div id="qr-team3"></div></div>
+        <div class="qr-card"><h3>Tim 4</h3><div id="qr-team4"></div></div>
+      </div>
+    </div>
+
+    <!-- Panel Chat -->
+    <div class="panel" style="flex: 1;">
+      <p class="panel-title">💬 Live Chat & Broadcast</p>
+      <div class="chat-list" id="chatList"></div>
+      <div class="chat-input">
+        <input id="hostChatInput" placeholder="Broadcast pesan..." onkeypress="if(event.key==='Enter')kirimChatHost()">
+        <button class="btn btn-primary" onclick="kirimChatHost()">Kirim</button>
+      </div>
     </div>
 
   </div>
 </div>
 
-<div id="winnerPopup" class="popup">
-  <div class="popup-content">
-    <div class="popup-trophy">🏆</div>
-    <div class="popup-label">TERCEPAT MENEKAN TOMBOL</div>
-    <div class="popup-team" id="popupTeam">Tim 1</div>
-    <div class="popup-name" id="popupName">Budi</div>
-    <button class="popup-btn" onclick="lanjutkanGame()">Lanjutkan ▶</button>
-  </div>
-</div>
+<!-- Library QR Code Generator -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, onValue, set, remove, get, push, serverTimestamp,
-         query, limitToLast, update }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getDatabase, ref, onValue, set, remove, push, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
-  authDomain: "cerdascermat-a3206.firebaseapp.com",
-  databaseURL: "https://cerdascermat-a3206-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "cerdascermat-a3206",
-  storageBucket: "cerdascermat-a3206.firebasestorage.app",
-  messagingSenderId: "1098230358098",
-  appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
-};
+  // ============ KONFIGURASI ============
+  const firebaseConfig = {
+    apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
+    authDomain: "cerdascermat-a3206.firebaseapp.com",
+    databaseURL: "https://cerdascermat-a3206-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "cerdascermat-a3206",
+    storageBucket: "cerdascermat-a3206.firebasestorage.app",
+    messagingSenderId: "1098230358098",
+    appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
+  };
+  // =====================================
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
 
-let serverOffset = 0;
-onValue(ref(db, '.info/serverTimeOffset'), s => serverOffset = s.val() || 0);
-const serverNow = () => Date.now() + serverOffset;
+  // Ganti room default jika perlu
+  const params = new URLSearchParams(location.search);
+  const roomId = (params.get('room') || 'CCA2026').toUpperCase();
+  document.getElementById('roomIdLabel').textContent = roomId;
 
-let roomId = localStorage.getItem('cc_room') || '';
-let teamCount = parseInt(localStorage.getItem('cc_team_count') || '0') || 0;
-let user = null;
-let fastestState = null;
-let playersData = {};
-let buzzerState = { armed: false };
-let timerInterval = null;
-let tickInterval = null; 
-let wasLocked = false;
-let listenersReady = false;
-let lastChatCount = 0;
-let isTickSoundOn = true;
-let qrVisibleState = {}; 
-let isTimerModalManuallyClosed = false; 
+  let serverOffset = 0;
+  onValue(ref(db, '.info/serverTimeOffset'), snap => { serverOffset = snap.val() || 0; });
+  const serverNow = () => Date.now() + serverOffset;
 
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('cc_theme_host', t);
-  const btn = document.getElementById('themeBtn');
-  if (btn) btn.textContent = t === 'dark' ? '☀ Light' : '🌙 Dark';
-}
-window.toggleTheme = () => {
-  const cur = document.documentElement.getAttribute('data-theme');
-  applyTheme(cur === 'dark' ? 'light' : 'dark');
-};
-applyTheme(localStorage.getItem('cc_theme_host') || 'dark');
+  let timerInterval = null;
 
-window.login = async () => {
-  const email = document.getElementById('email').value.trim();
-  const pass = document.getElementById('password').value;
-  const msg = document.getElementById('loginMsg');
-  msg.textContent = '';
-  try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch (e) { msg.textContent = "Login Gagal: " + e.message; }
-};
+  // Login Host secara anonim
+  signInAnonymously(auth).then(() => {
+    initHost();
+  }).catch(e => alert('Gagal login Host: ' + e.message));
 
-window.lupaPassword = async () => {
-  const email = document.getElementById('email').value.trim();
-  const msg = document.getElementById('loginMsg');
-  
-  if (!email) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = 'Masukkan email Anda terlebih dahulu di kolom Email.';
-    return;
-  }
-  
-  try {
-    await sendPasswordResetEmail(auth, email);
-    msg.style.color = 'var(--green)';
-    msg.textContent = '✅ Tautan reset password telah dikirim ke email Anda. Silakan cek Kotak Masuk atau Spam.';
-  } catch (error) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = 'Gagal mengirim email: ' + error.message;
-  }
-};
+  function initHost() {
+    // 1. Generate QR Code
+    generateQRs();
 
-window.clearChat = async () => {
-  if (!confirm('Hapus semua riwayat chat?')) return;
-  try {
-    await set(ref(db, `rooms/${roomId}/chat`), null);
-    document.getElementById('chatList').innerHTML = '';
-  } catch(e) {
-    alert("Gagal menghapus chat. Pastikan aturan Firebase Rules mengizinkan penghapusan data.");
-  }
-};
+    // 2. Listen State (Buzzer & Pemenang)
+    onValue(ref(db, `rooms/${roomId}/state`), snap => {
+      const state = snap.val();
+      const statusEl = document.getElementById('buzzerStatus');
+      const winnerEl = document.getElementById('winnerDisplay');
 
-window.logout = async () => {
-  try {
-    await signOut(auth);
-    localStorage.removeItem('cc_theme_host');
-    window.location.reload();
-  } catch(e) { alert('Gagal logout: ' + e.message); }
-};
+      if (!state || !state.locked) {
+        statusEl.textContent = 'STATUS: TERBUKA';
+        statusEl.className = 'buzzer-status open';
+        winnerEl.innerHTML = '';
+      } else {
+        statusEl.textContent = 'STATUS: TERKUNCI';
+        statusEl.className = 'buzzer-status locked';
+        winnerEl.innerHTML = `🏆 <span style="color:#22c55e">Tim ${state.team}</span> (${state.name}) lebih cepat!`;
+      }
+    });
 
-window.resetAllAndLogout = async () => {
-  if (!confirm('⚠ PERINGATAN ⚠\nIni akan menghapus Timer, Status Buzzer, Data Pemenang, Semua Chat, dan Cache Memori.\n\nLanjutkan Reset Total?')) return;
-  
-  try {
-    if (roomId) {
-      await set(ref(db, `rooms/${roomId}/timer`), null);
-      await set(ref(db, `rooms/${roomId}/buzzer`), null);
-      await set(ref(db, `rooms/${roomId}/state`), null);
-      await set(ref(db, `rooms/${roomId}/chat`), null);
-    }
-    await signOut(auth);
-    localStorage.removeItem('cc_room');
-    localStorage.removeItem('cc_team_count');
-    localStorage.removeItem('cc_theme_host');
-    window.location.reload();
-  } catch (e) {
-    alert('Gagal reset total: ' + e.message);
-  }
-};
-
-onAuthStateChanged(auth, u => {
-  user = u;
-  document.getElementById('loginView').style.display = u ? 'none' : 'block';
-  if (u){
-    if (roomId && teamCount > 0){ showHostView(); }
-    else { showSettingsView(); }
-  } else {
-    document.getElementById('settingsView').style.display = 'none';
-    document.getElementById('hostView').style.display = 'none';
-  }
-});
-
-function showSettingsView(){
-  document.getElementById('settingsView').style.display = 'block';
-  document.getElementById('hostView').style.display = 'none';
-  document.getElementById('settingRoomId').value = roomId;
-  document.getElementById('settingTeamCount').value = teamCount || 4;
-  document.getElementById('settingsMsg').textContent = '';
-  updateRoomPreview();
-}
-function updateRoomPreview(){
-  const v = document.getElementById('settingRoomId').value || '…';
-  document.getElementById('previewRoom').textContent = v;
-}
-window.openSettings = () => showSettingsView();
-
-async function showHostView(){
-  document.getElementById('settingsView').style.display = 'none';
-  document.getElementById('hostView').style.display = 'block';
-  document.getElementById('roomId').textContent = roomId;
-  document.getElementById('teamCountLabel').textContent = `${teamCount} tim`;
-  
-  try {
-    if(user) {
-       await set(ref(db, `rooms/${roomId}/timer`), null);
-       await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
-    }
-  } catch(e) {
-    console.warn("Peringatan reset state:", e.message);
-  }
-
-  qrVisibleState = {};
-  for(let i=1; i<=teamCount; i++) qrVisibleState[i] = false;
-
-  renderQRs();
-  
-  if (!listenersReady){ initListeners(); listenersReady = true; }
-  renderPlayers();
-  renderBuzzerStatus();
-}
-
-window.toggleSingleQR = (teamId) => {
-  qrVisibleState[teamId] = !qrVisibleState[teamId];
-  renderQRs();
-};
-
-window.saveSettings = async () => {
-  const msg = document.getElementById('settingsMsg');
-  const newRoom = document.getElementById('settingRoomId').value.trim().toLowerCase();
-  const newTeams = parseInt(document.getElementById('settingTeamCount').value) || 0;
-  msg.className = 'err';
-
-  if (!/^[a-z0-9]{3,20}$/.test(newRoom)){
-    msg.textContent = 'Room ID hanya boleh huruf kecil & angka, 3–20 karakter.';
-    return;
-  }
-  if (newTeams < 1 || newTeams > 20){
-    msg.textContent = 'Jumlah tim harus 1–20.';
-    return;
-  }
-  try {
-    const snap = await get(ref(db, `rooms/${newRoom}/players`));
-    if (snap.exists() && newRoom !== roomId){
-      if (!confirm(`Room "${newRoom}" sudah pernah dipakai. Lanjutkan?`)) return;
-    }
-  } catch (e){}
-
-  roomId = newRoom;
-  teamCount = newTeams;
-  localStorage.setItem('cc_room', roomId);
-  localStorage.setItem('cc_team_count', teamCount);
-  listenersReady = false;
-  showHostView();
-};
-
-function initListeners(){
-  onValue(ref(db, `rooms/${roomId}/state`), snap => {
-    const val = snap.val();
-    fastestState = val;
-    const isLocked = !!(val && val.locked);
-    if (isLocked && !wasLocked){ showFastestPopup(val); playHorn(); }
-    if (!isLocked && wasLocked){ hideFastestPopup(); }
-    wasLocked = isLocked;
-    renderBuzzerStatus();
-  });
-  onValue(ref(db, `rooms/${roomId}/players`), snap => {
-    playersData = snap.val() || {};
-    renderPlayers();
-  });
-  onValue(ref(db, `rooms/${roomId}/timer`), snap => startCountdown(snap.val()));
-  onValue(ref(db, `rooms/${roomId}/buzzer`), snap => {
-    buzzerState = snap.val() || { armed: false };
-    renderBuzzerStatus();
-  });
-  onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
-    const data = snap.val() || {};
-    const msgs = Object.entries(data).map(([k,v]) => ({key:k, ...v}))
-      .sort((a,b) => (a.ts||0) - (b.ts||0));
-    renderChat(msgs);
-  });
-}
-
-function renderBuzzerStatus(){
-  const s = document.getElementById('buzzerStatus');
-  const t = document.getElementById('buzzerText');
-  s.className = 'buzzer-status';
-  if (fastestState?.locked){ s.classList.add('locked'); t.textContent = 'TERKUNCI'; }
-  else if (buzzerState.armed){ s.classList.add('armed'); t.textContent = 'TERBUKA'; }
-  else { t.textContent = 'TERTUTUP'; }
-}
-function renderPlayers(){
-  const perTim = {};
-  Object.values(playersData).forEach(p => (perTim[p.team] ||= []).push(p.name));
-  const allTeams = new Set();
-  for (let t=1; t<=teamCount; t++) allTeams.add(t);
-  Object.keys(perTim).forEach(t => allTeams.add(parseInt(t)));
-  const sorted = Array.from(allTeams).sort((a,b) => a-b);
-  const html = sorted.map(t => {
-    const names = perTim[t] || [];
-    const extra = t > teamCount;
-    return `<div class="team-card">
-      <div class="team-title">Tim ${t}<span class="badge">${names.length} device</span>
-        ${extra ? '<span class="badge" style="background:var(--amber);color:#000">ext</span>' : ''}
-      </div>
-      <div class="team-members">${names.length ? names.map(esc).join(', ') : '<em>-</em>'}</div>
-    </div>`;
-  });
-  document.getElementById('playersList').innerHTML = html.join('');
-}
-
-function renderQRs(){
-  const c = document.getElementById('qrList');
-  c.innerHTML = '';
-
-  if (typeof QRCode === 'undefined') {
-    c.innerHTML = '<div style="color:var(--red);font-size:12px;">Gagal memuat QR.</div>';
-    return;
-  }
-
-  // --- PERBAIKAN URL ---
-  const currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-  const playerPageUrl = window.location.origin + currentPath + 'player.html';
-  const baseUrl = new URL(playerPageUrl);
-  // --------------------
-
-  let adaYangTampil = false;
-
-  for (let t=1; t<=teamCount; t++){
-    const div = document.createElement('div');
-    div.className = 'qr-item';
-    
-    const isVisible = qrVisibleState[t];
-    if(isVisible) adaYangTampil = true;
-
-    const btnText = isVisible ? 'Sembunyikan' : 'Tampilkan';
-    const btnClass = isVisible ? 'danger' : 'primary';
-    const displayStyle = isVisible ? 'flex' : 'none';
-
-    div.innerHTML = `
-      <div class="qr-label">Tim ${t}</div>
-      <button class="qr-toggle-btn ${btnClass}" onclick="toggleSingleQR(${t})">${btnText} QR</button>
-      <div class="qr-canvas-container" id="qr-canvas-${t}" style="display: ${displayStyle}; margin-top:6px;">
-      </div>
-    `;
-    c.appendChild(div);
-    
-    if (isVisible) {
-      const url = new URL(baseUrl);
-      url.searchParams.set('room', roomId);
-      url.searchParams.set('team', t);
+    // 3. Listen Timer
+    onValue(ref(db, `rooms/${roomId}/timer`), snap => {
+      const timer = snap.val();
+      clearInterval(timerInterval);
+      const el = document.getElementById('hostTimer');
       
-      new QRCode(document.getElementById(`qr-canvas-${t}`), {
-        text: url.toString(),
-        width: 150,
-        height: 150,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.M
+      if (!timer || !timer.running) {
+        el.textContent = '—';
+        return;
+      }
+      const endAt = timer.startedAt + timer.duration * 1000;
+      const tick = () => {
+        const remaining = Math.max(0, endAt - serverNow());
+        el.textContent = (remaining / 1000).toFixed(1);
+        if (remaining <= 0) {
+          el.textContent = 'WAKTU HABIS!';
+          clearInterval(timerInterval);
+        }
+      };
+      tick();
+      timerInterval = setInterval(tick, 100);
+    });
+
+    // 4. Listen Players
+    onValue(ref(db, `rooms/${roomId}/players`), snap => {
+      const players = snap.val() || {};
+      const teams = {1: [], 2: [], 3: [], 4: []};
+      
+      Object.values(players).forEach(p => {
+        if (teams[p.team]) teams[p.team].push(p.name);
+      });
+
+      const listEl = document.getElementById('playerList');
+      listEl.innerHTML = '';
+      for (let i = 1; i <= 4; i++) {
+        const names = teams[i].join(', ') || '-';
+        listEl.innerHTML += `
+          <div class="player-row">
+            <span>Tim ${i}</span>
+            <span>${names}</span>
+            <span class="device-count">${teams[i].length} device</span>
+          </div>
+        `;
+      }
+    });
+
+    // 5. Listen Chat
+    onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
+      const data = snap.val() || {};
+      const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+      const el = document.getElementById('chatList');
+      el.innerHTML = msgs.map(m => `
+        <div class="chat-msg ${m.name === 'Host' ? 'host' : ''}">
+          <div class="chat-who">Tim ${m.team} • ${m.name}</div>
+          <div>${escapeHtml(m.text)}</div>
+        </div>
+      `).join('');
+      el.scrollTop = el.scrollHeight;
+    });
+  }
+
+  // ============ FUNGSI TOMBOL ============
+
+  window.bukaBuzzer = async () => {
+    await remove(ref(db, `rooms/${roomId}/state`));
+  };
+
+  window.tutupBuzzer = async () => {
+    await remove(ref(db, `rooms/${roomId}/state`));
+  };
+
+  window.startTimer = async () => {
+    const dur = parseInt(document.getElementById('timerInput').value) || 30;
+    await set(ref(db, `rooms/${roomId}/timer`), {
+      running: true,
+      startedAt: serverNow(),
+      duration: dur
+    });
+  };
+
+  window.stopTimer = async () => {
+    await remove(ref(db, `rooms/${roomId}/timer`));
+  };
+
+  window.kirimChatHost = async () => {
+    const input = document.getElementById('hostChatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    await set(push(ref(db, `rooms/${roomId}/chat`)), {
+      name: 'Host',
+      team: 'ALL',
+      text: text,
+      ts: serverTimestamp()
+    });
+    input.value = '';
+  };
+
+  // ============ UTILS ============
+  function generateQRs() {
+    const baseUrl = window.location.href.split('?')[0].replace('index.html', 'player.html').replace('host.html', 'player.html');
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById(`qr-team${i}`);
+      el.innerHTML = '';
+      new QRCode(el, {
+        text: `${baseUrl}?room=${roomId}&team=${i}`,
+        width: 120, height: 120,
+        colorDark: "#000000", colorLight: "#ffffff",
       });
     }
   }
 
-  const qrPanel = document.getElementById('qrPanel');
-  if (adaYangTampil) {
-    qrPanel.style.minHeight = '250px'; 
-  } else {
-    qrPanel.style.minHeight = 'auto'; 
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   }
-}
-
-function renderChat(msgs){
-  const el = document.getElementById('chatList');
-  if (!el) return;
-  el.innerHTML = msgs.map(m => `
-    <div class="chat-msg">
-      <div class="chat-who">Tim ${m.team}${m.name ? ' • '+esc(m.name) : ''}
-        <span class="chat-time">${m.ts ? new Date(m.ts).toLocaleTimeString().slice(0,5) : ''}</span></div>
-      <div class="chat-text">${esc(m.text)}</div>
-    </div>`).join('');
-  el.scrollTop = el.scrollHeight;
-}
-
-function startCountdown(timer){
-  clearInterval(timerInterval);
-  clearTimeout(tickInterval); 
-  
-  const el = document.getElementById('timerDisplay');
-  const modal = document.getElementById('timerModal');
-  const modalText = document.getElementById('modalTimerText');
-  const btnShow = document.getElementById('btnShowTimer');
-  
-  if (!timer || !timer.running || !timer.startedAt){
-    el.textContent = '—'; el.className = 'timer-display'; 
-    modal.style.display = 'none';
-    if (btnShow) btnShow.style.display = 'none';
-    return;
-  }
-  
-  if (btnShow) btnShow.style.display = 'inline-block';
-
-  if (!isTimerModalManuallyClosed) {
-      modal.style.display = 'flex';
-  }
-  
-  const totalDuration = timer.duration * 1000;
-  const endAt = timer.startedAt + totalDuration;
-  
-  const scheduleTick = () => {
-      if(!isTickSoundOn) return;
-      playTick();
-      
-      const remainingMs = Math.max(0, endAt - serverNow());
-      const secondsLeft = Math.ceil(remainingMs / 1000);
-      
-      let delay = 1000;
-      if (secondsLeft <= 3) delay = 200; 
-      else if (secondsLeft <= 10) delay = 500; 
-
-      tickInterval = setTimeout(scheduleTick, delay);
-  };
-
-  if(isTickSoundOn) scheduleTick();
-
-  const tick = () => {
-    const remaining = Math.max(0, endAt - serverNow());
-    const secondsStr = (remaining/1000).toFixed(1);
-    
-    el.textContent = secondsStr;
-    el.className = 'timer-display';
-    if (remaining < 5000) el.classList.add('urgent');
-    
-    if(modalText) {
-        modalText.textContent = secondsStr;
-        if (remaining < 5000) modalText.style.color = 'var(--amber)';
-    }
-
-    if (remaining <= 0){
-      el.textContent = 'TIME UP!'; el.classList.add('done');
-      if(modalText) { modalText.textContent = 'TIME UP!'; modalText.style.color = 'var(--red)'; }
-      clearInterval(timerInterval);
-      clearTimeout(tickInterval); 
-      playHorn(); 
-      if (btnShow) btnShow.style.display = 'none'; 
-    }
-  };
-  tick();
-  timerInterval = setInterval(tick, 50); 
-}
-
-window.tutupPopupTimer = () => {
-  document.getElementById('timerModal').style.display = 'none';
-  isTimerModalManuallyClosed = true;
-};
-
-window.bukaPopupTimer = () => {
-  isTimerModalManuallyClosed = false;
-  document.getElementById('timerModal').style.display = 'flex';
-};
-
-window.toggleTickSound = () => {
-  isTickSoundOn = document.getElementById('tickSoundToggle').checked;
-  if(!isTickSoundOn) {
-     clearInterval(tickInterval); 
-     clearTimeout(tickInterval);
-  }
-};
-
-window.startTimer = async () => {
-  isTimerModalManuallyClosed = false; 
-  const dur = parseInt(document.getElementById('duration').value) || 30;
-  await set(ref(db, `rooms/${roomId}/timer`), { running: true, duration: dur, startedAt: serverTimestamp() });
-};
-window.stopTimer = async () => update(ref(db, `rooms/${roomId}/timer`), {running:false});
-window.resetTimer = async () => remove(ref(db, `rooms/${roomId}/timer`));
-window.armBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:true, armedAt: serverTimestamp()});
-window.disarmBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
-window.resetState = async () => remove(ref(db, `rooms/${roomId}/state`));
-
-function showFastestPopup(val){
-  document.getElementById('popupTeam').textContent = `Tim ${val.team}`;
-  document.getElementById('popupName').textContent = val.name || '—';
-  document.getElementById('winnerPopup').classList.add('show');
-}
-function hideFastestPopup(){
-  document.getElementById('winnerPopup').classList.remove('show');
-}
-window.lanjutkanGame = async () => {
-  hideFastestPopup();
-  await remove(ref(db, `rooms/${roomId}/state`));
-};
-window.kirimChat = async () => {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text) return;
-  await set(push(ref(db, `rooms/${roomId}/chat`)), { name:'Host', team:0, text, ts: serverTimestamp() });
-  input.value = '';
-  input.focus();
-};
-
-let actx;
-function getAC(){
-  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-  if (actx.state === 'suspended') actx.resume();
-  return actx;
-}
-
-function playHorn(){
-  try {
-    const ctx = getAC();
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sawtooth';
-    
-    osc.frequency.setValueAtTime(150, now);
-    osc.frequency.exponentialRampToValueAtTime(100, now + 0.5);
-    
-    const dist = ctx.createWaveShaper();
-    const curve = new Float32Array(44100);
-    for (let i = 0; i < 44100; i++) {
-        const x = i * 2 / 44100 - 1;
-        curve[i] = (3 + 10) * x * 20 * (Math.PI / 180) / (Math.PI + 10 * Math.abs(x));
-    }
-    dist.curve = curve;
-    
-    osc.connect(dist);
-    dist.connect(gain);
-    gain.connect(ctx.destination);
-    
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(1.0, now + 0.05); 
-    gain.gain.setValueAtTime(1.0, now + 0.4);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-    
-    osc.start(now); osc.stop(now + 0.6);
-  } catch(e){}
-}
-
-function playTick(){
-  try {
-    const ctx = getAC();
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square'; 
-    osc.frequency.setValueAtTime(800, now);
-    osc.frequency.exponentialRampToValueAtTime(300, now + 0.03);
-    osc.connect(gain); gain.connect(ctx.destination);
-    
-    gain.gain.setValueAtTime(1.0, now); 
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-    osc.start(now); osc.stop(now + 0.04);
-  } catch(e){}
-}
-
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
 </script>
 </body>
 </html>
