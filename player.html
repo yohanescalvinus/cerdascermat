@@ -6,9 +6,19 @@
 <title>Pemain</title>
 <style>
   * { box-sizing: border-box; }
+  
+  /* TEMA TERANG (LIGHT MODE) */
+  :root {
+    --bg-main: #f1f5f9;
+    --bg-panel: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --border-color: #cbd5e1;
+  }
+
   html, body {
     margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden;
-    font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0;
+    font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-main);
   }
   .center-panel {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -16,20 +26,19 @@
   }
   .center-panel input {
     padding: 12px 16px; font-size: 16px; border-radius: 8px;
-    border: 1px solid #334155; background: #1e293b; color: #e2e8f0; width: 100%; max-width: 280px;
+    border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-main); width: 100%; max-width: 280px;
   }
   .center-panel button {
     padding: 12px 24px; font-size: 16px; border-radius: 8px;
     border: none; background: #3b82f6; color: #fff; cursor: pointer; font-weight: 600;
   }
-  .center-panel button:active { transform: scale(0.97); }
 
   #mainView { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
-  header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #1e293b; border-radius: 8px; flex-shrink: 0;}
-  #identity { font-weight: 600; font-size: 14px; }
-  .exit-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--bg-panel); border-radius: 8px; flex-shrink: 0; border: 1px solid var(--border-color);}
+  #identity { font-weight: 700; font-size: 15px; }
+  .exit-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight:600; }
 
-  .timer-player { text-align: center; font-size: 48px; font-weight: 700; font-variant-numeric: tabular-nums; color: #94a3b8; padding: 4px 0; flex-shrink: 0;}
+  .timer-player { text-align: center; font-size: 48px; font-weight: 800; font-variant-numeric: tabular-nums; color: #64748b; padding: 4px 0; flex-shrink: 0;}
   .timer-player.urgent { color: #f59e0b; }
   .timer-player.done { color: #ef4444; }
 
@@ -40,19 +49,19 @@
   .push-btn:active { transform: scale(0.98); }
   .push-btn.pressed { background: #f59e0b; }
   .push-btn.winner  { background: #22c55e; }
-  .push-btn.loser   { background: #64748b; }
+  .push-btn.loser   { background: #94a3b8; }
 
-  .status { text-align: center; font-size: 15px; min-height: 22px; color: #cbd5e1; padding: 0 8px; flex-shrink: 0;}
+  .status { text-align: center; font-size: 15px; font-weight:600; min-height: 22px; color: var(--text-muted); padding: 0 8px; flex-shrink: 0;}
 
-  .chat-section { display: flex; flex-direction: column; background: #1e293b; border-radius: 8px; overflow: hidden; height: 200px; flex-shrink: 0; }
+  .chat-section { display: flex; flex-direction: column; background: var(--bg-panel); border-radius: 8px; overflow: hidden; height: 200px; flex-shrink: 0; border: 1px solid var(--border-color);}
   .chat-list { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
-  .chat-msg { background: #0f172a; padding: 6px 10px; border-radius: 6px; max-width: 85%; }
-  .chat-msg.mine { background: #1d4ed8; align-self: flex-end; }
-  .chat-who { font-size: 11px; opacity: 0.7; margin-bottom: 2px; }
-  .chat-text { word-wrap: break-word; }
-  .chat-input { display: flex; border-top: 1px solid #334155; }
-  .chat-input input { flex: 1; border: none; background: transparent; color: #e2e8f0; padding: 10px 12px; font-size: 14px; outline: none; }
-  .chat-input button { border: none; background: #3b82f6; color: #fff; padding: 0 16px; cursor: pointer; font-weight: 600; }
+  .chat-msg { background: var(--bg-main); padding: 8px 12px; border-radius: 6px; max-width: 85%; border: 1px solid var(--border-color);}
+  .chat-msg.mine { background: #e0e7ff; border-color: #c7d2fe; align-self: flex-end; }
+  .chat-who { font-size: 10px; color: var(--text-muted); margin-bottom: 2px; font-weight:600;}
+  .chat-text { word-wrap: break-word; color: var(--text-main);}
+  .chat-input { display: flex; border-top: 1px solid var(--border-color); }
+  .chat-input input { flex: 1; border: none; background: transparent; color: var(--text-main); padding: 12px; font-size: 14px; outline: none; }
+  .chat-input button { border: none; background: #3b82f6; color: #fff; padding: 0 20px; cursor: pointer; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -73,10 +82,11 @@
   <button id="btn" class="push-btn">TEKAN</button>
   <div id="status" class="status"></div>
 
+  <!-- FITUR CHAT PLAYER -->
   <div class="chat-section">
     <div id="chatList" class="chat-list"></div>
     <div class="chat-input">
-      <input id="chatInput" placeholder="Ketik pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
+      <input id="chatInput" placeholder="Ketik pesan ke Host..." onkeypress="if(event.key==='Enter')kirimChat()">
       <button onclick="kirimChat()">Kirim</button>
     </div>
   </div>
@@ -109,6 +119,10 @@
   const roomId = (params.get('room') || '').toUpperCase();
   const teamId = parseInt(params.get('team') || 0);
 
+  // Warna sesuai Tim
+  const teamColors = {1: '#ef4444', 2: '#3b82f6', 3: '#22c55e', 4: '#a855f7'};
+  document.documentElement.style.setProperty('--team-color', teamColors[teamId] || '#3b82f6');
+
   if (!roomId || !teamId) {
     document.body.innerHTML = '<div class="center-panel"><h2>Link tidak valid</h2></div>';
     throw new Error('Invalid URL');
@@ -118,7 +132,6 @@
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
 
-  // AUDIO PLAYER (Bip saat buzzer dibuka)
   let actx;
   function beep(freq = 880, dur = 0.12) {
     try {
@@ -162,7 +175,9 @@
     isStarting = true;
     try {
       document.getElementById('mainView').style.display = 'flex';
-      document.getElementById('identity').textContent = `Tim ${teamId} • ${myName}`;
+      const identityEl = document.getElementById('identity');
+      identityEl.textContent = `Tim ${teamId} • ${myName}`;
+      identityEl.style.color = teamColors[teamId];
 
       const playerRef = push(ref(db, `rooms/${roomId}/players`));
       myPlayerKey = playerRef.key;
@@ -176,15 +191,14 @@
         onValue(ref(db, `rooms/${roomId}/state`), snap => {
           stateData = snap.val();
           const isLocked = stateData && stateData.locked;
-          
-          // Jika sebelumnya terkunci, sekarang terbuka -> Bunyikan Bip
           if (prevLocked && !isLocked) beep(900, 0.1);
           prevLocked = isLocked;
-
           updateStateFromServer();
         });
 
         onValue(ref(db, `rooms/${roomId}/timer`), snap => { startCountdown(snap.val()); });
+        
+        // CHAT PLAYER LISTENER
         onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
           const data = snap.val() || {};
           const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
@@ -196,7 +210,7 @@
       myPlayerKey = null;
       document.getElementById('mainView').style.display = 'none';
       document.getElementById('nameView').style.display = 'flex';
-      alert('Gagal: ' + e.message);
+      alert('Gagal masuk: ' + e.message);
     } finally { isStarting = false; }
   }
 
@@ -215,13 +229,14 @@
   function ui() {
     const btn = document.getElementById('btn'), status = document.getElementById('status');
     btn.className = 'push-btn ' + state;
+    btn.style.background = (state === 'idle' || state === 'pressed') ? teamColors[teamId] : '';
+    
     btn.textContent = (state === 'idle' ? 'TEKAN' : state === 'pressed' ? '…' : state === 'winner' ? 'TERCEPAT!' : 'TERKUNCI');
     status.textContent = (state === 'idle' ? 'Siap!' : state === 'pressed' ? 'Menunggu…' : state === 'winner' ? '🏆 Kamu tercepat!' : `Terkunci — Tim ${stateData?.team} (${stateData?.name})`);
   }
 
   window.tekan = async () => {
-    if (state !== 'idle') return;
-    if (!myPlayerKey) return;
+    if (state !== 'idle' || !myPlayerKey) return;
     state = 'pressed'; ui(); beep(900, 0.08);
     
     try {
@@ -245,7 +260,7 @@
       const remaining = Math.max(0, endAt - serverNow());
       el.textContent = (remaining / 1000).toFixed(1);
       if (remaining < 5000) el.classList.add('urgent');
-      if (remaining <= 0) { el.textContent = 'TIME UP!'; el.classList.remove('urgent'); el.classList.add('done'); clearInterval(timerInterval); }
+      if (remaining <= 0) { el.textContent = 'WAKTU HABIS'; el.classList.remove('urgent'); el.classList.add('done'); clearInterval(timerInterval); }
     };
     tick(); timerInterval = setInterval(tick, 100);
   }
