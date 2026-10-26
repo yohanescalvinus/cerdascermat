@@ -154,7 +154,10 @@
   const roomId = (params.get('room') || '').toUpperCase();
   const teamId = parseInt(params.get('team') || 0);
 
-  const teamColors = {1: '#ef4444', 2: '#3b82f6', 3: '#22c55e', 4: '#a855f7'};
+    const teamColors = {
+    1: '#ef4444', 2: '#3b82f6', 3: '#22c55e', 4: '#a855f7',
+    5: '#f97316', 6: '#14b8a6', 7: '#ec4899', 8: '#84cc16'
+  };
   document.documentElement.style.setProperty('--team-color', teamColors[teamId] || '#3b82f6');
 
   if (!roomId || !teamId) {
