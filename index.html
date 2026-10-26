@@ -126,22 +126,40 @@
   .btn-close-winner { background: #ef4444; color: white; border: none; padding: 15px 40px; font-size: 24px; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 20px; transition: 0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
   .btn-close-winner:hover { background: #dc2626; transform: scale(1.05); }
 
-  /* POP-UP TIMER WINDOW */
+  /* ========================================== */
+  /* POP-UP TIMER WINDOW (MOVEABLE & RESIZE)    */
+  /* ========================================== */
   #timerOverlay {
-    display: none; position: fixed; top: 15%; left: 15%;
-    width: 35vw; height: 40vh; background: rgba(255, 255, 255, 0.98); z-index: 500;
+    display: none; position: fixed; top: 20%; left: 20%;
+    width: 300px; height: 250px; 
+    background: rgba(255, 255, 255, 0.98); z-index: 500;
     flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #cbd5e1; border-radius: 12px; overflow: hidden; resize: both;
   }
-  #timerHeader { width: 100%; padding: 10px 15px; background: #e2e8f0; cursor: grab; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 0; left: 0; font-weight: bold; color: #475569; font-size: 14px; border-bottom: 1px solid #cbd5e1; user-select: none; }
+  #timerHeader {
+    width: 100%; padding: 8px 12px; background: #e2e8f0; cursor: grab;
+    display: flex; justify-content: space-between; align-items: center;
+    position: absolute; top: 0; left: 0; font-weight: bold; color: #475569; font-size: 14px; border-bottom: 1px solid #cbd5e1; user-select: none;
+  }
   #timerHeader:active { cursor: grabbing; }
-  .btn-close-overlay { background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+  
+  /* Tombol Minimize (Garis) */
+  .btn-minimize {
+    background: #cbd5e1; color: #475569; border: none; 
+    width: 30px; height: 30px; border-radius: 4px;
+    font-size: 18px; font-weight: bold; cursor: pointer; 
+    display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    line-height: 0;
+  }
+  .btn-minimize:hover { background: #94a3b8; color: white; }
+
   .timer-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding-top: 30px; overflow: hidden; }
-  #timerOverlay h1 { font-size: 24px; color: var(--text-muted); margin-bottom: -5px; font-weight: 800; letter-spacing: 2px;}
-  #popupTimerValue { font-size: 10vw; max-width: 90%; font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; }
-  #timerOverlay.urgent #popupTimerValue { color: #ef4444; transform: scale(1.05); animation: pulse 1s infinite alternate; }
-  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+  #popupTimerValue { font-size: 72px; font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; }
+  #timerOverlay.urgent #popupTimerValue { color: #ef4444; animation: pulse 1s infinite alternate; }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+  
   #btnHentikanTimer { margin-top: 15px; padding: 10px 20px; font-size: 16px; border-radius: 8px; background: #ef4444; color: white; border: none; cursor: pointer; font-weight: bold; }
+  #btnHentikanTimer:hover { background: #dc2626; }
 
   /* CHAT */
   .chat-panel { flex: 1; min-height: 0; }
@@ -234,15 +252,17 @@
   <button class="btn-close-winner" onclick="tutupWinnerPopup()">✕ Tutup & Reset</button>
 </div>
 
-<!-- WINDOW MELAYANG: TIMER OVERLAY -->
+<!-- WINDOW MELAYANG: TIMER OVERLAY (MOVEABLE) -->
 <div id="timerOverlay">
   <div id="timerHeader">
-    <span>⏱ TIMER KUIS</span>
-    <button class="btn-close-overlay" onclick="sembunyikanTimer()">✕</button>
+    <span>⏱ TIMER</span>
+    <!-- Tombol Minimize (bukan close) -->
+    <button class="btn-minimize" onclick="sembunyikanTimer()">—</button>
   </div>
   <div class="timer-content">
     <div id="popupTimerValue">—</div>
-    <button id="btnHentikanTimer" onclick="stopTimer()">■ Hentikan Waktu</button>
+    <!-- Tombol Tutup & Reset -->
+    <button id="btnHentikanTimer" onclick="stopTimer()">✕ Tutup & Reset</button>
   </div>
 </div>
 
@@ -280,9 +300,42 @@
   let lastTickSecond = -1;
   let playerListenerRef = null;
   let isTimerHidden = false;
-
   let currentWinnerKey = ""; 
   let isPopupVisible = false;
+
+  // ==========================================
+  // FITUR DRAG AND DROP UNTUK POP-UP TIMER
+  // ==========================================
+  const dragItem = document.getElementById('timerOverlay');
+  const dragHandle = document.getElementById('timerHeader');
+  let active = false;
+  let currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+
+  dragHandle.addEventListener("mousedown", dragStart);
+  document.addEventListener("mouseup", dragEnd);
+  document.addEventListener("mousemove", drag);
+
+  function dragStart(e) {
+    if (e.target.classList.contains('btn-minimize')) return; // Abaikan jika klik tombol minimize
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
+    if (e.target === dragHandle || e.target.parentElement === dragHandle) active = true;
+  }
+  function dragEnd() { active = false; }
+  function drag(e) {
+    if (active) {
+      e.preventDefault();
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
+      xOffset = currentX;
+      yOffset = currentY;
+      setTranslate(currentX, currentY, dragItem);
+    }
+  }
+  function setTranslate(xPos, yPos, el) {
+    el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+  }
+  // ==========================================
 
   const isLoggedIn = sessionStorage.getItem('isHostLoggedIn');
   
@@ -337,13 +390,11 @@
     generateQRs();
     loadDataPemain();
 
-    // PEMANTAU STATUS BUZZER (DIPERBAIKI)
     let isFirstLoad = true;
     onValue(ref(db, `rooms/${roomId}/state`), snap => {
       const state = snap.val();
       const statusEl = document.getElementById('buzzerStatus');
 
-      // Hanya paksa tutup JIKA ini load pertama dan data memang tidak ada
       if (isFirstLoad) {
         isFirstLoad = false;
         if (state === null) {
@@ -376,7 +427,6 @@
       }
     });
 
-    // TIMER
     onValue(ref(db, `rooms/${roomId}/timer`), snap => {
       const timer = snap.val();
       clearInterval(timerInterval);
@@ -421,7 +471,6 @@
       }, 100);
     });
 
-    // CHAT
     onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
       const data = snap.val() || {};
       const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
@@ -474,12 +523,14 @@
     setTimeout(() => { if(btn) { btn.textContent = '🔄 Paksa Sinkron'; btn.disabled = false; } }, 800);
   };
 
+  // Minimize Pop-Up Timer (Timer tetap jalan)
   window.sembunyikanTimer = () => {
     document.getElementById('timerOverlay').style.display = 'none';
     document.getElementById('btnShowTimer').style.display = 'inline-block';
     isTimerHidden = true;
   };
 
+  // Tampilkan Pop-Up Timer kembali
   window.tampilkanTimer = () => {
     document.getElementById('timerOverlay').style.display = 'flex';
     document.getElementById('btnShowTimer').style.display = 'none';
@@ -555,7 +606,7 @@
     }
   };
 
-  // --- PERBAIKAN LOGIKA TOMBOL BUZZER ---
+  // --- LOGIKA TOMBOL BUZZER ---
   window.bukaBuzzer = async () => { 
     document.getElementById('winnerPopup').style.display = 'none';
     isPopupVisible = false;
@@ -585,7 +636,6 @@
       await remove(ref(db, `rooms/${roomId}/buzzer`));
     } catch(e) { console.error(e); }
   };
-  // ----------------------------------------
 
   window.hapusPemain = async (playerKey) => {
     if(confirm('Keluarkan pemain ini?')) await remove(ref(db, `rooms/${roomId}/players/${playerKey}`));
@@ -601,9 +651,15 @@
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
     if (actx && actx.state === 'suspended') actx.resume();
     isTimerHidden = false;
+    
+    // Reset posisi pop-up ke tengah setiap mulai
+    xOffset = 0; yOffset = 0;
+    dragItem.style.transform = `translate3d(0px, 0px, 0px)`;
+    
     await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: Date.now() + serverOffset, duration: dur });
   };
   
+  // TOMBOL STOP: MENGHENTIKAN TIMER & MENUTUP POP-UP
   window.stopTimer = async () => { 
     await remove(ref(db, `rooms/${roomId}/timer`));
     sembunyikanTimer(); 
