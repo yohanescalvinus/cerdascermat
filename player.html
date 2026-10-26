@@ -249,7 +249,7 @@
 
       const playerRef = ref(db, `rooms/${roomId}/players/${myPlayerKey}`);
       await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
-      try { await onDisconnect(playerRef).remove(); } catch (e) {}
+      //try { await onDisconnect(playerRef).remove(); } catch (e) {}
 
       if (!listenersAttached) {
         listenersAttached = true;
