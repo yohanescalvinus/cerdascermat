@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Pemain</title>
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   
   :root {
     --bg-main: #f1f5f9;
@@ -15,17 +15,17 @@
     --border-color: #cbd5e1;
   }
 
-  /* Mengizinkan scroll khusus jika layar HP sangat kecil */
+  /* TINGGI LAYAR DIKUNCI, TIDAK BISA DI-SCROLL */
   html, body {
-    margin: 0; padding: 0; height: 100%; min-height: 100dvh; width: 100vw; 
-    overflow-y: auto; overflow-x: hidden;
+    height: 100vh; height: 100dvh; width: 100vw; overflow: hidden;
     font-family: system-ui, -apple-system, sans-serif; 
     background: var(--bg-main); color: var(--text-main);
   }
   
+  /* HALAMAN MASUK NAMA */
   .center-panel {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 100dvh; padding: 24px; text-align: center; gap: 12px;
+    height: 100%; padding: 24px; text-align: center; gap: 12px;
   }
   .center-panel input {
     padding: 12px 16px; font-size: 16px; border-radius: 8px;
@@ -36,11 +36,10 @@
     border: none; background: #3b82f6; color: #fff; cursor: pointer; font-weight: 600;
   }
 
-  /* Container utama yang bisa fleksibel */
+  /* LAYAR UTAMA */
   #mainView { 
     display: none; flex-direction: column; 
-    min-height: 100dvh; /* Bisa lebih tinggi dari layar jika keyboard muncul */
-    padding: 8px; gap: 8px; 
+    height: 100%; padding: 10px; gap: 10px; 
   }
   
   header { 
@@ -51,34 +50,54 @@
   #identity { font-weight: 700; font-size: 14px; }
   .exit-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight:600; }
 
-  .timer-player { text-align: center; font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums; color: #64748b; padding: 2px 0; flex-shrink: 0;}
+  /* AREA TENGAH (TIMER & TOMBOL) */
+  .center-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Membuat isi berada persis di tengah vertikal */
+    align-items: center;
+    gap: 15px;
+    position: relative;
+  }
+
+  /* TIMER */
+  .timer-player { 
+    text-align: center; font-size: 56px; font-weight: 800; 
+    font-variant-numeric: tabular-nums; color: #64748b; 
+    transition: color 0.3s;
+  }
   .timer-player.urgent { color: #f59e0b; }
   .timer-player.done { color: #ef4444; }
 
-  /* TOMBOL TEKAN DIBERI BATAS MAKSIMAL AGAR TIDAK MENELAN LAYAR */
+  /* TOMBOL TEKAN RAKSASA */
   .push-btn {
-    flex: 1; 
-    min-height: 120px; 
-    max-height: 400px; /* Maksimal tinggi tombol */
-    font-size: 36px; font-weight: 800; border-radius: 16px; border: none; cursor: pointer;
-    background: #3b82f6; color: #fff; transition: transform 0.05s, background 0.2s; letter-spacing: 2px;
+    width: 100%; max-width: 320px;
+    height: 250px; /* Ukuran pas untuk jempol */
+    font-size: 42px; font-weight: 800; border-radius: 24px; border: none; cursor: pointer;
+    background: #3b82f6; color: #fff; 
+    transition: transform 0.05s, background 0.2s, box-shadow 0.2s; 
+    letter-spacing: 2px;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
   }
-  .push-btn:active { transform: scale(0.98); }
-  .push-btn.pressed { background: #f59e0b; }
-  .push-btn.winner  { background: #22c55e; }
-  .push-btn.loser   { background: #94a3b8; }
+  .push-btn:active { transform: scale(0.96); box-shadow: none; }
+  .push-btn.pressed { background: #f59e0b; box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3); }
+  .push-btn.winner  { background: #22c55e; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3); }
+  .push-btn.loser   { background: #94a3b8; box-shadow: none; }
 
-  .status { text-align: center; font-size: 14px; font-weight:600; min-height: 18px; color: var(--text-muted); padding: 0 8px; flex-shrink: 0;}
+  .status { 
+    text-align: center; font-size: 15px; font-weight: 600; 
+    color: var(--text-muted); padding: 0 8px; 
+  }
 
-  /* KOTAK CHAT */
+  /* KOTAK CHAT (BAWAH) */
   .chat-section { 
     display: flex; flex-direction: column; 
     background: var(--bg-panel); border-radius: 8px; 
     overflow: hidden; 
-    height: 200px; /* Tinggi pas */
+    height: 180px; /* Tinggi tetap agar tombol tidak terdorong */
     flex-shrink: 0;
     border: 1px solid var(--border-color);
-    margin-bottom: 8px; /* Jarak aman dari navigasi bawah HP */
   }
   .chat-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
   .chat-msg { background: var(--bg-main); padding: 8px 10px; border-radius: 6px; max-width: 90%; border: 1px solid var(--border-color);}
@@ -87,7 +106,7 @@
   .chat-text { word-wrap: break-word; color: var(--text-main);}
   
   .chat-input { display: flex; border-top: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-main);}
-  .chat-input input { flex: 1; border: none; background: transparent; color: var(--text-main); padding: 12px; font-size: 14px; outline: none; }
+  .chat-input input { flex: 1; border: none; background: transparent; color: var(--text-main); padding: 10px 12px; font-size: 14px; outline: none; }
   .chat-input button { border: none; background: #3b82f6; color: #fff; padding: 0 16px; cursor: pointer; font-weight: 600; }
 </style>
 </head>
@@ -105,11 +124,12 @@
     <button onclick="exitGame()" class="exit-btn">✕ Keluar</button>
   </header>
 
-  <div id="timerPlayer" class="timer-player">—</div>
-  
-  <button id="btn" class="push-btn">TEKAN</button>
-  
-  <div id="status" class="status"></div>
+  <!-- AREA TENGAH: TIMER & TOMBOL -->
+  <div class="center-area">
+    <div id="timerPlayer" class="timer-player">—</div>
+    <button id="btn" class="push-btn">TEKAN</button>
+    <div id="status" class="status"></div>
+  </div>
 
   <!-- FITUR CHAT PLAYER -->
   <div class="chat-section">
@@ -160,19 +180,31 @@
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
 
+  // SISTEM SUARA (Audio Context)
   let actx;
-  function beep(freq = 880, dur = 0.12) {
+  function beep(freq = 880, dur = 0.15) {
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      if (actx.state === 'suspended') actx.resume();
+      if (actx.state === 'suspended') actx.resume(); // Wajib untuk iOS/Android
       const o = actx.createOscillator(), g = actx.createGain();
-      o.type = 'square'; o.frequency.value = freq;
-      o.connect(g); g.connect(actx.destination);
-      g.gain.setValueAtTime(0.15, actx.currentTime);
+      o.type = 'square'; 
+      o.frequency.value = freq;
+      o.connect(g); 
+      g.connect(actx.destination);
+      g.gain.setValueAtTime(0.2, actx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
       o.start(); o.stop(actx.currentTime + dur);
-    } catch (e) {}
+    } catch (e) { console.log('Audio error:', e); }
   }
+
+  // Bunyikan beep sekali saat pertama kali layar disentuh (untuk membuka kunci audio di HP)
+  document.body.addEventListener('touchstart', function unlockAudio() {
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      beep(400, 0.1);
+    }
+    document.body.removeEventListener('touchstart', unlockAudio);
+  }, { once: true });
 
   signInAnonymously(auth).catch(e => console.error(e));
 
@@ -204,6 +236,10 @@
     
     localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
     document.getElementById('nameView').style.display = 'none';
+    
+    // Bunyi konfirmasi masuk
+    beep(800, 0.1);
+    
     try { await mulaiMain(); } catch (e) {}
   };
 
@@ -227,7 +263,10 @@
         onValue(ref(db, `rooms/${roomId}/state`), snap => {
           stateData = snap.val();
           const isLocked = stateData && stateData.locked;
-          if (prevLocked && !isLocked) beep(900, 0.1);
+          
+          // Bunyi saat Host membuka Buzzer
+          if (prevLocked && !isLocked) beep(950, 0.1);
+          
           prevLocked = isLocked;
           updateStateFromServer();
         });
@@ -254,9 +293,11 @@
       return;
     }
     if (stateData.playerKey === myPlayerKey) {
-      if (state !== 'winner') { state = 'winner'; ui(); beep(1400); }
+      // Bunyi Menang
+      if (state !== 'winner') { state = 'winner'; ui(); beep(1400, 0.3); }
     } else {
-      if (state !== 'loser') { state = 'loser'; ui(); beep(220); }
+      // Bunyi Kalah
+      if (state !== 'loser') { state = 'loser'; ui(); beep(220, 0.2); }
     }
   }
 
@@ -294,7 +335,13 @@
       const remaining = Math.max(0, endAt - serverNow());
       el.textContent = (remaining / 1000).toFixed(1);
       if (remaining < 5000) el.classList.add('urgent');
-      if (remaining <= 0) { el.textContent = 'WAKTU HABIS'; el.classList.remove('urgent'); el.classList.add('done'); clearInterval(timerInterval); }
+      if (remaining <= 0) { 
+        el.textContent = 'WAKTU HABIS'; 
+        el.classList.remove('urgent'); 
+        el.classList.add('done'); 
+        clearInterval(timerInterval); 
+        beep(300, 0.4); // Bunyi waktu habis
+      }
     };
     tick(); timerInterval = setInterval(tick, 100);
   }
@@ -326,7 +373,7 @@
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 
   window.exitGame = async () => {
-    if (!confirm('Keluar?')) return;
+    if (!confirm('Keluar dari permainan?')) return;
     if (myPlayerKey) try { await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`)); } catch(e){}
     localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
     document.body.innerHTML = '<div class="center-panel"><h2>Anda telah keluar</h2></div>';
