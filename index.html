@@ -7,7 +7,7 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
-  /* TEMA TERANG (LIGHT MODE SAJA) */
+  /* TEMA TERANG */
   :root {
     --bg-main: #f1f5f9;
     --bg-panel: #ffffff;
@@ -16,11 +16,7 @@
     --text-muted: #475569;
     --border-color: #cbd5e1;
     
-    /* Warna Tim Konsisten */
-    --tim1: #ef4444; /* Merah */
-    --tim2: #3b82f6; /* Biru */
-    --tim3: #22c55e; /* Hijau */
-    --tim4: #a855f7; /* Ungu */
+    --tim1: #ef4444; --tim2: #3b82f6; --tim3: #22c55e; --tim4: #a855f7;
   }
 
   html, body {
@@ -29,51 +25,40 @@
     background: var(--bg-main); color: var(--text-main);
   }
 
-  .app-container {
-    display: flex; flex-direction: column;
-    height: 100%; padding: 12px; gap: 12px;
-  }
+  .app-container { display: flex; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
 
   /* HEADER */
   .header {
     display: flex; justify-content: space-between; align-items: center;
     background: var(--bg-panel); padding: 10px 16px; border-radius: 10px; flex-shrink: 0;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    z-index: 10;
   }
   .header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--text-main);}
   .header-actions { display: flex; gap: 8px; align-items: center; }
   .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; color: white; transition: 0.2s;}
-  
   .btn-blue { background: #3b82f6; } .btn-blue:hover { background: #2563eb; }
   .btn-red { background: #ef4444; } .btn-red:hover { background: #dc2626; }
   .btn-gray { background: #64748b; } .btn-gray:hover { background: #475569; }
   
   /* LAYOUT UTAMA */
-  .grid-container {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; 
-  }
+  .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
   .column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
   .panel {
     background: var(--bg-panel); border-radius: 10px; padding: 12px;
     display: flex; flex-direction: column; gap: 8px; position: relative;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   .panel-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;}
   
   /* TOMBOL UTAMA */
   .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; color: #fff; transition: 0.2s;}
   .btn:active { transform: scale(0.95); }
-  .btn-primary { background: #3b82f6; }
-  .btn-success { background: #22c55e; }
-  .btn-warning { background: #f59e0b; }
-  .btn-danger { background: #ef4444; }
+  .btn-primary { background: #3b82f6; } .btn-success { background: #22c55e; } .btn-warning { background: #f59e0b; } .btn-danger { background: #ef4444; }
   .btn-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
   /* TIMER */
   .timer-panel { flex: 0.8; justify-content: center; }
-  .timer-display { font-size: 48px; font-weight: 800; text-align: center; color: #3b82f6; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
   .input-group { display: flex; gap: 6px; align-items: center; justify-content: center; font-size: 13px; color: var(--text-main);}
   .input-group input { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); width: 60px; text-align: center; font-size: 16px; font-weight: bold;}
 
@@ -88,13 +73,8 @@
   .player-panel { flex: 1.5; overflow: hidden; }
   .player-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; padding-right: 4px; flex: 1;}
   .player-row { background: var(--bg-card); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; border: 1px solid var(--border-color); border-left: 5px solid transparent; }
-  
-  /* Warna Border Kiri Tim */
-  .player-row.t1 { border-left-color: var(--tim1); } 
-  .player-row.t2 { border-left-color: var(--tim2); }
-  .player-row.t3 { border-left-color: var(--tim3); } 
-  .player-row.t4 { border-left-color: var(--tim4); }
-  
+  .player-row.t1 { border-left-color: var(--tim1); } .player-row.t2 { border-left-color: var(--tim2); }
+  .player-row.t3 { border-left-color: var(--tim3); } .player-row.t4 { border-left-color: var(--tim4); }
   .device-count { font-size: 11px; background: var(--border-color); padding: 4px 10px; border-radius: 12px; color: var(--text-main); white-space: nowrap;}
   .btn-del-player { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 11px; margin-left: 6px; }
   
@@ -103,8 +83,6 @@
   .qr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .qr-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
   .qr-card h3 { margin: 0; font-size: 13px; color: var(--text-main);}
-  
-  /* Kotak putih pelindung QR */
   .qr-wrapper { background: #ffffff; padding: 8px; border-radius: 8px; display: inline-block; border: 1px solid #e2e8f0;}
   .qr-wrapper canvas, .qr-wrapper img { width: 80px !important; height: 80px !important; cursor: pointer; display: block;}
   .btn-zoom { background: #64748b; color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%;}
@@ -114,6 +92,51 @@
   #qrModal .qr-wrapper { padding: 20px; border-radius: 12px; }
   #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 28px;}
+
+  /* ========================================= */
+  /* FITUR POP-UP TIMER RAKSASA (TIDAK MENUTUPI CHAT) */
+  /* ========================================= */
+  #timerOverlay {
+    display: none; position: fixed; 
+    top: 0; left: 0; 
+    width: 65vw; /* Hanya menutupi 65% layar kiri, menyisakan ruang chat di kanan */
+    height: 100vh; 
+    background: rgba(255, 255, 255, 0.95); 
+    z-index: 500;
+    flex-direction: column; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #timerOverlay h1 { font-size: 28px; color: var(--text-muted); margin-bottom: -10px; font-weight: 600;}
+  #popupTimerValue {
+    font-size: 25vw; /* Ukuran super raksasa */
+    font-weight: 900;
+    color: #3b82f6;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition: color 0.3s, transform 0.1s;
+  }
+  #timerOverlay.urgent #popupTimerValue {
+    color: #ef4444;
+    transform: scale(1.05);
+    animation: pulse 1s infinite alternate;
+  }
+  @keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+  .btn-stop-overlay {
+    margin-top: 30px;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: 800;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+  }
+  .btn-stop-overlay:active { transform: scale(0.95); }
 
   /* CHAT */
   .chat-panel { flex: 1; min-height: 0; }
@@ -127,6 +150,13 @@
 </style>
 </head>
 <body>
+
+<!-- POP-UP TIMER (Z-INDEX TINGGI) -->
+<div id="timerOverlay">
+  <h1>SISA WAKTU</h1>
+  <div id="popupTimerValue">—</div>
+  <button class="btn-stop-overlay" onclick="stopTimer()">■ Hentikan Waktu</button>
+</div>
 
 <!-- MODAL ZOOM QR -->
 <div id="qrModal" onclick="tutupModalQR()">
@@ -150,7 +180,7 @@
     <div class="column">
       <div class="panel timer-panel">
         <p class="panel-title">⏱ Timer Kuis</p>
-        <div class="timer-display" id="hostTimer">—</div>
+        <!-- Timer display di sini disembunyikan saat overlay muncul -->
         <div class="input-group">
           <input type="number" id="timerInput" value="30" min="1" max="300"> <span>detik</span>
           <button class="btn btn-primary" onclick="startTimer()">▶ Start</button>
@@ -175,7 +205,7 @@
       </div>
     </div>
 
-    <!-- KOLOM KANAN -->
+    <!-- KOLOM KANAN (CHAT) -->
     <div class="column">
       <div class="panel qr-panel">
         <p class="panel-title">📱 QR Code Registrasi Tim</p>
@@ -223,26 +253,49 @@
   const serverNow = () => Date.now() + serverOffset;
 
   let timerInterval = null;
+  let lastTickSecond = -1;
 
+  // ==========================================
+  // SISTEM SUARA HOST
+  // ==========================================
+  let actx;
+  document.addEventListener('click', () => {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+  }, { once: true });
+
+  function playSound(freq = 880, dur = 0.1, vol = 1.0, type = 'sine') {
+    try {
+      if (!actx) return;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; 
+      o.frequency.value = freq;
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(vol, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
+      o.start(); o.stop(actx.currentTime + dur);
+    } catch (e) {}
+  }
+
+  function playHorn() {
+    try {
+      if (!actx) return;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sawtooth'; 
+      o.frequency.setValueAtTime(600, actx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(300, actx.currentTime + 0.4);
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(1.0, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.5);
+      o.start(); o.stop(actx.currentTime + 0.5);
+    } catch (e) {}
+  }
+
+  // URL ROUTING
   function getPlayerBaseUrl() {
     let url = window.location.origin + window.location.pathname;
     url = url.substring(0, url.lastIndexOf('/') + 1);
     return url + 'player.html';
-  }
-
-  let actx;
-  function playHorn() {
-    try {
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      if (actx.state === 'suspended') actx.resume();
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = 'square'; o.frequency.setValueAtTime(800, actx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(400, actx.currentTime + 0.3);
-      o.connect(g); g.connect(actx.destination);
-      g.gain.setValueAtTime(0.2, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.5);
-      o.start(); o.stop(actx.currentTime + 0.5);
-    } catch (e) {}
   }
 
   signInAnonymously(auth).then(() => { initHost(); }).catch(e => alert('Gagal login: ' + e.message));
@@ -250,7 +303,8 @@
   function initHost() {
     generateQRs();
 
-    let prevLocked = false;
+    // STATE / BUZZER
+    let prevLocked = null;
     onValue(ref(db, `rooms/${roomId}/state`), snap => {
       const state = snap.val();
       const statusEl = document.getElementById('buzzerStatus');
@@ -261,33 +315,72 @@
         statusEl.textContent = 'STATUS: TERBUKA';
         statusEl.className = 'buzzer-status open';
         winnerEl.innerHTML = '';
+        
+        if (prevLocked === true) playSound(800, 0.3, 1.0, 'square'); // Bunyi saat Buka
+        
       } else {
         statusEl.textContent = 'STATUS: TERKUNCI';
         statusEl.className = 'buzzer-status locked';
         if (state.name === 'Ditutup Host') {
           winnerEl.innerHTML = `🔒 Buzzer Ditutup Manual`;
+          if (prevLocked === false) playSound(300, 0.3, 1.0, 'square'); // Bunyi saat Tutup
         } else {
           winnerEl.innerHTML = `🏆 <span style="color:var(--tim${state.team}); font-weight:800;">Tim ${state.team}</span> (${state.name})!`;
-          if (!prevLocked) playHorn();
+          if (prevLocked === false) playHorn();
         }
       }
       prevLocked = isLocked;
     });
 
+    // TIMER
     onValue(ref(db, `rooms/${roomId}/timer`), snap => {
       const timer = snap.val();
       clearInterval(timerInterval);
-      const el = document.getElementById('hostTimer');
-      if (!timer || !timer.running) { el.textContent = '—'; return; }
+      const overlay = document.getElementById('timerOverlay');
+      const popupVal = document.getElementById('popupTimerValue');
+      
+      if (!timer || !timer.running) { 
+        overlay.style.display = 'none'; 
+        lastTickSecond = -1;
+        return; 
+      }
+      
+      // Tampilkan pop-up
+      overlay.style.display = 'flex';
+      overlay.classList.remove('urgent');
+      
       const endAt = timer.startedAt + timer.duration * 1000;
-      const tick = () => {
-        const remaining = Math.max(0, endAt - serverNow());
-        el.textContent = (remaining / 1000).toFixed(1);
-        if (remaining <= 0) { el.textContent = 'WAKTU HABIS'; clearInterval(timerInterval); }
-      };
-      tick(); timerInterval = setInterval(tick, 100);
+      
+      timerInterval = setInterval(() => {
+        const remainingMs = Math.max(0, endAt - serverNow());
+        const remainingSec = Math.ceil(remainingMs / 1000);
+        
+        popupVal.textContent = (remainingMs / 1000).toFixed(1);
+
+        if (remainingMs <= 10000) {
+          overlay.classList.add('urgent');
+        }
+
+        if (remainingMs <= 0) {
+          clearInterval(timerInterval);
+          popupVal.textContent = '0.0';
+          playSound(200, 0.8, 1.0, 'sawtooth');
+          return;
+        }
+
+        // LOGIKA SUARA DETAK DI HOST
+        if (remainingSec !== lastTickSecond) {
+          lastTickSecond = remainingSec;
+          if (remainingSec <= 10) {
+            playSound(1200, 0.1, 1.0, 'sawtooth'); // Bip cepat 10 detik terakhir
+          } else {
+            playSound(600, 0.05, 1.0, 'sine'); // Tik jam biasa
+          }
+        }
+      }, 100);
     });
 
+    // PEMAIN
     onValue(ref(db, `rooms/${roomId}/players`), snap => {
       const players = snap.val() || {};
       const teams = {1: [], 2: [], 3: [], 4: []};
@@ -309,6 +402,7 @@
       }
     });
 
+    // CHAT
     onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
       const data = snap.val() || {};
       const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
@@ -323,6 +417,9 @@
     });
   }
 
+  // ==========================================
+  // FUNGSI TOMBOL
+  // ==========================================
   window.bukaBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
   window.tutupBuzzer = async () => { await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); };
   window.resetBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
@@ -341,8 +438,11 @@
 
   window.startTimer = async () => {
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
+    // Saat start, aktifkan AudioContext secara paksa jika belum
+    if (actx && actx.state === 'suspended') actx.resume();
     await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: serverNow(), duration: dur });
   };
+  
   window.stopTimer = async () => { await remove(ref(db, `rooms/${roomId}/timer`)); };
 
   window.kirimChatHost = async () => {
