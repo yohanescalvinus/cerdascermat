@@ -2,12 +2,11 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Pemain</title>
 <style>
   * { box-sizing: border-box; }
   
-  /* TEMA TERANG (LIGHT MODE) */
   :root {
     --bg-main: #f1f5f9;
     --bg-panel: #ffffff;
@@ -17,12 +16,13 @@
   }
 
   html, body {
-    margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden;
+    margin: 0; padding: 0; height: 100dvh; width: 100vw; overflow: hidden;
     font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-main);
   }
+  
   .center-panel {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 100%; padding: 24px; text-align: center; gap: 12px;
+    height: 100dvh; padding: 24px; text-align: center; gap: 12px;
   }
   .center-panel input {
     padding: 12px 16px; font-size: 16px; border-radius: 8px;
@@ -33,17 +33,29 @@
     border: none; background: #3b82f6; color: #fff; cursor: pointer; font-weight: 600;
   }
 
-  #mainView { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
-  header { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--bg-panel); border-radius: 8px; flex-shrink: 0; border: 1px solid var(--border-color);}
-  #identity { font-weight: 700; font-size: 15px; }
-  .exit-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight:600; }
+  #mainView { 
+    display: none; flex-direction: column; 
+    height: 100dvh; /* Kunci tinggi layar HP */
+    padding: 8px; gap: 8px; 
+  }
+  
+  header { 
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 10px 14px; background: var(--bg-panel); border-radius: 8px; 
+    flex-shrink: 0; border: 1px solid var(--border-color);
+  }
+  #identity { font-weight: 700; font-size: 14px; }
+  .exit-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight:600; }
 
-  .timer-player { text-align: center; font-size: 48px; font-weight: 800; font-variant-numeric: tabular-nums; color: #64748b; padding: 4px 0; flex-shrink: 0;}
+  .timer-player { text-align: center; font-size: 40px; font-weight: 800; font-variant-numeric: tabular-nums; color: #64748b; padding: 2px 0; flex-shrink: 0;}
   .timer-player.urgent { color: #f59e0b; }
   .timer-player.done { color: #ef4444; }
 
+  /* TOMBOL TEKAN DIBUAT FLEKSIBEL (MENGISI SISA RUANG) */
   .push-btn {
-    flex: 1; min-height: 120px; font-size: 36px; font-weight: 800; border-radius: 16px; border: none; cursor: pointer;
+    flex: 1; /* Mengisi semua sisa ruang di tengah */
+    min-height: 100px; /* Batas minimal tinggi */
+    font-size: 36px; font-weight: 800; border-radius: 16px; border: none; cursor: pointer;
     background: #3b82f6; color: #fff; transition: transform 0.05s, background 0.2s; letter-spacing: 2px;
   }
   .push-btn:active { transform: scale(0.98); }
@@ -51,17 +63,33 @@
   .push-btn.winner  { background: #22c55e; }
   .push-btn.loser   { background: #94a3b8; }
 
-  .status { text-align: center; font-size: 15px; font-weight:600; min-height: 22px; color: var(--text-muted); padding: 0 8px; flex-shrink: 0;}
+  .status { text-align: center; font-size: 14px; font-weight:600; min-height: 18px; color: var(--text-muted); padding: 0 8px; flex-shrink: 0;}
 
-  .chat-section { display: flex; flex-direction: column; background: var(--bg-panel); border-radius: 8px; overflow: hidden; height: 200px; flex-shrink: 0; border: 1px solid var(--border-color);}
-  .chat-list { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
-  .chat-msg { background: var(--bg-main); padding: 8px 12px; border-radius: 6px; max-width: 85%; border: 1px solid var(--border-color);}
+  /* KOTAK CHAT DIBERI UKURAN TETAP DI HP */
+  .chat-section { 
+    display: flex; flex-direction: column; 
+    background: var(--bg-panel); border-radius: 8px; 
+    overflow: hidden; 
+    height: 180px; /* Ukuran pas untuk layar HP */
+    flex-shrink: 0;
+    border: 1px solid var(--border-color);
+  }
+  .chat-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+  .chat-msg { background: var(--bg-main); padding: 8px 10px; border-radius: 6px; max-width: 90%; border: 1px solid var(--border-color);}
   .chat-msg.mine { background: #e0e7ff; border-color: #c7d2fe; align-self: flex-end; }
   .chat-who { font-size: 10px; color: var(--text-muted); margin-bottom: 2px; font-weight:600;}
   .chat-text { word-wrap: break-word; color: var(--text-main);}
-  .chat-input { display: flex; border-top: 1px solid var(--border-color); }
-  .chat-input input { flex: 1; border: none; background: transparent; color: var(--text-main); padding: 12px; font-size: 14px; outline: none; }
-  .chat-input button { border: none; background: #3b82f6; color: #fff; padding: 0 20px; cursor: pointer; font-weight: 600; }
+  
+  .chat-input { display: flex; border-top: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-main);}
+  .chat-input input { flex: 1; border: none; background: transparent; color: var(--text-main); padding: 10px 12px; font-size: 14px; outline: none; }
+  .chat-input button { border: none; background: #3b82f6; color: #fff; padding: 0 16px; cursor: pointer; font-weight: 600; }
+
+  /* Penyesuaian khusus jika keyboard HP muncul (opsional, agar input tidak tenggelam) */
+  @media (max-height: 500px) {
+    .timer-player { font-size: 24px; }
+    .push-btn { font-size: 24px; min-height: 70px; }
+    .chat-section { height: 120px; }
+  }
 </style>
 </head>
 <body>
@@ -79,15 +107,16 @@
   </header>
 
   <div id="timerPlayer" class="timer-player">—</div>
+  
   <button id="btn" class="push-btn">TEKAN</button>
+  
   <div id="status" class="status"></div>
 
   <!-- FITUR CHAT PLAYER -->
   <div class="chat-section">
     <div id="chatList" class="chat-list"></div>
     <div class="chat-input">
-      <!-- Menggunakan id="chatMessage" agar tidak bentrok dengan form nama -->
-      <input id="chatMessage" placeholder="Ketik pesan ke Host..." onkeypress="if(event.key==='Enter')kirimChat()">
+      <input id="chatMessage" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')kirimChat()">
       <button onclick="kirimChat()">Kirim</button>
     </div>
   </div>
@@ -120,7 +149,6 @@
   const roomId = (params.get('room') || '').toUpperCase();
   const teamId = parseInt(params.get('team') || 0);
 
-  // Warna sesuai Tim
   const teamColors = {1: '#ef4444', 2: '#3b82f6', 3: '#22c55e', 4: '#a855f7'};
   document.documentElement.style.setProperty('--team-color', teamColors[teamId] || '#3b82f6');
 
@@ -154,11 +182,9 @@
     if (!u || authHandled) return;
     authHandled = true;
 
-    // Cek apakah nama pernah disimpan di HP ini
     const saved = localStorage.getItem(`cc_name_${roomId}_${teamId}`);
     if (saved) { 
       myName = saved; 
-      // Gunakan ID unik berbasis Nama untuk mencegah duplikasi
       myPlayerKey = `Tim${teamId}_${myName.replace(/\s+/g, '_')}`; 
       mulaiMain(); 
     } 
@@ -175,7 +201,6 @@
     if (!name) { alert('Nama wajib diisi'); return; }
     
     myName = name;
-    // GUNAKAN ID UNIK: Tim2_Budi (Mencegah ganda saat refresh)
     myPlayerKey = `Tim${teamId}_${myName.replace(/\s+/g, '_')}`;
     
     localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
@@ -192,11 +217,8 @@
       identityEl.textContent = `Tim ${teamId} • ${myName}`;
       identityEl.style.color = teamColors[teamId];
 
-      // Tulis data ke Firebase (karena ID-nya unik, ini akan menimpa yang lama, bukan menggandakan)
       const playerRef = ref(db, `rooms/${roomId}/players/${myPlayerKey}`);
       await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
-      
-      // Hapus dari database saat player menutup tab
       try { await onDisconnect(playerRef).remove(); } catch (e) {}
 
       if (!listenersAttached) {
@@ -213,7 +235,6 @@
 
         onValue(ref(db, `rooms/${roomId}/timer`), snap => { startCountdown(snap.val()); });
         
-        // CHAT PLAYER LISTENER
         onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
           const data = snap.val() || {};
           const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
@@ -279,7 +300,6 @@
     tick(); timerInterval = setInterval(tick, 100);
   }
 
-  // FUNGSI CHAT YANG SUDAH DIPERBAIKI (Menggunakan chatMessage)
   window.kirimChat = async () => {
     if (!myName) return;
     const input = document.getElementById('chatMessage'); 
