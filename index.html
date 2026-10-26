@@ -40,8 +40,9 @@
     background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
   .center-panel button:disabled{opacity:.5;cursor:not-allowed}
   .hint{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px;line-height:1.4}
-  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
 
+  /* --- HEADER --- */
   header{display:flex;justify-content:space-between;align-items:center;gap:12px;
     flex-wrap:wrap;padding:10px 16px;background:var(--card);border-radius:14px;
     border:1px solid var(--line);margin-bottom:12px}
@@ -54,9 +55,11 @@
   header button:hover{filter:brightness(1.15)}
   header button.btn-reset { background: var(--red); color: white; border: none; }
 
+  /* --- PANELS --- */
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:clamp(10px,1.5vw,14px);margin-bottom:12px;transition:.3s}
   
+  /* Ergonomis & Rapi */
   .panel-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;}
   .panel-header-row h2 { margin: 0; }
   .controls-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
@@ -73,6 +76,7 @@
   .panel button.danger{background:var(--red);color:#fff;border:none}
   .panel button:disabled{opacity:.4;cursor:not-allowed;filter:none}
 
+  /* --- TIMER & BUZZER --- */
   .timer-display-wrapper { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 12px; padding: 12px; background: var(--card-2); border-radius: 12px; border: 1px solid var(--line);}
   .timer-display{font-family:ui-monospace,Consolas,monospace;
     font-size:clamp(32px,5vw,48px);font-weight:900;text-align:center;
@@ -93,6 +97,7 @@
   .buzzer-status.locked{border-color:var(--amber);color:var(--amber)}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
 
+  /* --- PEMAIN --- */
   .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
     padding:10px;margin-bottom:6px; display: flex; justify-content: space-between; align-items: center;}
   .team-title{font-weight:700;font-size:14px;}
@@ -100,11 +105,13 @@
     border-radius:20px;margin-left:6px;font-weight:600}
   .team-members{color:var(--muted);font-size:12px; text-align: right; max-width: 60%;}
 
+  /* --- QR CODE --- */
   .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
   .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
     padding:10px;display:flex;flex-direction:column;align-items:center;}
   .qr-label{font-weight:700;margin-bottom:8px;font-size:13px;width:100%;text-align:center;}
   
+  /* Background Putih Dipaksa untuk kontras QR */
   .qr-canvas-container { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 120px; background: #ffffff; border-radius: 8px; padding: 8px;}
   .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; }
 
@@ -113,14 +120,11 @@
     border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
   }
   
-  /* --- LAYOUT KANAN DINAMIS (CHAT MEMBESAR SAAT QR TUTUP) --- */
-  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch;}
+  /* --- LAYOUT UTAMA --- */
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   
-  .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; min-height: 500px;}
-  
-  .chat-panel { display: flex; flex-direction: column; flex: 1; transition: flex 0.3s ease; }
-  .qr-panel { display: flex; flex-direction: column; flex-shrink: 0; transition: all 0.3s ease; }
-
+  /* --- CHAT --- */
+  .chat-panel { display: flex; flex-direction: column; height: 380px; }
   .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
     border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px}
   .chat-msg{padding:6px 0;border-bottom:1px solid var(--line)}
@@ -140,6 +144,7 @@
   }
   .btn-clear-chat:hover { filter: brightness(1.2); }
 
+  /* --- POPUPS --- */
   .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
   .popup.show{display:flex}
@@ -162,26 +167,21 @@
 
   @media (max-width: 900px){
     .dashboard-grid { grid-template-columns: 1fr; }
-    .right-column { height: auto; min-height: auto;}
-    .chat-panel { height: 300px; flex: none; }
+    .chat-panel { height: 300px; }
+    .controls-group { flex: 1; justify-content: flex-end; }
   }
 </style>
 </head>
 <body>
 
-<!-- LOGIN VIEW -->
 <div id="loginView" class="center-panel">
   <h1 style="text-align:center">🎯 Host Login</h1>
   <input id="email" type="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
-  <div style="text-align: center; margin-top: 12px;">
-    <a href="#" onclick="lupaPassword()" style="font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 600;">Lupa Password?</a>
-  </div>
   <div id="loginMsg" class="err"></div>
 </div>
 
-<!-- SETTINGS VIEW -->
 <div id="settingsView" class="center-panel" style="display:none">
   <h1 style="text-align:center">⚙ Settings Room</h1>
   <label for="settingRoomId">Room ID (huruf kecil & angka, 3–20 karakter)</label>
@@ -195,7 +195,6 @@
   <div id="settingsMsg" class="err"></div>
 </div>
 
-<!-- HOST VIEW -->
 <div id="hostView" style="display:none;max-width:1400px;margin:0 auto">
   
   <header>
@@ -224,7 +223,7 @@
 
   <div class="dashboard-grid">
     
-    <!-- KIRI: Timer, Buzzer, Pemain -->
+    <!-- Kiri: Timer, Buzzer, Pemain -->
     <div style="display:flex; flex-direction:column; gap:12px;">
       
       <section class="panel" style="margin-bottom:0;">
@@ -263,14 +262,14 @@
         <div class="panel-header-row">
           <h2>👥 Pemain</h2>
         </div>
-        <div id="playersList" style="max-height:250px;overflow-y:auto;padding-right:5px;"></div>
+        <div id="playersList" style="max-height:220px;overflow-y:auto;padding-right:5px;"></div>
       </section>
     </div>
 
-    <!-- KANAN: Live Chat (Atas) & QR (Bawah) - Dinamis -->
-    <div class="right-column">
+    <!-- Kanan: Live Chat, QR -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
       
-      <section class="panel chat-panel" id="chatPanel" style="margin-bottom:0;">
+      <section class="panel chat-panel" style="margin-bottom:0;">
         <div class="panel-header-row">
           <h2>💬 Live Chat</h2>
           <button class="btn-clear-chat" onclick="clearChat()">Hapus Chat</button>
@@ -282,15 +281,13 @@
         </div>
       </section>
 
-      <!-- Panel QR SELALU ada. -->
-      <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0;">
+      <section class="panel" style="margin-bottom:0; flex:1;">
         <div class="panel-header-row">
           <h2>📱 QR Code Registrasi</h2>
         </div>
         <div id="qrList" class="qr-grid"></div>
       </section>
     </div>
-
   </div>
 </div>
 
@@ -307,7 +304,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail }
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, onValue, set, remove, get, push, serverTimestamp,
          query, limitToLast, update }
@@ -361,39 +358,18 @@ applyTheme(localStorage.getItem('cc_theme_host') || 'dark');
 window.login = async () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('password').value;
-  const msg = document.getElementById('loginMsg');
-  msg.textContent = '';
   try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch (e) { msg.textContent = "Login Gagal: " + e.message; }
+  catch (e) { document.getElementById('loginMsg').textContent = e.message; }
 };
 
-window.lupaPassword = async () => {
-  const email = document.getElementById('email').value.trim();
-  const msg = document.getElementById('loginMsg');
-  
-  if (!email) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = 'Masukkan email Anda terlebih dahulu di kolom Email.';
-    return;
-  }
-  
-  try {
-    await sendPasswordResetEmail(auth, email);
-    msg.style.color = 'var(--green)';
-    msg.textContent = '✅ Tautan reset password telah dikirim ke email Anda. Silakan cek Kotak Masuk atau Spam.';
-  } catch (error) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = 'Gagal mengirim email: ' + error.message;
-  }
-};
-
+// --- FITUR CLEAR & LOGOUT ---
 window.clearChat = async () => {
   if (!confirm('Hapus semua riwayat chat?')) return;
   try {
     await set(ref(db, `rooms/${roomId}/chat`), null);
     document.getElementById('chatList').innerHTML = '';
   } catch(e) {
-    alert("Gagal menghapus chat. Pastikan aturan Firebase Rules mengizinkan penghapusan data.");
+    alert("Gagal menghapus chat. Pastikan aturan Firebase Rules mengizinkan penghapusan.");
   }
 };
 
@@ -415,15 +391,19 @@ window.resetAllAndLogout = async () => {
       await set(ref(db, `rooms/${roomId}/state`), null);
       await set(ref(db, `rooms/${roomId}/chat`), null);
     }
+    
     await signOut(auth);
+    
     localStorage.removeItem('cc_room');
     localStorage.removeItem('cc_team_count');
     localStorage.removeItem('cc_theme_host');
+    
     window.location.reload();
   } catch (e) {
     alert('Gagal reset total: ' + e.message);
   }
 };
+// ----------------------------
 
 onAuthStateChanged(auth, u => {
   user = u;
@@ -571,15 +551,12 @@ function renderQRs(){
   }
 
   const baseUrl = new URL('player.html', location.href);
-  let adaYangTampil = false;
-
+  
   for (let t=1; t<=teamCount; t++){
     const div = document.createElement('div');
     div.className = 'qr-item';
     
     const isVisible = qrVisibleState[t];
-    if(isVisible) adaYangTampil = true;
-
     const btnText = isVisible ? 'Sembunyikan' : 'Tampilkan';
     const btnClass = isVisible ? 'danger' : 'primary';
     const displayStyle = isVisible ? 'flex' : 'none';
@@ -606,13 +583,6 @@ function renderQRs(){
         correctLevel : QRCode.CorrectLevel.M
       });
     }
-  }
-
-  const qrPanel = document.getElementById('qrPanel');
-  if (adaYangTampil) {
-    qrPanel.style.minHeight = '250px'; 
-  } else {
-    qrPanel.style.minHeight = 'auto'; 
   }
 }
 
@@ -745,6 +715,9 @@ window.kirimChat = async () => {
   input.focus();
 };
 
+// ==========================================
+// SISTEM SUARA (Horn Bass, Tik Keras, Vol Max)
+// ==========================================
 let actx;
 function getAC(){
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -776,7 +749,7 @@ function playHorn(){
     gain.connect(ctx.destination);
     
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(1.0, now + 0.05); 
+    gain.gain.linearRampToValueAtTime(1.0, now + 0.05); // VOLUME MAX
     gain.gain.setValueAtTime(1.0, now + 0.4);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
     
@@ -795,7 +768,7 @@ function playTick(){
     osc.frequency.exponentialRampToValueAtTime(300, now + 0.03);
     osc.connect(gain); gain.connect(ctx.destination);
     
-    gain.gain.setValueAtTime(1.0, now); 
+    gain.gain.setValueAtTime(1.0, now); // VOLUME MAX
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
     osc.start(now); osc.stop(now + 0.04);
   } catch(e){}
