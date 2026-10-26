@@ -649,21 +649,49 @@
     } catch (e) { console.log(e); }
   };
 
-  window.paksaSinkron = async (e) => {
+    window.paksaSinkron = async (e) => {
     const btn = e ? e.currentTarget : document.activeElement;
     if(btn) { btn.innerHTML = '<i>⏳</i> Memuat'; btn.disabled = true; }
+    
     try {
+      // Ambil data pemain terbaru langsung dari Firebase
       const playersRef = ref(db, `rooms/${roomId}/players`);
       const snapshot = await get(playersRef);
+      
       if (snapshot.exists()) {
         const players = snapshot.val();
-        for (const [key, p] of Object.entries(players)) {
-          await set(ref(db, `rooms/${roomId}/players/${key}`), p);
+        const teams = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: []};
+        
+        // Kelompokkan pemain berdasarkan tim
+        Object.entries(players).forEach(([key, p]) => { 
+          if (teams[p.team]) teams[p.team].push({ key, name: p.name }); 
+        });
+        
+        // Render ulang ke layar
+        const listEl = document.getElementById('playerList');
+        listEl.innerHTML = '';
+        
+        for (let i = 1; i <= teamCount; i++) {
+          const namesHTML = teams[i].length > 0 
+            ? teams[i].map(p => `<span style="font-size:15px; color:var(--text-main); font-weight:700;">${p.name}</span> <button class="btn-del-player" onclick="hapusPemain('${p.key}')">✕</button>`).join(', ')
+            : '-';
+          listEl.innerHTML += `
+            <div class="player-row t${i}">
+              <span style="color:var(--tim${i}); min-width:50px; font-weight:900;">TIM ${i}</span>
+              <span style="flex:1; text-align:left; padding:0 10px;">${namesHTML}</span>
+              <span class="device-count">${teams[i].length} device</span>
+            </div>
+          `;
         }
       }
-    } catch(err) { console.error(err); }
-    loadDataPemain();
-    setTimeout(() => { if(btn) { btn.innerHTML = '<i>🔄</i> Sinkron'; btn.disabled = false; } }, 800);
+    } catch(err) { 
+      console.error("Gagal sinkron:", err); 
+    }
+    
+    // Kembalikan tombol ke semula setelah 1 detik
+    setTimeout(() => { 
+      if(btn) { btn.innerHTML = '<i>🔄</i> Sinkron'; btn.disabled = false; } 
+    }, 1000);
   };
 
   window.minimizeTimer = () => {
