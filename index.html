@@ -207,7 +207,6 @@
     </div>
   </header>
 
-  <!-- POP-UP TIMER DIGITAL RAKSASA -->
   <div id="timerModal" class="popup" style="display:none; z-index: 10000;">
     <div class="popup-content" style="border-color:var(--blue); max-width: 800px; padding: 40px;">
       <div class="popup-label" style="color:var(--blue); font-size: 20px; margin-bottom: 20px;">WAKTU TERSISA</div>
@@ -238,7 +237,7 @@
         </div>
         
         <div class="timer-display-wrapper">
-          <div style="width: 120px; text-align: left;">
+          <div style="width: 120px; display:flex; justify-content:flex-start;">
             <button class="btn-show-timer" id="btnShowTimer" onclick="bukaPopupTimer()">🔍 Munculkan</button>
           </div>
           <div id="timerDisplay" class="timer-display" style="text-align: center;">—</div>
@@ -292,7 +291,6 @@
   </div>
 </div>
 
-<!-- POP-UP PEMENANG -->
 <div id="winnerPopup" class="popup">
   <div class="popup-content">
     <div class="popup-trophy">🏆</div>
@@ -455,10 +453,16 @@ async function showHostView(){
   document.getElementById('roomId').textContent = roomId;
   document.getElementById('teamCountLabel').textContent = `${teamCount} tim`;
   
-  if(user) {
-     await set(ref(db, `rooms/${roomId}/timer`), null);
-     await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
+  // --- PENGAMAN ANTI-CRASH ---
+  try {
+    if(user) {
+       await set(ref(db, `rooms/${roomId}/timer`), null);
+       await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
+    }
+  } catch(e) {
+    console.warn("Peringatan: Gagal mereset state awal (mungkin terblokir Rules), tapi halaman tetap lanjut.");
   }
+  // ---------------------------
 
   qrVisibleState = {};
   for(let i=1; i<=teamCount; i++) qrVisibleState[i] = false;
