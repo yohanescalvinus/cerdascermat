@@ -131,7 +131,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
@@ -234,7 +234,7 @@
     localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
     document.getElementById('nameView').style.display = 'none';
     
-    playSound(800, 0.2, 1.0, 'square'); 
+    playSound(800, 0.2, 1.0, 'square');
     try { await mulaiMain(); } catch (e) {}
   };
 
@@ -249,7 +249,20 @@
 
       const playerRef = ref(db, `rooms/${roomId}/players/${myPlayerKey}`);
       await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
-      //try { await onDisconnect(playerRef).remove(); } catch (e) {}
+      
+      // ====================================================
+      // FITUR KICK DARI HOST (Mendengarkan apakah datanya dihapus)
+      // ====================================================
+      onValue(playerRef, (snap) => {
+        if (!snap.exists() && !isStarting) {
+          // Jika data hilang di tengah permainan, berarti Host meng-kick
+          alert('Anda telah dikeluarkan dari room oleh Host.');
+          localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
+          sessionStorage.clear();
+          window.location.reload();
+        }
+      });
+      // ====================================================
 
       if (!listenersAttached) {
         listenersAttached = true;
@@ -273,7 +286,6 @@
         });
 
         onValue(ref(db, `rooms/${roomId}/timer`), snap => { 
-           // Kirim data mentah langsung ke startCountdown
            startCountdown(snap.val()); 
         });
         
@@ -345,7 +357,6 @@
     const endAt = timer.startedAt + timer.duration * 1000;
     
     timerInterval = setInterval(() => {
-      // Jika Host menekan pause, jangan hitung dan jangan bunyikan suara
       if (timer.isPaused) {
         el.classList.add('paused');
         return;
@@ -356,7 +367,6 @@
       const remainingMs = Math.max(0, endAt - serverNow());
       const remainingSec = Math.ceil(remainingMs / 1000);
       
-      // Format Jam:Menit:Detik
       const h = Math.floor(remainingMs / 3600000);
       const m = Math.floor((remainingMs % 3600000) / 60000);
       const s = Math.floor((remainingMs % 60000) / 1000);
@@ -387,9 +397,9 @@
         lastTickSecond = remainingSec;
         
         if (remainingSec <= 10) {
-          playSound(1200, 0.1, 1.0, 'sawtooth'); // Detik akhir
+          playSound(1200, 0.1, 1.0, 'sawtooth'); 
         } else {
-          playSound(600, 0.05, 1.0, 'sine'); // Tik jam biasa
+          playSound(600, 0.05, 1.0, 'sine'); 
         }
       }
     }, 100);
