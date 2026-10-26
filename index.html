@@ -7,15 +7,9 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
-  /* TEMA TERANG */
   :root {
-    --bg-main: #f1f5f9;
-    --bg-panel: #ffffff;
-    --bg-card: #f8fafc;
-    --text-main: #0f172a;
-    --text-muted: #475569;
-    --border-color: #cbd5e1;
-    
+    --bg-main: #f1f5f9; --bg-panel: #ffffff; --bg-card: #f8fafc;
+    --text-main: #0f172a; --text-muted: #475569; --border-color: #cbd5e1;
     --tim1: #ef4444; --tim2: #3b82f6; --tim3: #22c55e; --tim4: #a855f7;
   }
 
@@ -25,24 +19,43 @@
     background: var(--bg-main); color: var(--text-main);
   }
 
-  .app-container { display: flex; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
+  /* LAYAR LOGIN & SETUP ROOM */
+  #loginScreen, #setupScreen {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; width: 100%; padding: 20px; background: var(--bg-main);
+  }
+  .login-box {
+    background: var(--bg-panel); padding: 30px; border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid var(--border-color);
+    width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px;
+  }
+  .login-box h1 { text-align: center; color: #3b82f6; margin-bottom: 5px; }
+  .login-box p { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+  .login-box input {
+    padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
+    font-size: 15px; background: var(--bg-main); color: var(--text-main); outline: none;
+  }
+  .login-box input:focus { border-color: #3b82f6; }
+  .login-box button {
+    padding: 12px; border-radius: 8px; border: none; background: #3b82f6; color: white;
+    font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
+  }
+  .login-box button:hover { background: #2563eb; }
+  #loginError { color: #ef4444; font-size: 13px; text-align: center; display: none; font-weight: bold;}
 
-  /* HEADER */
+  /* PANEL HOST UTAMA */
+  #appContainer { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
+  
   .header {
     display: flex; justify-content: space-between; align-items: center;
     background: var(--bg-panel); padding: 10px 16px; border-radius: 10px; flex-shrink: 0;
-    border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    z-index: 10;
+    border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 10;
   }
-  .header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--text-main);}
+  .header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; }
   .header-actions { display: flex; gap: 8px; align-items: center; }
   .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; color: white; transition: 0.2s;}
-  .btn-blue { background: #3b82f6; } .btn-blue:hover { background: #2563eb; }
-  .btn-red { background: #ef4444; } .btn-red:hover { background: #dc2626; }
-  .btn-gray { background: #64748b; } .btn-gray:hover { background: #475569; }
-  .btn-orange { background: #f59e0b; } .btn-orange:hover { background: #d97706; }
+  .btn-blue { background: #3b82f6; } .btn-red { background: #ef4444; } .btn-gray { background: #64748b; } .btn-orange { background: #f59e0b; }
   
-  /* LAYOUT UTAMA */
   .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
   .column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
   .panel {
@@ -52,25 +65,20 @@
   }
   .panel-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;}
   
-  /* TOMBOL UTAMA */
   .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; color: #fff; transition: 0.2s;}
-  .btn:active { transform: scale(0.95); }
   .btn-primary { background: #3b82f6; } .btn-success { background: #22c55e; } .btn-warning { background: #f59e0b; } .btn-danger { background: #ef4444; }
   .btn-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
-  /* TIMER */
   .timer-panel { flex: 0.8; justify-content: center; }
-  .input-group { display: flex; gap: 6px; align-items: center; justify-content: center; font-size: 13px; color: var(--text-main); flex-wrap: wrap;}
+  .input-group { display: flex; gap: 6px; align-items: center; justify-content: center; font-size: 13px; flex-wrap: wrap;}
   .input-group input { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); width: 60px; text-align: center; font-size: 16px; font-weight: bold;}
 
-  /* BUZZER */
   .buzzer-panel { flex: 0.9; justify-content: center; }
   .buzzer-status { text-align: center; font-size: 20px; font-weight: 800; padding: 12px; border-radius: 8px; border: 2px dashed var(--border-color); transition: 0.3s;}
   .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: #fee2e2; }
   .buzzer-status.open { color: #16a34a; border-color: #22c55e; background: #dcfce7; }
   .winner-box { font-size: 22px; font-weight: bold; text-align: center; color: #d97706; min-height: 30px; margin: 8px 0; }
 
-  /* PEMAIN */
   .player-panel { flex: 1.5; overflow: hidden; }
   .player-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; padding-right: 4px; flex: 1;}
   .player-row { background: var(--bg-card); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; border: 1px solid var(--border-color); border-left: 5px solid transparent; }
@@ -78,68 +86,37 @@
   .player-row.t3 { border-left-color: var(--tim3); } .player-row.t4 { border-left-color: var(--tim4); }
   .device-count { font-size: 11px; background: var(--border-color); padding: 4px 10px; border-radius: 12px; color: var(--text-main); white-space: nowrap;}
   .btn-del-player { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 11px; margin-left: 6px; }
-  
-  /* QR CODE */
+
   .qr-panel { flex-shrink: 0; }
   .qr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .qr-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
-  .qr-card h3 { margin: 0; font-size: 13px; color: var(--text-main);}
+  .qr-card h3 { margin: 0; font-size: 13px; }
   .qr-wrapper { background: #ffffff; padding: 8px; border-radius: 8px; display: inline-block; border: 1px solid #e2e8f0;}
   .qr-wrapper canvas, .qr-wrapper img { width: 80px !important; height: 80px !important; cursor: pointer; display: block;}
   .btn-zoom { background: #64748b; color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%;}
-  
-  /* MODAL ZOOM QR */
+
   #qrModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.8); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;}
   #qrModal .qr-wrapper { padding: 20px; border-radius: 12px; }
   #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 28px;}
 
-  /* ========================================= */
-  /* POP-UP TIMER RAKSASA */
-  /* ========================================= */
   #timerOverlay {
-    display: none; position: fixed; 
-    top: 0; left: 0; 
-    width: 65vw; height: 100vh; 
-    background: rgba(255, 255, 255, 0.98); 
-    z-index: 500;
-    flex-direction: column; align-items: center; justify-content: center;
-    backdrop-filter: blur(8px);
+    display: none; position: fixed; top: 0; left: 0; width: 65vw; height: 100vh; 
+    background: rgba(255, 255, 255, 0.98); z-index: 500;
+    flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(8px);
     box-shadow: 2px 0 10px rgba(0,0,0,0.1);
   }
-  
-  /* Tombol Close di Pojok */
   .btn-close-overlay {
-    position: absolute; top: 20px; right: 20px;
-    background: #e2e8f0; color: #0f172a; border: none;
-    width: 40px; height: 40px; border-radius: 50%;
-    font-size: 20px; font-weight: bold; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: 0.2s;
+    position: absolute; top: 20px; right: 20px; background: #e2e8f0; color: #0f172a; border: none;
+    width: 40px; height: 40px; border-radius: 50%; font-size: 20px; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: 0.2s;
   }
   .btn-close-overlay:hover { background: #cbd5e1; }
-
   #timerOverlay h1 { font-size: 28px; color: var(--text-muted); margin-bottom: -10px; font-weight: 600;}
-  
-  /* Ukuran Font Proporsional */
-  #popupTimerValue {
-    font-size: 15vw; /* Ukuran disesuaikan agar tidak terpotong */
-    max-width: 100%;
-    font-weight: 900;
-    color: #3b82f6;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    transition: color 0.3s, transform 0.1s;
-  }
-  
-  #timerOverlay.urgent #popupTimerValue {
-    color: #ef4444;
-    transform: scale(1.05);
-    animation: pulse 1s infinite alternate;
-  }
+  #popupTimerValue { font-size: 15vw; max-width: 100%; font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; }
+  #timerOverlay.urgent #popupTimerValue { color: #ef4444; transform: scale(1.05); animation: pulse 1s infinite alternate; }
   @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
 
-  /* CHAT */
   .chat-panel { flex: 1; min-height: 0; }
   .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
   .chat-msg { background: var(--bg-card); padding: 8px 12px; border-radius: 6px; font-size: 13px; max-width: 90%; border: 1px solid var(--border-color);}
@@ -152,36 +129,41 @@
 </head>
 <body>
 
-<!-- POP-UP TIMER -->
-<div id="timerOverlay">
-  <!-- Tombol Tutup Pop-up (TIDAK menghentikan timer) -->
-  <button class="btn-close-overlay" onclick="sembunyikanTimer()">✕</button>
-  
-  <h1>SISA WAKTU</h1>
-  <div id="popupTimerValue">—</div>
-  <button class="btn btn-danger" onclick="stopTimer()" style="margin-top: 30px; padding: 12px 30px; font-size: 18px;">■ Hentikan Waktu</button>
+<!-- LAYAR LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>🔐 Host Login</h1>
+    <p>Masuk untuk mengelola kuis</p>
+    <input type="email" id="loginEmail" placeholder="Email Host" value="host@cerdascermat.cloud">
+    <input type="password" id="loginPassword" placeholder="Password" value="Secret123">
+    <button onclick="prosesLogin()">Masuk Panel Host</button>
+    <div id="loginError">Email atau Password salah!</div>
+  </div>
 </div>
 
-<!-- MODAL ZOOM QR -->
-<div id="qrModal" onclick="tutupModalQR()">
-  <h2 id="qrModalTitle">Tim 1</h2>
-  <div class="qr-wrapper" id="qrModalTarget"></div>
-  <p style="color:#cbd5e1; font-size:14px;">Klik di mana saja untuk menutup</p>
+<!-- LAYAR SETUP ROOM -->
+<div id="setupScreen">
+  <div class="login-box">
+    <h1>📝 Buat Room</h1>
+    <p>Masukkan ID Room (tanpa spasi)</p>
+    <input type="text" id="newRoomId" placeholder="Contoh: CCA2026" value="CCA2026" style="text-transform: uppercase;">
+    <button onclick="buatRoom()">Buat & Mulai Kuis</button>
+  </div>
 </div>
 
-<div class="app-container">
+<!-- PANEL HOST UTAMA -->
+<div id="appContainer">
   <div class="header">
     <h1>Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
     <div class="header-actions">
       <button class="btn-sm btn-orange" onclick="paksaSinkron()">🔄 Paksa Sinkron</button>
       <button class="btn-sm btn-blue" onclick="if(confirm('Hapus semua chat?')) remove(ref(db, 'rooms/'+roomId+'/chat'))">Hapus Chat</button>
       <button class="btn-sm btn-red" onclick="resetTotal()">Reset Total</button>
-      <button class="btn-sm btn-gray" onclick="exitHost()">✕ Keluar</button>
+      <button class="btn-sm btn-gray" onclick="logoutHost()">Logout</button>
     </div>
   </div>
 
   <div class="grid-container">
-    <!-- KOLOM KIRI -->
     <div class="column">
       <div class="panel timer-panel">
         <p class="panel-title">⏱ Timer Kuis</p>
@@ -210,7 +192,6 @@
       </div>
     </div>
 
-    <!-- KOLOM KANAN -->
     <div class="column">
       <div class="panel qr-panel">
         <p class="panel-title">📱 QR Code Registrasi Tim</p>
@@ -229,10 +210,25 @@
   </div>
 </div>
 
+<!-- OVERLAY TIMER -->
+<div id="timerOverlay">
+  <button class="btn-close-overlay" onclick="sembunyikanTimer()">✕</button>
+  <h1>SISA WAKTU</h1>
+  <div id="popupTimerValue">—</div>
+  <button class="btn btn-danger" onclick="stopTimer()" style="margin-top: 30px; padding: 12px 30px; font-size: 18px;">■ Hentikan Waktu</button>
+</div>
+
+<!-- MODAL QR -->
+<div id="qrModal" onclick="tutupModalQR()">
+  <h2 id="qrModalTitle">Tim 1</h2>
+  <div class="qr-wrapper" id="qrModalTarget"></div>
+  <p style="color:#cbd5e1; font-size:14px;">Klik di mana saja untuk menutup</p>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getDatabase, ref, onValue, set, remove, push, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
@@ -249,20 +245,27 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  const params = new URLSearchParams(location.search);
-  const roomId = (params.get('room') || 'CCA2026').toUpperCase();
-  document.getElementById('roomIdLabel').textContent = roomId;
-
+  let roomId = '';
   let serverOffset = 0;
-  onValue(ref(db, '.info/serverTimeOffset'), snap => { serverOffset = snap.val() || 0; });
-  const serverNow = () => Date.now() + serverOffset;
-
   let timerInterval = null;
   let lastTickSecond = -1;
   let playerListenerRef = null;
-  let isTimerHidden = false; // Menyimpan status pop-up disembunyikan manual
+  let isTimerHidden = false;
 
-  // SISTEM SUARA HOST
+  // FUNGSI OVERLAY
+  window.sembunyikanTimer = () => {
+    document.getElementById('timerOverlay').style.display = 'none';
+    document.getElementById('btnShowTimer').style.display = 'inline-block';
+    isTimerHidden = true;
+  };
+
+  window.tampilkanTimer = () => {
+    document.getElementById('timerOverlay').style.display = 'flex';
+    document.getElementById('btnShowTimer').style.display = 'none';
+    isTimerHidden = false;
+  };
+
+  // SUARA
   let actx;
   document.addEventListener('click', () => {
     if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -301,9 +304,64 @@
     return url + 'player.html';
   }
 
-  signInAnonymously(auth).then(() => { initHost(); }).catch(e => alert('Gagal login: ' + e.message));
+  // AUTENTIKASI
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('loginScreen').style.display = 'none';
+      const savedRoom = sessionStorage.getItem('hostRoomId');
+      if (savedRoom) {
+        roomId = savedRoom;
+        mulaiHost();
+      } else {
+        document.getElementById('setupScreen').style.display = 'flex';
+      }
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('setupScreen').style.display = 'none';
+      document.getElementById('appContainer').style.display = 'none';
+    }
+  });
 
-  function initHost() {
+  window.prosesLogin = async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    
+    if (!email || !pass) { errEl.textContent = 'Email dan Password wajib diisi!'; errEl.style.display = 'block'; return; }
+    
+    try {
+      errEl.style.display = 'none';
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (e) {
+      errEl.textContent = 'Login Gagal: ' + (e.message.includes('auth/invalid-credential') ? 'Email atau Password salah.' : e.message);
+      errEl.style.display = 'block';
+    }
+  };
+
+  window.logoutHost = () => {
+    if (confirm('Logout dari Host?')) {
+      sessionStorage.removeItem('hostRoomId');
+      signOut(auth);
+    }
+  };
+
+  window.buatRoom = () => {
+    const newId = document.getElementById('newRoomId').value.trim().toUpperCase();
+    if (!newId) { alert('ID Room tidak boleh kosong!'); return; }
+    roomId = newId;
+    sessionStorage.setItem('hostRoomId', roomId);
+    document.getElementById('setupScreen').style.display = 'none';
+    mulaiHost();
+  };
+
+  // LOGIKA HOST UTAMA
+  function mulaiHost() {
+    document.getElementById('appContainer').style.display = 'flex';
+    document.getElementById('roomIdLabel').textContent = roomId;
+
+    onValue(ref(db, '.info/serverTimeOffset'), snap => { serverOffset = snap.val() || 0; });
+    const serverNow = () => Date.now() + serverOffset;
+
     generateQRs();
     loadDataPemain();
 
@@ -341,7 +399,6 @@
       const overlay = document.getElementById('timerOverlay');
       const btnShow = document.getElementById('btnShowTimer');
       
-      // Jika timer mati / di-reset
       if (!timer || !timer.running) { 
         overlay.style.display = 'none'; 
         btnShow.style.display = 'none';
@@ -350,14 +407,12 @@
         return; 
       }
       
-      // Jika timer menyala dari database, tampilkan pop-up KECUALI jika Host baru saja menyembunyikannya
       if (!isTimerHidden) {
         overlay.style.display = 'flex';
         btnShow.style.display = 'none';
       }
       
       overlay.classList.remove('urgent');
-      
       const endAt = timer.startedAt + timer.duration * 1000;
       
       timerInterval = setInterval(() => {
@@ -365,7 +420,6 @@
         const remainingSec = Math.ceil(remainingMs / 1000);
         
         document.getElementById('popupTimerValue').textContent = (remainingMs / 1000).toFixed(1);
-
         if (remainingMs <= 10000) overlay.classList.add('urgent');
 
         if (remainingMs <= 0) {
@@ -398,24 +452,7 @@
     });
   }
 
-  // ==========================================
-  // FUNGSI KONTROL POP-UP TIMER
-  // ==========================================
-  window.sembunyikanTimer = () => {
-    document.getElementById('timerOverlay').style.display = 'none';
-    document.getElementById('btnShowTimer').style.display = 'inline-block';
-    isTimerHidden = true;
-  };
-
-  window.tampilkanTimer = () => {
-    document.getElementById('timerOverlay').style.display = 'flex';
-    document.getElementById('btnShowTimer').style.display = 'none';
-    isTimerHidden = false;
-  };
-
-  // ==========================================
-  // FUNGSI SINKRONISASI & TOMBOL LAINNYA
-  // ==========================================
+  // FUNGSI SINKRON PEMAIN
   function loadDataPemain() {
     if (playerListenerRef) playerListenerRef();
     playerListenerRef = onValue(ref(db, `rooms/${roomId}/players`), snap => {
@@ -447,9 +484,25 @@
     setTimeout(() => { btn.textContent = '🔄 Paksa Sinkron'; }, 800);
   };
 
-  window.bukaBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
-  window.tutupBuzzer = async () => { await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); };
-  window.resetBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
+  // ==========================================
+  // PERBAIKAN: BUZZER DISESUAIKAN DENGAN RULES
+  // ==========================================
+  window.bukaBuzzer = async () => { 
+    // Hapus state. Pemain akan mendeteksi state kosong = buzzer terbuka.
+    await remove(ref(db, `rooms/${roomId}/state`)); 
+    // Opsional: Beri nilai false ke path buzzer jika nanti diperlukan
+    await set(ref(db, `rooms/${roomId}/buzzer`), { armed: false });
+  };
+
+  window.tutupBuzzer = async () => { 
+    await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); 
+    await set(ref(db, `rooms/${roomId}/buzzer`), { armed: true });
+  };
+
+  window.resetBuzzer = async () => { 
+    await remove(ref(db, `rooms/${roomId}/state`)); 
+    await remove(ref(db, `rooms/${roomId}/buzzer`));
+  };
   
   window.hapusPemain = async (playerKey) => {
     if(confirm('Keluarkan pemain ini?')) await remove(ref(db, `rooms/${roomId}/players/${playerKey}`));
@@ -461,13 +514,11 @@
     location.reload();
   };
 
-  window.exitHost = () => { if(confirm('Keluar?')) window.location.href = 'about:blank'; };
-
   window.startTimer = async () => {
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
     if (actx && actx.state === 'suspended') actx.resume();
-    isTimerHidden = false; // Paksa tampil saat start baru
-    await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: serverNow(), duration: dur });
+    isTimerHidden = false;
+    await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: Date.now() + serverOffset, duration: dur });
   };
   
   window.stopTimer = async () => { await remove(ref(db, `rooms/${roomId}/timer`)); };
