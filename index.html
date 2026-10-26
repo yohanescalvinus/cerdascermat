@@ -273,7 +273,7 @@ import { getDatabase, ref, onValue, set, remove, get, push, serverTimestamp,
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 /* ============================================================
-   🔥 GANTI BLOK INI DENGAN firebaseConfig ANDA (Langkah 6)
+   🔥 GANTI BLOK INI DENGAN firebaseConfig ANDA
    ============================================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
@@ -290,12 +290,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
+/* ---------- Server time offset (aman untuk timer) ---------- */
 let serverOffset = 0;
-onValue(ref(db, '.info/serverTimeOffset'), s => serverOffset = s.val() || 0);
-const serverNow = () => Date.now() + serverOffset;
+onValue(ref(db, '.info/serverTimeOffset'), s => {
+  serverOffset = Number(s.val()) || 0;
+});
+const serverNow = () => Date.now() + (serverOffset || 0);
 
+/* ---------- State global ---------- */
 let roomId = localStorage.getItem('cc_room') || '';
-let teamCount = parseInt(localStorage.getItem('cc_team_count') || '0') || 0;
+let teamCount = parseInt(localStorage.getItem('cc_team_count') || '0', 10) || 0;
 let user = null;
 let fastestState = null;
 let playersData = {};
@@ -307,6 +311,7 @@ let chatOpen = false;
 let lastChatCount = 0;
 let unreadChat = 0;
 
+/* ---------- Theme ---------- */
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
   localStorage.setItem('cc_theme_host', t);
@@ -319,6 +324,7 @@ window.toggleTheme = () => {
 };
 applyTheme(localStorage.getItem('cc_theme_host') || 'dark');
 
+/* ---------- Auth ---------- */
 window.login = async () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('password').value;
@@ -338,9 +344,12 @@ onAuthStateChanged(auth, u => {
   } else {
     document.getElementById('settingsView').style.display = 'none';
     document.getElementById('hostView').style.display = 'none';
+    listenersReady = false;
+    clearInterval(timerInterval);
   }
 });
 
+/* ---------- Settings view ---------- */
 function showSettingsView(){
   document.getElementById('settingsView').style.display = 'block';
   document.getElementById('hostView').style.display = 'none';
@@ -360,6 +369,7 @@ function updateRoomPreview(){
 }
 window.openSettings = () => showSettingsView();
 
+/* ---------- Host view ---------- */
 function showHostView(){
   document.getElementById('settingsView').style.display = 'none';
   document.getElementById('hostView').style.display = 'block';
@@ -375,7 +385,7 @@ function showHostView(){
 window.saveSettings = async () => {
   const msg = document.getElementById('settingsMsg');
   const newRoom = document.getElementById('settingRoomId').value.trim().toLowerCase();
-  const newTeams = parseInt(document.getElementById('settingTeamCount').value) || 0;
+  const newTeams = parseInt(document.getElementById('settingTeamCount').value, 10) || 0;
   msg.className = 'err';
 
   if (!/^[a-z0-9]{3,20}$/.test(newRoom)){
@@ -396,13 +406,13 @@ window.saveSettings = async () => {
   roomId = newRoom;
   teamCount = newTeams;
   localStorage.setItem('cc_room', roomId);
-  localStorage.setItem('cc_team_count', teamCount);
+  localStorage.setItem('cc_team_count', String(teamCount));
   listenersReady = false;
   showHostView();
 };
 
+/* ---------- Listeners ---------- */
 function initListeners(){
-  // Reset state lokal saat (re)init
   fastestState = null;
   playersData = {};
   buzzerState = { armed: false };
@@ -418,15 +428,21 @@ function initListeners(){
     renderFastest();
     renderBuzzerStatus();
   });
+
   onValue(ref(db, `rooms/${roomId}/players`), snap => {
     playersData = snap.val() || {};
     renderPlayers();
   });
-  onValue(ref(db, `rooms/${roomId}/timer`), snap => startCountdown(snap.val()));
+
+  onValue(ref(db, `rooms/${roomId}/timer`), snap => {
+    startCountdown(snap.val());
+  });
+
   onValue(ref(db, `rooms/${roomId}/buzzer`), snap => {
     buzzerState = snap.val() || { armed: false };
     renderBuzzerStatus();
   });
+
   onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(100)), snap => {
     const data = snap.val() || {};
     const msgs = Object.entries(data).map(([k,v]) => ({key:k, ...v}))
@@ -435,6 +451,7 @@ function initListeners(){
   });
 }
 
+/* ---------- Render helpers ---------- */
 function renderFastest(){
   const el = document.getElementById('fastestDisplay');
   if (!fastestState || !fastestState.locked){
@@ -444,6 +461,7 @@ function renderFastest(){
   el.innerHTML = `<div style="font-size:22px;font-weight:900;color:var(--green)">
     🏆 Tim ${fastestState.team} — ${esc(fastestState.name)}</div>`;
 }
+
 function renderBuzzerStatus(){
   const s = document.getElementById('buzzerStatus');
   const t = document.getElementById('buzzerText');
@@ -452,12 +470,13 @@ function renderBuzzerStatus(){
   else if (buzzerState.armed){ s.classList.add('armed'); t.textContent = 'TERBUKA — pemain bisa menekan'; }
   else { t.textContent = 'TERTUTUP'; }
 }
+
 function renderPlayers(){
   const perTim = {};
   Object.values(playersData).forEach(p => (perTim[p.team] ||= []).push(p.name));
   const allTeams = new Set();
   for (let t=1; t<=teamCount; t++) allTeams.add(t);
-  Object.keys(perTim).forEach(t => allTeams.add(parseInt(t)));
+  Object.keys(perTim).forEach(t => allTeams.add(parseInt(t, 10)));
   const sorted = Array.from(allTeams).sort((a,b) => a-b);
   const html = sorted.map(t => {
     const names = perTim[t] || [];
@@ -471,11 +490,11 @@ function renderPlayers(){
   });
   document.getElementById('playersList').innerHTML = html.join('');
 }
+
 function renderQRs(){
   const c = document.getElementById('qrList');
   c.innerHTML = '';
 
-  // Cek apakah library lokal berhasil dimuat
   if (typeof QRCode === 'undefined') {
     c.innerHTML = '<div style="color:var(--red);grid-column:1/-1;padding:10px;">Gagal memuat library QR lokal (qrcode.min.js). Pastikan file sudah di-upload di folder yang sama.</div>';
     return;
@@ -511,6 +530,7 @@ function renderQRs(){
     }
   }
 }
+
 function renderChat(msgs){
   const el = document.getElementById('chatList');
   if (!el) return;
@@ -532,6 +552,7 @@ function renderChat(msgs){
     }
   }
 }
+
 window.toggleChat = () => {
   chatOpen = !chatOpen;
   const drawer = document.getElementById('chatDrawer');
@@ -548,6 +569,7 @@ window.toggleChat = () => {
     }, 300);
   }
 };
+
 function updateUnreadBadge(){
   const badge = document.getElementById('chatUnread');
   if (!badge) return;
@@ -555,20 +577,35 @@ function updateUnreadBadge(){
   else { badge.style.display = 'none'; }
 }
 
+/* ---------- Timer ---------- */
 function startCountdown(timer){
   clearInterval(timerInterval);
   const el = document.getElementById('timerDisplay');
+
   if (!timer || !timer.running || !timer.startedAt){
-    el.textContent = '—'; el.className = 'timer-display'; return;
+    el.textContent = '—';
+    el.className = 'timer-display';
+    return;
   }
-  const endAt = timer.startedAt + timer.duration * 1000;
+
+  const startedAt = Number(timer.startedAt);
+  const duration  = Number(timer.duration);
+  if (!Number.isFinite(startedAt) || !Number.isFinite(duration) || duration <= 0){
+    el.textContent = '—';
+    el.className = 'timer-display';
+    console.warn('Timer data invalid:', timer);
+    return;
+  }
+
+  const endAt = startedAt + duration * 1000;
   const tick = () => {
     const remaining = Math.max(0, endAt - serverNow());
     el.textContent = (remaining/1000).toFixed(1);
     el.className = 'timer-display';
     if (remaining < 5000) el.classList.add('urgent');
     if (remaining <= 0){
-      el.textContent = 'TIME UP!'; el.classList.add('done');
+      el.textContent = 'TIME UP!';
+      el.classList.add('done');
       clearInterval(timerInterval);
       playTimeUp();
     }
@@ -576,12 +613,36 @@ function startCountdown(timer){
   tick();
   timerInterval = setInterval(tick, 100);
 }
+
 window.startTimer = async () => {
-  const dur = parseInt(document.getElementById('duration').value) || 30;
-  await set(ref(db, `rooms/${roomId}/timer`), { running: true, duration: dur, startedAt: serverTimestamp() });
+  const dur = parseInt(document.getElementById('duration').value, 10) || 30;
+  try {
+    await update(ref(db, `rooms/${roomId}/timer`), {
+      running: true,
+      duration: dur,
+      startedAt: serverTimestamp()
+    });
+  } catch (e) {
+    console.error('startTimer error:', e);
+    alert('Gagal start timer: ' + e.message);
+  }
 };
-window.stopTimer = async () => update(ref(db, `rooms/${roomId}/timer`), {running:false});
-window.resetTimer = async () => remove(ref(db, `rooms/${roomId}/timer`));
+
+window.stopTimer = async () => {
+  try {
+    await update(ref(db, `rooms/${roomId}/timer`), { running: false });
+  } catch (e) {
+    console.error('stopTimer error:', e);
+  }
+};
+
+window.resetTimer = async () => {
+  clearInterval(timerInterval);
+  try { await remove(ref(db, `rooms/${roomId}/timer`)); }
+  catch (e){ console.error('resetTimer error:', e); }
+};
+
+/* ---------- Buzzer & state ---------- */
 window.armBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:true, armedAt: serverTimestamp()});
 window.disarmBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
 window.resetState = async () => remove(ref(db, `rooms/${roomId}/state`));
@@ -598,6 +659,8 @@ window.lanjutkanGame = async () => {
   hideFastestPopup();
   await remove(ref(db, `rooms/${roomId}/state`));
 };
+
+/* ---------- Chat kirim ---------- */
 window.kirimChat = async () => {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
@@ -611,6 +674,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && chatOpen) toggleChat();
 });
 
+/* ---------- Suara ---------- */
 let actx;
 function getAC(){
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -646,6 +710,8 @@ function playTimeUp(){
     [880, 660, 440].forEach((f, i) => note(ctx, f, now + i*0.18, 0.35, 0.5));
   } catch(e){}
 }
+
+/* ---------- Escaper ---------- */
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
 </script>
 </body>
