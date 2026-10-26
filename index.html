@@ -8,8 +8,8 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
   :root {
-    --bg-main: #e2e8f0; /* Latar belakang abu kebiruan */
-    --bg-panel: rgba(255, 255, 255, 0.7); /* Efek kaca */
+    --bg-main: #e2e8f0; 
+    --bg-panel: rgba(255, 255, 255, 0.7); 
     --bg-card: #ffffff;
     --text-main: #1e293b; --text-muted: #64748b; --border-color: #cbd5e1;
     --tim1: #ef4444; --tim2: #3b82f6; --tim3: #22c55e; --tim4: #a855f7;
@@ -17,7 +17,6 @@
     --blue-theme: #0ea5e9;
   }
 
-  /* Efek Background Awan / Gradient */
   body {
     height: 100vh; width: 100vw; overflow: hidden; 
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -51,7 +50,6 @@
   /* PANEL HOST UTAMA */
   #appContainer { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
   
-  /* HEADER GAYA BARU */
   .header {
     display: flex; justify-content: space-between; align-items: center;
     background: var(--bg-panel); backdrop-filter: blur(10px);
@@ -62,7 +60,6 @@
   .header h1 span { color: var(--blue-theme); }
   
   .header-actions { display: flex; gap: 8px; align-items: center; }
-  /* Tombol header dengan ikon dan teks di bawahnya */
   .btn-header { 
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     background: transparent; border: none; cursor: pointer; font-weight: 600; 
@@ -76,7 +73,6 @@
   .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
   .column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
   
-  /* GAYA PANEL KACA */
   .panel {
     background: var(--bg-panel); backdrop-filter: blur(10px);
     border-radius: 16px; padding: 16px;
@@ -85,7 +81,7 @@
   }
   .panel-title { font-size: 13px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;}
 
-  /* TIMER PANEL GAYA BARU */
+  /* TIMER PANEL */
   .timer-panel { flex: 0 0 auto; }
   
   .btn-maximize {
@@ -96,28 +92,31 @@
   }
   .btn-maximize:hover { background: #ffffff; color: var(--blue-theme); }
 
-  /* Container untuk menampilkan Timer di Panel */
-  .main-timer-display {
-    text-align: center; font-size: 64px; font-weight: 900; color: var(--text-main);
-    font-variant-numeric: tabular-nums; letter-spacing: 2px; line-height: 1;
-    margin: 10px 0 5px 0;
+  /* Desain Input Waktu Inline */
+  .time-input-group { 
+    display: flex; gap: 5px; align-items: center; justify-content: center; 
+    margin: 5px 0; 
   }
-  .time-labels { 
-    display: flex; justify-content: center; gap: 25px; font-size: 11px; 
-    font-weight: 800; color: #94a3b8; letter-spacing: 1px; margin-bottom: 15px;
-  }
-
-  /* Input Waktu (Disembunyikan, muncul saat edit) */
-  .time-input-group { display: none; gap: 10px; justify-content: center; margin-bottom: 15px; }
-  .time-input-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .time-input-box { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  
+  /* Input transparan yang berfungsi sebagai tampilan sekaligus input */
   .time-input-box input {
-    width: 60px; height: 50px; text-align: center; font-size: 24px; font-weight: 900;
-    border-radius: 8px; border: 1px solid var(--border-color); background: #ffffff; color: var(--text-main);
+    width: 80px; height: 60px; text-align: center; font-size: 40px; font-weight: 900;
+    border-radius: 10px; border: 2px solid transparent; background: transparent; color: var(--text-main);
+    padding: 0; transition: 0.2s; outline: none;
   }
-  .time-input-box span { font-size: 11px; font-weight: bold; color: var(--text-muted); }
+  .time-input-box input:hover:not(:disabled) { border-color: #cbd5e1; background: #ffffff; cursor: text;}
+  .time-input-box input:focus:not(:disabled) { background: #ffffff; border-color: var(--blue-theme); box-shadow: 0 0 10px rgba(14,165,233,0.2);}
+  
+  /* Saat berjalan, warna berubah */
+  .time-input-box input:disabled { color: var(--blue-theme); cursor: default; opacity: 1;}
+  .time-input-box input.urgent { color: #ef4444; }
+  
+  .time-input-box span { font-size: 10px; font-weight: 800; color: #94a3b8; letter-spacing: 1px;}
+  .time-colon { font-size: 40px; font-weight: 900; color: var(--text-main); margin-top: -15px;}
 
-  /* Tombol Ikon Play, Pause, Stop (Gaya Glass) */
-  .timer-controls { display: flex; gap: 12px; justify-content: center; }
+  /* Tombol Ikon Play, Pause, Stop */
+  .timer-controls { display: flex; gap: 12px; justify-content: center; margin-top: 5px;}
   .btn-icon {
     width: 60px; height: 45px; border-radius: 12px; border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
@@ -128,11 +127,9 @@
   .btn-icon.play { background: #34d399; color: white; }
   .btn-icon.pause { background: #fbbf24; color: white; }
   .btn-icon.stop { background: #f87171; color: white; }
-  
-  /* Ikon SVG sederhana */
   .icon-svg { width: 20px; height: 20px; fill: currentColor; }
 
-  /* BUZZER GAYA BARU */
+  /* BUZZER */
   .buzzer-panel { flex: 0 0 auto; }
   .buzzer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;}
   .buzzer-status { font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; text-transform: uppercase;}
@@ -151,7 +148,7 @@
   .btn-ctrl.tutup { background: #fbbf24; }
   .btn-ctrl.reset { background: #f87171; }
 
-  /* PEMAIN GAYA BARU */
+  /* PEMAIN */
   .player-panel { flex: 1; overflow: hidden; }
   .player-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 6px; flex: 1; margin-top: 5px;}
   .player-row { background: rgba(255,255,255,0.6); padding: 10px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; border: 1px solid rgba(255,255,255,0.9); }
@@ -187,9 +184,7 @@
   .chat-input input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6); color: var(--text-main); font-size: 14px; outline: none;}
   .chat-input button { border-radius: 8px; border: none; background: var(--blue-theme); color: white; padding: 0 20px; font-weight: bold; cursor: pointer;}
 
-  /* ========================================== */
-  /* POP-UP PEMENANG & TIMER                    */
-  /* ========================================== */
+  /* POPUPS */
   #winnerPopup {
     display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
     background: #ffffff; padding: 40px 60px; border-radius: 24px;
@@ -280,32 +275,25 @@
   <div class="grid-container">
     <div class="column">
       
-      <!-- TIMER PANEL GAYA BARU -->
+      <!-- TIMER PANEL YANG BISA DIEDIT LANGSUNG -->
       <div class="panel timer-panel">
         <button class="btn-maximize" onclick="tampilkanTimer()" title="Tampilkan Pop-up">⛶</button>
         <p class="panel-title">⏱ Timer Kuis</p>
         
-        <!-- Tampilan Angka Timer (Berjalan Mundur) -->
-        <div class="main-timer-display" id="mainTimerDisplay">00:00:30</div>
-        <div class="time-labels">
-          <span>JAM</span>
-          <span>MENIT</span>
-          <span>DETIK</span>
-        </div>
-        
-        <!-- Input Waktu (Tersembunyi, hanya muncul jika diklik) -->
-        <div class="time-input-group" id="timeInputGroup">
+        <div class="time-input-group">
           <div class="time-input-box">
-            <input type="number" id="timerHour" value="0" min="0" max="99">
-            <span>Jam</span>
+            <input type="text" id="timerHour" value="00" maxlength="2" oninput="validateInput(this, 99)">
+            <span>JAM</span>
           </div>
+          <div class="time-colon">:</div>
           <div class="time-input-box">
-            <input type="number" id="timerMin" value="0" min="0" max="59">
-            <span>Menit</span>
+            <input type="text" id="timerMin" value="00" maxlength="2" oninput="validateInput(this, 59)">
+            <span>MENIT</span>
           </div>
+          <div class="time-colon">:</div>
           <div class="time-input-box">
-            <input type="number" id="timerSec" value="30" min="0" max="59">
-            <span>Detik</span>
+            <input type="text" id="timerSec" value="30" maxlength="2" oninput="validateInput(this, 59)">
+            <span>DETIK</span>
           </div>
         </div>
         
@@ -322,7 +310,7 @@
         </div>
       </div>
 
-      <!-- BUZZER PANEL GAYA BARU -->
+      <!-- BUZZER PANEL -->
       <div class="panel buzzer-panel">
         <div class="buzzer-header">
           <p class="panel-title" style="margin:0;">⚠ Tombol Cepat (Buzzer)</p>
@@ -381,7 +369,7 @@
     </div>
   </div>
   <div class="timer-content">
-    <div id="popupTimerValue">00:00:30</div>
+    <div id="popupTimerValue">00:30</div>
   </div>
 </div>
 
@@ -454,6 +442,14 @@
   function setTranslate(xPos, yPos, el) {
     el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
   }
+
+  // Validasi Input Angka (Maksimal 2 digit dan menyesuaikan max)
+  window.validateInput = (el, max) => {
+    let val = parseInt(el.value) || 0;
+    if (val > max) val = max;
+    if (val < 0) val = 0;
+    el.value = val.toString().padStart(2, '0');
+  };
 
   const isLoggedIn = sessionStorage.getItem('isHostLoggedIn');
   
@@ -564,6 +560,11 @@
       overlay.classList.remove('urgent');
       const endAt = timer.startedAt + timer.duration * 1000;
       
+      // Matikan edit pada input saat timer berjalan
+      document.getElementById('timerHour').disabled = true;
+      document.getElementById('timerMin').disabled = true;
+      document.getElementById('timerSec').disabled = true;
+      
       timerInterval = setInterval(() => {
         if (isPaused) return;
 
@@ -575,24 +576,33 @@
         const m = Math.floor((remainingMs % 3600000) / 60000);
         const s = Math.floor((remainingMs % 60000) / 1000);
         
-        let timeString = "";
-        if (h > 0) {
-           timeString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        } else {
-           timeString = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
+        // Update langsung ke kotak input
+        document.getElementById('timerHour').value = h.toString().padStart(2, '0');
+        document.getElementById('timerMin').value = m.toString().padStart(2, '0');
+        document.getElementById('timerSec').value = s.toString().padStart(2, '0');
         
-        // UPDATE MAIN PANEL TIMER & POPUP
-        document.getElementById('mainTimerDisplay').textContent = timeString;
+        let timeString = (h > 0) 
+           ? `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+           : `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
         document.getElementById('popupTimerValue').textContent = timeString;
 
-        if (remainingMs <= 10000) overlay.classList.add('urgent');
+        if (remainingMs <= 10000) {
+          overlay.classList.add('urgent');
+          document.getElementById('timerSec').classList.add('urgent');
+        } else {
+          document.getElementById('timerSec').classList.remove('urgent');
+        }
 
         if (remainingMs <= 0) {
           clearInterval(timerInterval);
-          document.getElementById('mainTimerDisplay').textContent = (h > 0) ? '00:00:00' : '00:00';
           document.getElementById('popupTimerValue').textContent = (h > 0) ? '00:00:00' : '00:00';
           playSound(200, 0.8, 1.0, 'sawtooth');
+          
+          // Kembalikan mode edit
+          document.getElementById('timerHour').disabled = false;
+          document.getElementById('timerMin').disabled = false;
+          document.getElementById('timerSec').disabled = false;
           return;
         }
 
@@ -785,11 +795,6 @@
     
     if (actx && actx.state === 'suspended') actx.resume();
     
-    // Sembunyikan input, tampilkan timer berjalan
-    document.getElementById('timeInputGroup').style.display = 'none';
-    document.getElementById('mainTimerDisplay').style.display = 'block';
-    document.querySelector('.time-labels').style.display = 'flex';
-
     if (isPaused) {
       const newStartedAt = Date.now() + serverOffset - (dur * 1000) + pausedTimeRemaining;
       await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: newStartedAt, duration: dur });
@@ -804,18 +809,12 @@
   
   window.pauseTimer = () => {
     if (isPaused) return;
-    const popupVal = document.getElementById('popupTimerValue').textContent; 
-    const parts = popupVal.split(':');
-    if (parts.length === 3) {
-      const h = parseInt(parts[0]) || 0;
-      const m = parseInt(parts[1]) || 0;
-      const s = parseInt(parts[2]) || 0;
-      pausedTimeRemaining = (h * 3600000) + (m * 60000) + (s * 1000); 
-    } else if (parts.length === 2) {
-      const m = parseInt(parts[0]) || 0;
-      const s = parseInt(parts[1]) || 0;
-      pausedTimeRemaining = (m * 60000) + (s * 1000); 
-    }
+    
+    const h = parseInt(document.getElementById('timerHour').value) || 0;
+    const m = parseInt(document.getElementById('timerMin').value) || 0;
+    const s = parseInt(document.getElementById('timerSec').value) || 0;
+    pausedTimeRemaining = (h * 3600000) + (m * 60000) + (s * 1000); 
+    
     isPaused = true;
   };
 
@@ -824,13 +823,18 @@
     minimizeTimer(); 
     isPaused = false;
     
-    // Kembalikan tampilan ke input waktu
-    document.getElementById('mainTimerDisplay').style.display = 'none';
-    document.querySelector('.time-labels').style.display = 'none';
-    document.getElementById('timeInputGroup').style.display = 'flex';
+    // Kembalikan mode edit
+    document.getElementById('timerHour').disabled = false;
+    document.getElementById('timerMin').disabled = false;
+    document.getElementById('timerSec').disabled = false;
+    document.getElementById('timerSec').classList.remove('urgent');
 
-    document.getElementById('mainTimerDisplay').textContent = '00:00';
     document.getElementById('popupTimerValue').textContent = '00:00';
+    
+    // Set nilai input ke default (30 detik)
+    document.getElementById('timerHour').value = '00';
+    document.getElementById('timerMin').value = '00';
+    document.getElementById('timerSec').value = '30';
   };
 
   window.kirimChatHost = async () => {
