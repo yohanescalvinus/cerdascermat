@@ -64,6 +64,7 @@
   }
   .timer-player.urgent { color: #ef4444; transform: scale(1.15); font-weight: 900;}
   .timer-player.done { color: #ef4444; }
+  .timer-player.paused { color: #f59e0b; opacity: 0.8; }
 
   .push-btn {
     width: 100%; max-width: 320px;
@@ -79,7 +80,7 @@
   .push-btn.winner  { background: #22c55e; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3); }
   .push-btn.loser   { background: #94a3b8; box-shadow: none; }
 
-  .status { text-align: center; font-size: 15px; font-weight: 600; color: var(--text-muted); padding: 0 8px; }
+  .status { text-align: center; font-size: 15px; font-weight: 600; color: var(--text-muted); padding: 0 8px; min-height: 20px;}
 
   .chat-section { 
     display: flex; flex-direction: column; 
@@ -169,6 +170,7 @@
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
   let lastTickSecond = -1;
+  let globalTimerState = null; // Menyimpan data timer dari database
 
   let actx;
   function initAudio() {
@@ -237,14 +239,10 @@
 
       const playerRef = ref(db, `rooms/${roomId}/players/${myPlayerKey}`);
       
-      // Daftarkan Pemain
       await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
       
-      // FITUR ONVALUE: Deteksi langsung jika Host menghapus pemain
-      // Kita pantau apakah data pemain ini masih ada di Firebase
       onValue(playerRef, (snap) => {
         if (!snap.exists()) {
-          // Jika data tiba-tiba hilang (Host menekan tombol X)
           alert('Anda telah dikeluarkan dari room oleh Host.');
           localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
           sessionStorage.clear();
@@ -273,7 +271,11 @@
           updateStateFromServer();
         });
 
-        onValue(ref(db, `rooms/${roomId}/timer`), snap => { startCountdown(snap.val()); });
+        // TIMER LISTENER
+        onValue(ref(db, `rooms/${roomId}/timer`), snap => { 
+          globalTimerState = snap.val();
+          startCountdown(); 
+        });
         
         onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
           const data = snap.val() || {};
@@ -326,13 +328,15 @@
 
   document.getElementById('btn').addEventListener('click', () => window.tekan());
 
-  function startCountdown(timer) {
+  // FUNGSI TIMER DENGAN FITUR PAUSE & FORMAT JAM
+  function startCountdown() {
     clearInterval(timerInterval);
     const el = document.getElementById('timerPlayer');
+    const timer = globalTimerState;
     
     if (!timer || !timer.running) { 
       el.textContent = '—'; 
-      el.classList.remove('urgent','done'); 
+      el.classList.remove('urgent','done', 'paused'); 
       lastTickSecond = -1;
       return; 
     }
@@ -340,10 +344,27 @@
     const endAt = timer.startedAt + timer.duration * 1000;
     
     timerInterval = setInterval(() => {
+      // JIKA HOST MENEKAN PAUSE, TAMPILAN MEMBEKU
+      if (timer.isPaused) {
+        el.classList.add('paused');
+        return; // Jangan hitung waktu, jangan bunyi bip
+      } else {
+        el.classList.remove('paused');
+      }
+
       const remainingMs = Math.max(0, endAt - serverNow());
-      el.textContent = (remainingMs / 1000).toFixed(1);
-      
       const remainingSec = Math.ceil(remainingMs / 1000);
+      
+      // Format HH:MM:SS atau MM:SS
+      const h = Math.floor(remainingMs / 3600000);
+      const m = Math.floor((remainingMs % 3600000) / 60000);
+      const s = Math.floor((remainingMs % 60000) / 1000);
+      
+      let timeString = (h > 0) 
+        ? `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+        : `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+      el.textContent = timeString;
 
       if (remainingMs <= 10000) {
         el.classList.add('urgent');
