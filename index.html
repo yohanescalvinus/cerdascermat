@@ -2,240 +2,294 @@
 <html lang="id" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Pemain • Cerdas Cermat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Host • Cerdas Cermat</title>
+<script src="qrcode.min.js"></script>
 <style>
   :root, [data-theme="dark"]{
-    --bg-1:#1e293b; --bg-2:#070d19;
+    --bg:#0b1120; --bg-grad-1:#1e293b; --bg-grad-2:#0b1120;
     --card:#1e293b; --card-2:#0b1120; --line:#334155;
     --text:#e2e8f0; --muted:#94a3b8;
-    --blue:#2563eb; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+    --blue:#38bdf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
   }
   [data-theme="light"]{
-    --bg-1:#e5e7eb; --bg-2:#f3f4f6;
-    --card:#f9fafb; --card-2:#ffffff; --line:#d1d5db;
+    --bg:#e5e7eb; --bg-grad-1:#f3f4f6; --bg-grad-2:#d1d5db; /* Crem/Abu soft */
+    --card:#f9fafb; --card-2:#f3f4f6; --line:#d1d5db;
     --text:#1f2937; --muted:#6b7280;
     --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html, body {
-    height:100%; height:100dvh; margin:0; padding:0;
-    overflow:hidden; overscroll-behavior:none;
-    user-select:none; -webkit-user-select:none;
-    font-family:system-ui,Segoe UI,Roboto,sans-serif;
-    background:radial-gradient(circle at 50% 20%, var(--bg-1), var(--bg-2) 70%);
-    color:var(--text); transition:background .3s, color .3s;
-  }
-  .center-panel{max-width:340px;margin:12vh auto;background:var(--card);
-    padding:24px;border-radius:16px;border:1px solid var(--line);text-align:center}
-  .center-panel h1{font-size:18px;margin:0 0 16px}
-  .center-panel input{width:100%;margin-bottom:14px;padding:14px;border-radius:10px;
-    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:16px;text-align:center}
-  .center-panel button{width:100%;padding:14px;border-radius:10px;border:none;
-    background:var(--blue);color:#fff;font-weight:700;font-size:16px;cursor:pointer}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;
+    padding:clamp(10px,2vw,16px);
+    background:radial-gradient(circle at top,var(--bg-grad-1),var(--bg-grad-2) 70%);
+    color:var(--text);min-height:100dvh;transition:background .3s,color .3s; overflow-x: hidden;}
+  
+  h1{font-size:clamp(18px,2.5vw,22px);margin:0 0 4px}
+  h2{font-size:clamp(11px,1.4vw,13px);margin:0 0 10px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1px; font-weight: 700;}
 
-  #mainView{
-    display:flex; flex-direction:column; height:100dvh;
-    padding:max(6px, env(safe-area-inset-top)) 8px max(6px, env(safe-area-inset-bottom)) 8px;
-    gap:6px; overflow:hidden;
-  }
-  header{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:6px 10px; background:var(--card); border:1px solid var(--line);
-    border-radius:10px; font-size:12px; flex-shrink:0;
-  }
-  #identity{font-weight:700; font-size:clamp(12px, 3.2vw, 14px)}
-  .hdr-actions{display:flex; gap:6px}
-  .hdr-actions button{
-    width:32px; height:32px; border-radius:8px; border:1px solid var(--line);
-    background:var(--line); color:var(--text); font-size:14px; cursor:pointer;
-    padding:0; display:flex; align-items:center; justify-content:center;
-  }
-  #timerPlayer{
-    text-align:center; font-family:ui-monospace,Consolas,monospace;
-    font-size:clamp(24px, 8vmin, 48px); font-weight:900; color:var(--green);
-    padding:4px; flex-shrink:0; line-height:1.1;
-  }
-  #timerPlayer.urgent{color:var(--amber)}
-  #timerPlayer.done{color:var(--red); font-size:clamp(18px, 5vmin, 28px)}
+  .center-panel{max-width:420px;margin:8vh auto;background:var(--card);
+    padding:28px;border-radius:16px;border:1px solid var(--line);transition:.3s}
+  .center-panel label{display:block;font-size:13px;color:var(--muted);
+    margin-bottom:6px;font-weight:600;letter-spacing:.5px}
+  .center-panel input{width:100%;margin-bottom:14px;padding:12px;border-radius:10px;
+    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:15px;font-family:inherit}
+  .center-panel input.mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:1px;text-transform:lowercase}
+  .center-panel input:focus{outline:2px solid var(--blue);outline-offset:0}
+  .center-panel button{width:100%;padding:12px;border-radius:10px;border:none;
+    background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+  .center-panel button:disabled{opacity:.5;cursor:not-allowed}
+  .hint{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px;line-height:1.4}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
 
-  .btn-container{
-    flex:1 1 auto; min-height:0; min-width:0;
-    display:flex; align-items:center; justify-content:center; overflow:hidden;
-  }
-  .push-btn{
-    aspect-ratio:1/1; max-width:100%; max-height:100%; width:auto; height:auto;
-    min-width:120px; min-height:120px;
-    border-radius:50%; border:clamp(5px, 1.5vmin, 9px) solid #1d4ed8;
-    background:radial-gradient(circle at 35% 30%, #60a5fa, #2563eb 60%, #1e40af);
-    color:#fff; font-size:clamp(24px, 8vmin, 48px); font-weight:900; letter-spacing:2px;
-    cursor:pointer; touch-action:manipulation;
-    transition:transform .08s, background .25s, border-color .25s, box-shadow .25s;
-    box-shadow:0 12px 40px rgba(37,99,235,.45), inset 0 -10px 24px rgba(0,0,0,.35);
-    padding:0; display:flex; align-items:center; justify-content:center;
-  }
-  .push-btn:active:not(:disabled){transform:scale(.96)}
-  .push-btn:disabled{cursor:not-allowed}
-  .push-btn.pressed{
-    border-color:#b45309;
-    background:radial-gradient(circle at 35% 30%, #fcd34d, #f59e0b 60%, #b45309);
-    box-shadow:0 12px 40px rgba(245,158,11,.5), inset 0 -10px 24px rgba(0,0,0,.35);
-  }
-  .push-btn.winner{
-    border-color:#4ade80;
-    background:radial-gradient(circle at 35% 30%, #86efac, #22c55e 60%, #15803d);
-    box-shadow:0 12px 40px rgba(34,197,94,.55), inset 0 -10px 24px rgba(0,0,0,.35);
-  }
-  .push-btn.loser{
-    border-color:#f87171;
-    background:radial-gradient(circle at 35% 30%, #fca5a5, #ef4444 60%, #991b1b);
-    box-shadow:0 12px 40px rgba(239,68,68,.5), inset 0 -10px 24px rgba(0,0,0,.35);
-  }
-  .push-btn.idle-off{
-    border-color:#475569;
-    background:radial-gradient(circle at 35% 30%, #64748b, #334155 60%, #1e293b);
-    box-shadow:0 8px 24px rgba(0,0,0,.4), inset 0 -8px 20px rgba(0,0,0,.35);
-  }
-  .status{
-    text-align:center; font-size:clamp(11px, 2.8vw, 14px);
-    color:var(--muted); min-height:1em; padding:0 8px; flex-shrink:0; line-height:1.2;
-  }
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    flex-wrap:wrap;padding:10px 16px;background:var(--card);border-radius:14px;
+    border:1px solid var(--line);margin-bottom:12px}
+  header .room-wrap{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  header .room{font-family:ui-monospace,Consolas,monospace;
+    font-size:clamp(16px,2.4vw,20px);font-weight:900;letter-spacing:2px;color:var(--blue)}
+  header .team-count{font-size:13px;color:var(--muted)}
+  header button{padding:8px 14px;border-radius:9px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px}
+  header button:hover{filter:brightness(1.15)}
 
-  .chat-fab{
-    position:fixed; right:max(12px, env(safe-area-inset-right));
-    bottom:max(12px, env(safe-area-inset-bottom));
-    width:56px; height:56px; border-radius:50%;
-    background:var(--blue); color:#fff; border:none; font-size:22px;
-    cursor:pointer; z-index:900; box-shadow:0 6px 20px rgba(0,0,0,.4);
-    display:flex; align-items:center; justify-content:center; transition:opacity .2s, transform .15s;
-  }
-  .chat-fab:active{transform:scale(.94)}
-  .chat-unread{
-    position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff;
-    min-width:22px; height:22px; border-radius:11px; font-size:11px; font-weight:700;
-    display:flex; align-items:center; justify-content:center; padding:0 6px;
-    border:2px solid var(--bg-2);
-  }
-  .chat-backdrop{
-    position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none;
-    transition:opacity .28s ease; z-index:950;
-  }
-  .chat-backdrop.show{opacity:1; pointer-events:auto}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:clamp(10px,1.5vw,14px);margin-bottom:12px;transition:.3s}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .row input[type=number]{width:70px;padding:8px;border-radius:9px;
+    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:14px}
+  .panel button{padding:8px 12px;border-radius:9px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px;transition:.15s}
+  .panel button:hover{filter:brightness(1.15)}
+  .panel button.primary{background:var(--blue);color:#fff;border:none}
+  .panel button.success{background:var(--green);color:#fff;border:none}
+  .panel button.danger{background:var(--red);color:#fff;border:none}
+  .panel button:disabled{opacity:.4;cursor:not-allowed;filter:none}
 
-  .chat-drawer{
-    position:fixed; left:0; right:0; bottom:0; width:100%;
-    height:min(85dvh, 720px); background:var(--card);
-    border-top:1px solid var(--line);
-    border-top-left-radius:20px; border-top-right-radius:20px;
-    transform:translateY(100%);
-    transition:transform .32s cubic-bezier(.4,0,.2,1);
-    z-index:960; display:flex; flex-direction:column;
-    box-shadow:0 -8px 32px rgba(0,0,0,.5);
-    padding-bottom:env(safe-area-inset-bottom);
-    will-change:transform;
+  .timer-display{font-family:ui-monospace,Consolas,monospace;
+    font-size:clamp(32px,5vw,48px);font-weight:900;text-align:center;
+    margin-top:8px;color:var(--green);letter-spacing:2px; line-height: 1;}
+  .timer-display.urgent{color:var(--amber)}
+  .timer-display.done{color:var(--red);font-size:clamp(24px,4vw,32px)}
+
+  .buzzer-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:8px 12px;border-radius:10px;background:var(--card-2);
+    border:2px dashed var(--line);font-weight:700;margin-bottom:10px; font-size: 13px;}
+  .buzzer-status.armed{border-color:var(--green);color:var(--green);animation:pulse 2s ease-in-out infinite}
+  .buzzer-status.locked{border-color:var(--amber);color:var(--amber)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+
+  .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
+    padding:8px;margin-bottom:6px}
+  .team-title{font-weight:700;font-size:14px;margin-bottom:2px}
+  .team-title .badge{font-size:10px;background:var(--line);padding:2px 6px;
+    border-radius:20px;margin-left:6px;font-weight:600}
+  .team-members{color:var(--muted);font-size:12px}
+
+  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+  .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
+    padding:8px;text-align:center}
+  .qr-label{font-weight:700;margin-bottom:4px;font-size:12px}
+  
+  .qr-canvas-container { display: flex; justify-content: center; align-items: center; }
+  .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; border-radius: 4px; }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
   }
-  .chat-drawer.open{transform:translateY(0)}
-  .chat-drawer.dragging{transition:none}
-  .chat-drawer-handle{
-    width:44px; height:5px; border-radius:3px;
-    background:var(--muted); opacity:.45; margin:10px auto 0;
-    flex-shrink:0; cursor:grab; touch-action:none;
-  }
-  .chat-drawer-header{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:12px 18px 14px; border-bottom:1px solid var(--line); flex-shrink:0;
-  }
-  .chat-drawer-header h3{margin:0; font-size:16px}
-  .chat-close{
-    width:32px; height:32px; border-radius:50%; border:none;
-    background:var(--line); color:var(--text); cursor:pointer; font-size:14px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .chat-list{flex:1; overflow-y:auto; background:transparent; padding:12px 16px; font-size:14px}
-  .chat-msg{padding:6px 0; border-bottom:1px solid var(--line)}
+  .dashboard-grid .full-width { grid-column: 1 / -1; }
+
+  .chat-panel { display: flex; flex-direction: column; height: 240px; }
+  .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
+    border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;font-size:12px}
+  .chat-msg{padding:4px 0;border-bottom:1px solid var(--line)}
   .chat-msg:last-child{border-bottom:none}
-  .chat-who{font-weight:700; color:var(--blue); font-size:12px; margin-bottom:2px}
-  .chat-msg.mine .chat-who{color:var(--green)}
-  .chat-text{color:var(--text); word-break:break-word}
-  .chat-time{font-size:10px; color:var(--muted); margin-left:6px}
-  .chat-input{
-    display:flex; gap:8px; padding:12px 16px max(14px, env(safe-area-inset-bottom));
-    border-top:1px solid var(--line); flex-shrink:0;
-  }
-  .chat-input input{
-    flex:1; padding:10px; border-radius:9px; border:1px solid var(--line);
-    background:var(--card-2); color:var(--text); font-size:14px; min-width:0;
-  }
-  .chat-input button{
-    padding:10px 16px; border-radius:9px; border:none;
-    background:var(--blue); color:#fff; font-weight:700; cursor:pointer; font-size:14px; flex-shrink:0;
-  }
-  .chat-toast{
-    position:fixed; top:max(8px, env(safe-area-inset-top));
-    left:50%; transform:translateX(-50%) translateY(-120%);
-    background:var(--card); border:1px solid var(--blue); border-radius:12px;
-    padding:10px 14px; color:var(--text); font-size:13px; max-width:88vw;
-    box-shadow:0 8px 24px rgba(0,0,0,.4); z-index:100;
-    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
-    pointer-events:none; text-align:center;
-  }
-  .chat-toast.show{transform:translateX(-50%) translateY(0)}
-  .chat-toast strong{color:var(--blue); display:block; font-size:11px; margin-bottom:2px}
+  .chat-who{font-weight:700;color:var(--blue);font-size:11px;margin-bottom:1px}
+  .chat-text{color:var(--text)}
+  .chat-time{font-size:9px;color:var(--muted);margin-left:4px}
+  .chat-input{display:flex;gap:6px}
+  .chat-input input{flex:1;padding:8px;border-radius:8px;border:1px solid var(--line);
+    background:var(--card-2);color:var(--text);font-size:12px;min-width:0}
+  .chat-input button{padding:8px 12px;border-radius:8px;border:none;
+    background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:12px;flex-shrink:0}
 
-  @media (max-height: 480px){
-    #timerPlayer{font-size:clamp(16px, 5vmin, 26px)}
-    .status{font-size:11px}
+  .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
+  .popup.show{display:flex}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .popup-content{background:var(--card);padding:clamp(24px,4vw,40px);
+    border-radius:24px;text-align:center;max-width:min(92vw,560px);width:100%;
+    border:3px solid var(--green);box-shadow:0 20px 60px rgba(34,197,94,.4);
+    animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+  .popup-trophy{font-size:clamp(60px,12vw,90px);margin-bottom:8px;animation:bounce 1s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .popup-label{font-size:clamp(13px,2vw,16px);color:var(--muted);
+    text-transform:uppercase;letter-spacing:3px;font-weight:700}
+  .popup-team{font-size:clamp(26px,5vw,38px);font-weight:900;color:var(--blue);margin:10px 0 6px}
+  .popup-name{font-size:clamp(34px,7vw,52px);font-weight:900;color:var(--green);margin-bottom:24px;line-height:1.1}
+  .popup-btn{padding:16px 32px;border-radius:14px;border:none;
+    background:var(--green);color:#fff;font-size:clamp(16px,2.5vw,20px);font-weight:800;
+    cursor:pointer;letter-spacing:1px;box-shadow:0 8px 24px rgba(34,197,94,.4);transition:.15s}
+  .popup-btn:hover{transform:scale(1.05)}
+
+  @media (max-width: 900px){
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .row button{flex:1 1 auto;min-width:0;padding:8px 10px;font-size:12px}
   }
 </style>
 </head>
 <body>
 
-<div id="nameView" class="center-panel" style="display:none">
-  <h1>Masukkan Nama Anda</h1>
-  <input id="nameInput" maxlength="20" placeholder="Nama" autocomplete="off">
-  <button onclick="simpanNama()">Lanjut</button>
+<div id="loginView" class="center-panel">
+  <h1 style="text-align:center">🎯 Host Login</h1>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div id="loginMsg" class="err"></div>
 </div>
 
-<div id="mainView" style="display:none">
+<div id="settingsView" class="center-panel" style="display:none">
+  <h1 style="text-align:center">⚙ Settings Room</h1>
+  <label for="settingRoomId">Room ID (huruf kecil & angka, 3–20 karakter)</label>
+  <input id="settingRoomId" class="mono" maxlength="20" placeholder="contoh: cerdas2025"
+         oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9]/g, '')">
+  <div class="hint">URL QR: <code>...?room=<span id="previewRoom">…</span></code></div>
+  <label for="settingTeamCount">Jumlah Tim</label>
+  <input id="settingTeamCount" type="number" min="1" max="20" value="4">
+  <div class="hint">QR dibuat untuk Tim 1 s.d. Tim N. Jumlah pemain per tim <strong>bebas</strong>.</div>
+  <button onclick="saveSettings()">💾 Simpan &amp; Lanjutkan</button>
+  <div id="settingsMsg" class="err"></div>
+</div>
+
+<div id="hostView" style="display:none;max-width:1400px;margin:0 auto">
+  
   <header>
-    <div id="identity">-</div>
-    <div class="hdr-actions">
-      <button id="themeBtn" onclick="toggleTheme()">☀</button>
-      <button onclick="exitGame()" title="Keluar">✕</button>
+    <div class="room-wrap">
+      <span>Room:</span><span class="room" id="roomId">-</span>
+      <span class="team-count" id="teamCountLabel">- tim</span>
+    </div>
+    <div class="row">
+      <button onclick="toggleTheme()" id="themeBtn">☀ Light</button>
+      <button onclick="openSettings()">⚙ Settings</button>
+      <button onclick="logout()">Logout</button>
     </div>
   </header>
-  <div id="timerPlayer">—</div>
-  <div class="btn-container">
-    <button id="btn" class="push-btn" onclick="tekan()">TEKAN</button>
+
+  <!-- POP-UP TIMER ANALOG RAKSASA -->
+  <div id="timerModal" class="popup" style="display:none; z-index: 10000;">
+    <div class="popup-content" style="border-color:var(--blue); max-width: 500px;">
+      <div class="popup-label" style="color:var(--blue)">WAKTU TERSISA</div>
+      
+      <div style="position:relative; width:240px; height:240px; margin:20px auto; border-radius:50%; border:8px solid var(--line); background:var(--card-2);">
+        <div style="position:absolute; top:10px; left:50%; transform:translateX(-50%); width:4px; height:15px; background:var(--muted);"></div>
+        <div style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); width:4px; height:15px; background:var(--muted);"></div>
+        <div style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:15px; height:4px; background:var(--muted);"></div>
+        <div style="position:absolute; right:10px; top:50%; transform:translateY(-50%); width:15px; height:4px; background:var(--muted);"></div>
+        
+        <div id="analogHand" style="position:absolute; bottom:50%; left:calc(50% - 4px); width:8px; height:100px; background:var(--red); transform-origin: bottom center; transform: rotate(0deg); border-radius:4px; transition: transform 0.1s linear;"></div>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:16px; height:16px; background:var(--text); border-radius:50%; z-index:2;"></div>
+      </div>
+
+      <div id="modalTimerText" style="font-family:ui-monospace,Consolas,monospace; font-size:48px; font-weight:900; color:var(--green); margin-bottom:20px;">30.0</div>
+      <button class="popup-btn" onclick="tutupPopupTimer()" style="background:var(--red); box-shadow:0 8px 24px rgba(239,68,68,.4); font-size:16px; padding:12px 24px;">Sembunyikan Timer</button>
+    </div>
   </div>
-  <div id="status" class="status">Menghubungkan…</div>
+
+  <div class="dashboard-grid">
+    
+    <!-- Kiri: Timer, Buzzer, Pemain -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      
+      <section class="panel" style="margin-bottom:0;">
+        <h2>⏱ Timer Quiz</h2>
+        <div class="row">
+          <input id="duration" type="number" min="5" max="600" value="30"> <span>detik</span>
+          <button class="primary" onclick="startTimer()">▶ Start</button>
+          <button onclick="stopTimer()">⏸ Stop</button>
+          <button class="danger" onclick="resetTimer()">↺ Reset</button>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;margin-left:auto;">
+            <input type="checkbox" id="tickSoundToggle" checked onchange="toggleTickSound()"> Suara Tik
+          </label>
+        </div>
+        <div id="timerDisplay" class="timer-display">—</div>
+      </section>
+
+      <section class="panel" style="margin-bottom:0;">
+        <h2>🔔 Tombol Cepat</h2>
+        <div id="buzzerStatus" class="buzzer-status">Status: <span id="buzzerText">TERTUTUP</span></div>
+        <div class="row">
+          <button class="success" onclick="armBuzzer()">🔓 Buka</button>
+          <button onclick="disarmBuzzer()">🔒 Tutup</button>
+          <button class="danger" onclick="resetState()">↺ Reset</button>
+        </div>
+      </section>
+
+      <section class="panel" style="margin-bottom:0; flex:1;">
+        <h2>👥 Pemain</h2>
+        <div id="playersList" style="max-height:220px;overflow-y:auto;padding-right:5px;"></div>
+      </section>
+    </div>
+
+    <!-- Kanan: Pemenang, Live Chat, QR -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      
+      <section class="panel" style="margin-bottom:0; text-align:center;">
+        <h2>🏆 Siapa Cepat Tekan?</h2>
+        <div id="fastestDisplay" style="padding:10px;font-size:18px;font-weight:bold;">
+          <em style="color:var(--muted);font-size:14px;font-weight:normal;">Menunggu…</em>
+        </div>
+      </section>
+
+      <section class="panel chat-panel" style="margin-bottom:0;">
+        <h2>💬 Live Chat</h2>
+        <div id="chatList" class="chat-list"></div>
+        <div class="chat-input">
+          <input id="chatInput" placeholder="Broadcast pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
+          <button onclick="kirimChat()">➤</button>
+        </div>
+      </section>
+
+      <!-- FITUR BARU: TOMBOL SHOW/HIDE QR -->
+      <section class="panel" style="margin-bottom:0; flex:1; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;">📱 QR Code Registrasi</h2>
+          <button id="toggleQrBtn" class="primary" style="font-size:11px; padding:6px 10px; margin-bottom:8px;" onclick="toggleQRVisibility()">Tampilkan QR</button>
+        </div>
+        
+        <!-- Area QR yang bisa disembunyikan -->
+        <div id="qrContainer" style="display:none; padding-top:10px;">
+          <div id="qrList" class="qr-grid"></div>
+        </div>
+        
+        <!-- Pesan saat QR disembunyikan -->
+        <div id="qrHiddenMsg" style="text-align:center; color:var(--muted); font-size:13px; padding:20px 0; font-style:italic;">
+          QR Code disembunyikan.<br>Klik "Tampilkan QR" untuk memandu registrasi tim.
+        </div>
+      </section>
+    </div>
+  </div>
 </div>
 
-<button id="chatFab" class="chat-fab" onclick="toggleChat()" title="Buka chat">
-  💬<span id="chatUnread" class="chat-unread" style="display:none">0</span>
-</button>
-<div id="chatBackdrop" class="chat-backdrop" onclick="toggleChat()"></div>
-<aside id="chatDrawer" class="chat-drawer" aria-hidden="true">
-  <div class="chat-drawer-handle" id="chatHandle"></div>
-  <header class="chat-drawer-header">
-    <h3>💬 Chat</h3>
-    <button class="chat-close" onclick="toggleChat()" title="Tutup">✕</button>
-  </header>
-  <div id="chatList" class="chat-list"></div>
-  <div class="chat-input">
-    <input id="chatInput" placeholder="Ketik pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
-    <button onclick="kirimChat()">➤</button>
+<!-- POP-UP PEMENANG -->
+<div id="winnerPopup" class="popup">
+  <div class="popup-content">
+    <div class="popup-trophy">🏆</div>
+    <div class="popup-label">TERCEPAT MENEKAN TOMBOL</div>
+    <div class="popup-team" id="popupTeam">Tim 1</div>
+    <div class="popup-name" id="popupName">Budi</div>
+    <button class="popup-btn" onclick="lanjutkanGame()">Lanjutkan ▶</button>
   </div>
-</aside>
-
-<div id="chatToast" class="chat-toast"></div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged }
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, onValue, set, remove, push, runTransaction,
-         serverTimestamp, query, limitToLast, onDisconnect }
+import { getDatabase, ref, onValue, set, remove, get, push, serverTimestamp,
+         query, limitToLast, update }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -256,318 +310,413 @@ let serverOffset = 0;
 onValue(ref(db, '.info/serverTimeOffset'), s => serverOffset = s.val() || 0);
 const serverNow = () => Date.now() + serverOffset;
 
-const params = new URLSearchParams(location.search);
-const roomId = (params.get('room') || '').toLowerCase();
-const teamId = parseInt(params.get('team') || 0);
-
-if (!roomId || !teamId){
-  document.body.innerHTML = '<div class="center-panel"><h1>Link tidak valid</h1><p>Scan ulang QR dari host.</p></div>';
-  throw new Error('Invalid params');
-}
-
-let myName = null;
-let myPlayerKey = null;
-let state = 'idle';
-let stateData = null;
-let buzzerArmed = false;
+let roomId = localStorage.getItem('cc_room') || '';
+let teamCount = parseInt(localStorage.getItem('cc_team_count') || '0') || 0;
+let user = null;
+let fastestState = null;
+let playersData = {};
+let buzzerState = { armed: false };
 let timerInterval = null;
-let lastChatKey = null;
-let toastTimer = null;
-let chatOpen = false;
+let tickInterval = null; 
+let wasLocked = false;
+let listenersReady = false;
 let lastChatCount = 0;
-let unreadChat = 0;
-let chatMsgs = [];
+let isTickSoundOn = true;
+let isQrVisible = false; // Fitur Toggle QR Default: False (Sembunyi)
 
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('cc_theme_player', t);
-  const b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '☀' : '🌙';
+  localStorage.setItem('cc_theme_host', t);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = t === 'dark' ? '☀ Light' : '🌙 Dark';
 }
 window.toggleTheme = () => {
   const cur = document.documentElement.getAttribute('data-theme');
   applyTheme(cur === 'dark' ? 'light' : 'dark');
 };
-applyTheme(localStorage.getItem('cc_theme_player') || 'dark');
+applyTheme(localStorage.getItem('cc_theme_host') || 'dark');
 
-signInAnonymously(auth).catch(e => {
-  document.body.innerHTML = '<div class="center-panel"><h1>Gagal terhubung</h1><p>'+e.message+'</p></div>';
-});
+window.login = async () => {
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value;
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch (e) { document.getElementById('loginMsg').textContent = e.message; }
+};
+window.logout = () => signOut(auth);
 
 onAuthStateChanged(auth, u => {
-  if (!u) return;
-  const saved = localStorage.getItem(`cc_name_${roomId}_${teamId}`);
-  if (saved){ myName = saved; mulaiMain(); }
-  else { document.getElementById('nameView').style.display = 'block'; }
+  user = u;
+  document.getElementById('loginView').style.display = u ? 'none' : 'block';
+  if (u){
+    if (roomId && teamCount > 0){ showHostView(); }
+    else { showSettingsView(); }
+  } else {
+    document.getElementById('settingsView').style.display = 'none';
+    document.getElementById('hostView').style.display = 'none';
+  }
 });
 
-window.simpanNama = () => {
-  const name = document.getElementById('nameInput').value.trim();
-  if (!name){ alert('Nama wajib diisi'); return; }
-  if (name.length > 20){ alert('Maksimal 20 karakter'); return; }
-  myName = name;
-  localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
-  document.getElementById('nameView').style.display = 'none';
-  mulaiMain();
-};
-
-async function mulaiMain(){
-  document.getElementById('mainView').style.display = 'flex';
-  document.getElementById('identity').textContent = `Tim ${teamId} • ${myName}`;
-
-  const playerRef = push(ref(db, `rooms/${roomId}/players`));
-  myPlayerKey = playerRef.key;
-  await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
-  await onDisconnect(playerRef).remove();
-
-  onValue(ref(db, `rooms/${roomId}/state`), snap => {
-    stateData = snap.val();
-    syncButtonState();
-  });
-  onValue(ref(db, `rooms/${roomId}/buzzer`), snap => {
-    const b = snap.val() || {};
-    const prev = buzzerArmed;
-    buzzerArmed = !!b.armed;
-    if (buzzerArmed && !prev) beep(660, 0.15, 0.25);
-    syncButtonState();
-  });
-  onValue(ref(db, `rooms/${roomId}/timer`), snap => startCountdown(snap.val()));
-  onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
-    const data = snap.val() || {};
-    const msgs = Object.entries(data).map(([key, v]) => ({ key, ...v }))
-      .sort((a, b) => (a.ts || 0) - (b.ts || 0));
-    const prevLen = lastChatCount;
-    lastChatCount = msgs.length;
-    chatMsgs = msgs;
-    if (chatOpen) renderChatList();
-    if (prevLen > 0 && msgs.length > prevLen){
-      const newMsgs = msgs.slice(prevLen);
-      const fromOthers = newMsgs.filter(m => !(m.team === teamId && m.name === myName));
-      if (fromOthers.length > 0 && !chatOpen){
-        showChatToast(fromOthers[fromOthers.length - 1]);
-        unreadChat += fromOthers.length;
-        updateUnreadBadge();
-      }
-    }
-  });
+function showSettingsView(){
+  document.getElementById('settingsView').style.display = 'block';
+  document.getElementById('hostView').style.display = 'none';
+  document.getElementById('settingRoomId').value = roomId;
+  document.getElementById('settingTeamCount').value = teamCount || 4;
+  document.getElementById('settingsMsg').textContent = '';
+  updateRoomPreview();
 }
+function updateRoomPreview(){
+  const v = document.getElementById('settingRoomId').value || '…';
+  document.getElementById('previewRoom').textContent = v;
+}
+window.openSettings = () => showSettingsView();
 
-function syncButtonState(){
-  const btn = document.getElementById('btn');
-  const status = document.getElementById('status');
-
-  if (stateData && stateData.locked){
-    const amWinner = stateData.playerKey === myPlayerKey;
-    if (amWinner && state !== 'winner'){ state = 'winner'; playFanfare(); }
-    else if (!amWinner && state !== 'loser'){ state = 'loser'; beep(220, 0.3, 0.3); }
-  } else if (state === 'winner' || state === 'loser'){
-    state = 'idle';
+async function showHostView(){
+  document.getElementById('settingsView').style.display = 'none';
+  document.getElementById('hostView').style.display = 'block';
+  document.getElementById('roomId').textContent = roomId;
+  document.getElementById('teamCountLabel').textContent = `${teamCount} tim`;
+  
+  if(user) {
+     await remove(ref(db, `rooms/${roomId}/timer`));
+     await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
   }
 
-  btn.className = 'push-btn';
-  if (state === 'winner') btn.classList.add('winner');
-  else if (state === 'loser') btn.classList.add('loser');
-  else if (state === 'pressed') btn.classList.add('pressed');
-  else if (!buzzerArmed) btn.classList.add('idle-off');
+  renderQRs();
+  
+  // Pastikan status QR kembali ke default (sembunyi) saat masuk halaman
+  isQrVisible = false;
+  updateQRVisibilityUI();
 
-  if (state === 'winner'){ btn.textContent = 'TERCEPAT!'; btn.disabled = true; }
-  else if (state === 'loser'){ btn.textContent = 'TERKUNCI'; btn.disabled = true; }
-  else if (state === 'pressed'){ btn.textContent = '…'; btn.disabled = true; }
-  else if (!buzzerArmed){ btn.textContent = 'TUTUP'; btn.disabled = true; }
-  else { btn.textContent = 'TEKAN'; btn.disabled = false; }
-
-  if (state === 'winner') status.textContent = '🏆 Kamu tercepat!';
-  else if (state === 'loser') status.textContent =
-    `Tim ${stateData?.team} (${stateData?.name}) lebih cepat menekan.`;
-  else if (state === 'pressed') status.textContent = 'Menunggu konfirmasi…';
-  else if (!buzzerArmed) status.textContent = 'Buzzer belum dibuka host…';
-  else status.textContent = 'Siap! Tekan sekarang!';
+  if (!listenersReady){ initListeners(); listenersReady = true; }
+  renderPlayers();
+  renderFastest();
+  renderBuzzerStatus();
 }
 
-window.tekan = async () => {
-  if (state !== 'idle' || !buzzerArmed || !myPlayerKey) return;
-  state = 'pressed'; syncButtonState();
-  beep(900, 0.08, 0.35);
-  try {
-    await runTransaction(ref(db, `rooms/${roomId}/state`), current => {
-      if (current) return;
-      return { locked: true, team: teamId, name: myName, playerKey: myPlayerKey, ts: Date.now() };
-    });
-  } catch (e){ console.log('abort', e.message); }
-  setTimeout(() => {
-    if (state === 'pressed'){ state = 'idle'; syncButtonState(); }
-  }, 3000);
+// FITUR TAMBAHAN: LOGIKA SHOW/HIDE QR
+window.toggleQRVisibility = () => {
+  isQrVisible = !isQrVisible;
+  updateQRVisibilityUI();
 };
+
+function updateQRVisibilityUI(){
+  const container = document.getElementById('qrContainer');
+  const msg = document.getElementById('qrHiddenMsg');
+  const btn = document.getElementById('toggleQrBtn');
+  
+  if (isQrVisible){
+    container.style.display = 'block';
+    msg.style.display = 'none';
+    btn.textContent = 'Sembunyikan QR';
+    btn.className = 'danger'; // Tombol jadi merah
+  } else {
+    container.style.display = 'none';
+    msg.style.display = 'block';
+    btn.textContent = 'Tampilkan QR';
+    btn.className = 'primary'; // Tombol jadi biru
+  }
+}
+
+window.saveSettings = async () => {
+  const msg = document.getElementById('settingsMsg');
+  const newRoom = document.getElementById('settingRoomId').value.trim().toLowerCase();
+  const newTeams = parseInt(document.getElementById('settingTeamCount').value) || 0;
+  msg.className = 'err';
+
+  if (!/^[a-z0-9]{3,20}$/.test(newRoom)){
+    msg.textContent = 'Room ID hanya boleh huruf kecil & angka, 3–20 karakter.';
+    return;
+  }
+  if (newTeams < 1 || newTeams > 20){
+    msg.textContent = 'Jumlah tim harus 1–20.';
+    return;
+  }
+  try {
+    const snap = await get(ref(db, `rooms/${newRoom}/players`));
+    if (snap.exists() && newRoom !== roomId){
+      if (!confirm(`Room "${newRoom}" sudah pernah dipakai. Lanjutkan?`)) return;
+    }
+  } catch (e){}
+
+  roomId = newRoom;
+  teamCount = newTeams;
+  localStorage.setItem('cc_room', roomId);
+  localStorage.setItem('cc_team_count', teamCount);
+  listenersReady = false;
+  showHostView();
+};
+
+function initListeners(){
+  onValue(ref(db, `rooms/${roomId}/state`), snap => {
+    const val = snap.val();
+    fastestState = val;
+    const isLocked = !!(val && val.locked);
+    if (isLocked && !wasLocked){ showFastestPopup(val); playHorn(); }
+    if (!isLocked && wasLocked){ hideFastestPopup(); }
+    wasLocked = isLocked;
+    renderFastest();
+    renderBuzzerStatus();
+  });
+  onValue(ref(db, `rooms/${roomId}/players`), snap => {
+    playersData = snap.val() || {};
+    renderPlayers();
+  });
+  onValue(ref(db, `rooms/${roomId}/timer`), snap => startCountdown(snap.val()));
+  onValue(ref(db, `rooms/${roomId}/buzzer`), snap => {
+    buzzerState = snap.val() || { armed: false };
+    renderBuzzerStatus();
+  });
+  onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
+    const data = snap.val() || {};
+    const msgs = Object.entries(data).map(([k,v]) => ({key:k, ...v}))
+      .sort((a,b) => (a.ts||0) - (b.ts||0));
+    renderChat(msgs);
+  });
+}
+
+function renderFastest(){
+  const el = document.getElementById('fastestDisplay');
+  if (!fastestState || !fastestState.locked){
+    el.innerHTML = '<em style="color:var(--muted);font-size:14px;font-weight:normal;">Menunggu…</em>';
+    return;
+  }
+  el.innerHTML = `<span style="color:var(--green)">🏆 Tim ${fastestState.team} — ${esc(fastestState.name)}</span>`;
+}
+function renderBuzzerStatus(){
+  const s = document.getElementById('buzzerStatus');
+  const t = document.getElementById('buzzerText');
+  s.className = 'buzzer-status';
+  if (fastestState?.locked){ s.classList.add('locked'); t.textContent = 'TERKUNCI'; }
+  else if (buzzerState.armed){ s.classList.add('armed'); t.textContent = 'TERBUKA'; }
+  else { t.textContent = 'TERTUTUP'; }
+}
+function renderPlayers(){
+  const perTim = {};
+  Object.values(playersData).forEach(p => (perTim[p.team] ||= []).push(p.name));
+  const allTeams = new Set();
+  for (let t=1; t<=teamCount; t++) allTeams.add(t);
+  Object.keys(perTim).forEach(t => allTeams.add(parseInt(t)));
+  const sorted = Array.from(allTeams).sort((a,b) => a-b);
+  const html = sorted.map(t => {
+    const names = perTim[t] || [];
+    const extra = t > teamCount;
+    return `<div class="team-card">
+      <div class="team-title">Tim ${t}<span class="badge">${names.length} device</span>
+        ${extra ? '<span class="badge" style="background:var(--amber);color:#000">ext</span>' : ''}
+      </div>
+      <div class="team-members">${names.length ? names.map(esc).join(', ') : '<em>-</em>'}</div>
+    </div>`;
+  });
+  document.getElementById('playersList').innerHTML = html.join('');
+}
+function renderQRs(){
+  const c = document.getElementById('qrList');
+  c.innerHTML = '';
+
+  if (typeof QRCode === 'undefined') {
+    c.innerHTML = '<div style="color:var(--red);font-size:12px;">Gagal memuat QR.</div>';
+    return;
+  }
+
+  const baseUrl = new URL('player.html', location.href);
+  
+  for (let t=1; t<=teamCount; t++){
+    const div = document.createElement('div');
+    div.className = 'qr-item';
+    div.innerHTML = `<div class="qr-label">Tim ${t}</div><div class="qr-canvas-container" id="qr-tim-${t}"></div>`;
+    c.appendChild(div);
+    
+    const url = new URL(baseUrl);
+    url.searchParams.set('room', roomId);
+    url.searchParams.set('team', t);
+    
+    new QRCode(document.getElementById(`qr-tim-${t}`), {
+      text: url.toString(),
+      width: 150,
+      height: 150,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.M
+    });
+  }
+}
+function renderChat(msgs){
+  const el = document.getElementById('chatList');
+  if (!el) return;
+  el.innerHTML = msgs.map(m => `
+    <div class="chat-msg">
+      <div class="chat-who">Tim ${m.team}${m.name ? ' • '+esc(m.name) : ''}
+        <span class="chat-time">${m.ts ? new Date(m.ts).toLocaleTimeString().slice(0,5) : ''}</span></div>
+      <div class="chat-text">${esc(m.text)}</div>
+    </div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
 
 function startCountdown(timer){
   clearInterval(timerInterval);
-  const el = document.getElementById('timerPlayer');
+  clearTimeout(tickInterval); 
+  
+  const el = document.getElementById('timerDisplay');
+  const modal = document.getElementById('timerModal');
+  const modalText = document.getElementById('modalTimerText');
+  const analogHand = document.getElementById('analogHand');
+  
   if (!timer || !timer.running || !timer.startedAt){
-    el.textContent = '—'; el.className = ''; return;
+    el.textContent = '—'; el.className = 'timer-display'; 
+    modal.style.display = 'none';
+    return;
   }
-  const endAt = timer.startedAt + timer.duration * 1000;
+  
+  const totalDuration = timer.duration * 1000;
+  const endAt = timer.startedAt + totalDuration;
+  
+  modal.style.display = 'flex';
+  
+  const scheduleTick = () => {
+      if(!isTickSoundOn) return;
+      playTick();
+      
+      const remainingMs = Math.max(0, endAt - serverNow());
+      const secondsLeft = Math.ceil(remainingMs / 1000);
+      
+      let delay = 1000;
+      if (secondsLeft <= 3) delay = 200; 
+      else if (secondsLeft <= 10) delay = 500; 
+
+      tickInterval = setTimeout(scheduleTick, delay);
+  };
+
+  if(isTickSoundOn) scheduleTick();
+
   const tick = () => {
     const remaining = Math.max(0, endAt - serverNow());
-    el.textContent = (remaining/1000).toFixed(1);
-    el.className = '';
+    const secondsStr = (remaining/1000).toFixed(1);
+    
+    el.textContent = secondsStr;
+    el.className = 'timer-display';
     if (remaining < 5000) el.classList.add('urgent');
+    
+    if(modalText) modalText.textContent = secondsStr;
+    if(remaining < 5000 && modalText) modalText.style.color = 'var(--amber)';
+    
+    const progress = remaining / totalDuration;
+    const degrees = (progress * 360) - 90; 
+    if(analogHand) analogHand.style.transform = `rotate(${degrees}deg)`;
+
     if (remaining <= 0){
       el.textContent = 'TIME UP!'; el.classList.add('done');
+      if(modalText) { modalText.textContent = 'TIME UP!'; modalText.style.color = 'var(--red)'; }
       clearInterval(timerInterval);
+      clearTimeout(tickInterval); 
+      playHorn(); 
     }
   };
   tick();
-  timerInterval = setInterval(tick, 100);
+  timerInterval = setInterval(tick, 50); 
 }
 
-window.toggleChat = () => {
-  chatOpen = !chatOpen;
-  const drawer = document.getElementById('chatDrawer');
-  const backdrop = document.getElementById('chatBackdrop');
-  const fab = document.getElementById('chatFab');
-  drawer.classList.toggle('open', chatOpen);
-  backdrop.classList.toggle('show', chatOpen);
-  drawer.setAttribute('aria-hidden', chatOpen ? 'false' : 'true');
-  if (fab){
-    fab.style.opacity = chatOpen ? '0' : '1';
-    fab.style.pointerEvents = chatOpen ? 'none' : 'auto';
-  }
-  if (chatOpen){
-    document.getElementById('chatToast').classList.remove('show');
-    clearTimeout(toastTimer);
-    unreadChat = 0;
-    updateUnreadBadge();
-    renderChatList();
-    setTimeout(() => {
-      const el = document.getElementById('chatList');
-      if (el) el.scrollTop = el.scrollHeight;
-    }, 350);
+window.tutupPopupTimer = () => {
+  document.getElementById('timerModal').style.display = 'none';
+};
+
+window.toggleTickSound = () => {
+  isTickSoundOn = document.getElementById('tickSoundToggle').checked;
+  if(!isTickSoundOn) {
+     clearInterval(tickInterval); 
+     clearTimeout(tickInterval);
   }
 };
-function updateUnreadBadge(){
-  const badge = document.getElementById('chatUnread');
-  if (!badge) return;
-  if (unreadChat > 0){ badge.style.display = 'flex'; badge.textContent = unreadChat > 99 ? '99+' : unreadChat; }
-  else { badge.style.display = 'none'; }
+
+window.startTimer = async () => {
+  const dur = parseInt(document.getElementById('duration').value) || 30;
+  await set(ref(db, `rooms/${roomId}/timer`), { running: true, duration: dur, startedAt: serverTimestamp() });
+};
+window.stopTimer = async () => update(ref(db, `rooms/${roomId}/timer`), {running:false});
+window.resetTimer = async () => remove(ref(db, `rooms/${roomId}/timer`));
+window.armBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:true, armedAt: serverTimestamp()});
+window.disarmBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
+window.resetState = async () => remove(ref(db, `rooms/${roomId}/state`));
+
+function showFastestPopup(val){
+  document.getElementById('popupTeam').textContent = `Tim ${val.team}`;
+  document.getElementById('popupName').textContent = val.name || '—';
+  document.getElementById('winnerPopup').classList.add('show');
 }
-function renderChatList(){
-  const el = document.getElementById('chatList');
-  if (!el) return;
-  el.innerHTML = chatMsgs.map(m => {
-    const mine = (m.team === teamId && m.name === myName);
-    return `<div class="chat-msg ${mine ? 'mine' : ''}">
-      <div class="chat-who">Tim ${m.team}${m.name ? ' • '+esc(m.name) : ''}
-        <span class="chat-time">${m.ts ? new Date(m.ts).toLocaleTimeString() : ''}</span></div>
-      <div class="chat-text">${esc(m.text)}</div>
-    </div>`;
-  }).join('');
-  if (chatOpen) el.scrollTop = el.scrollHeight;
+function hideFastestPopup(){
+  document.getElementById('winnerPopup').classList.remove('show');
 }
+window.lanjutkanGame = async () => {
+  hideFastestPopup();
+  await remove(ref(db, `rooms/${roomId}/state`));
+};
 window.kirimChat = async () => {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
-  if (!text || !myPlayerKey) return;
-  await set(push(ref(db, `rooms/${roomId}/chat`)),
-    { name: myName, team: teamId, text, ts: serverTimestamp() });
+  if (!text) return;
+  await set(push(ref(db, `rooms/${roomId}/chat`)), { name:'Host', team:0, text, ts: serverTimestamp() });
   input.value = '';
   input.focus();
 };
-function showChatToast(msg){
-  if (chatOpen) return;
-  const el = document.getElementById('chatToast');
-  el.innerHTML = `<strong>Tim ${msg.team}${msg.name ? ' • '+esc(msg.name) : ''}</strong>${esc(msg.text)}`;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 4000);
-  beep(1200, 0.08, 0.15);
-}
 
-window.exitGame = async () => {
-  if (!confirm('Keluar dari permainan?')) return;
-  if (myPlayerKey){
-    try { await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`)); } catch(e){}
-  }
-  localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
-  document.body.innerHTML = '<div class="center-panel"><h1>Anda telah keluar</h1><p>Tutup tab ini atau scan QR lagi.</p></div>';
-};
-
-(function setupSwipeToClose(){
-  const drawer = document.getElementById('chatDrawer');
-  const handle = document.getElementById('chatHandle');
-  const header = drawer.querySelector('.chat-drawer-header');
-  let startY = 0, currentY = 0, dragging = false;
-
-  const start = (e) => {
-    if (!chatOpen) return;
-    startY = currentY = e.touches ? e.touches[0].clientY : e.clientY;
-    dragging = true;
-    drawer.classList.add('dragging');
-  };
-  const move = (e) => {
-    if (!dragging) return;
-    currentY = e.touches ? e.touches[0].clientY : e.clientY;
-    const delta = Math.max(0, currentY - startY);
-    drawer.style.transform = `translateY(${delta}px)`;
-    const backdrop = document.getElementById('chatBackdrop');
-    const total = drawer.offsetHeight;
-    backdrop.style.opacity = Math.max(0, 0.6 * (1 - delta / total));
-  };
-  const end = () => {
-    if (!dragging) return;
-    dragging = false;
-    drawer.classList.remove('dragging');
-    drawer.style.transform = '';
-    document.getElementById('chatBackdrop').style.opacity = '';
-    const delta = currentY - startY;
-    if (delta > 100) toggleChat();
-  };
-
-  [handle, header].forEach(el => {
-    if (!el) return;
-    el.addEventListener('touchstart', start, {passive:true});
-    el.addEventListener('touchmove', move, {passive:true});
-    el.addEventListener('touchend', end);
-    el.addEventListener('mousedown', start);
-  });
-  document.addEventListener('mousemove', move);
-  document.addEventListener('mouseup', end);
-})();
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && chatOpen) toggleChat();
-});
-
+// ==========================================
+// SISTEM SUARA (Horn Bass, Tik Keras, Vol Max)
+// ==========================================
 let actx;
 function getAC(){
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
   if (actx.state === 'suspended') actx.resume();
   return actx;
 }
-function note(ctx, freq, start, dur, vol){
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'square'; osc.frequency.value = freq;
-  osc.connect(gain); gain.connect(ctx.destination);
-  gain.gain.setValueAtTime(0, start);
-  gain.gain.linearRampToValueAtTime(vol, start + 0.015);
-  gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
-  osc.start(start); osc.stop(start + dur);
-}
-function beep(freq, dur, vol=0.3){
-  try { const ctx = getAC(); note(ctx, freq, ctx.currentTime, dur, vol); } catch(e){}
-}
-function playFanfare(){
+
+function playHorn(){
   try {
     const ctx = getAC();
     const now = ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
-    notes.forEach((f, i) => {
-      note(ctx, f, now + i*0.11, 0.28, 0.5);
-      note(ctx, f*2, now + i*0.11, 0.20, 0.18);
-    });
-    [523.25, 659.25, 783.99, 1046.5].forEach(f => note(ctx, f, now + notes.length*0.11, 0.6, 0.4));
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.exponentialRampToValueAtTime(100, now + 0.5);
+    
+    const dist = ctx.createWaveShaper();
+    const curve = new Float32Array(44100);
+    for (let i = 0; i < 44100; i++) {
+        const x = i * 2 / 44100 - 1;
+        curve[i] = (3 + 10) * x * 20 * (Math.PI / 180) / (Math.PI + 10 * Math.abs(x));
+    }
+    dist.curve = curve;
+    
+    osc.connect(dist);
+    dist.connect(gain);
+    gain.connect(ctx.destination);
+    
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(1.0, now + 0.05); // VOLUME MAX
+    gain.gain.setValueAtTime(1.0, now + 0.4);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+    
+    osc.start(now); osc.stop(now + 0.6);
   } catch(e){}
 }
+
+function playTick(){
+  try {
+    const ctx = getAC();
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square'; 
+    osc.frequency.setValueAtTime(800, now);
+    osc.frequency.exponentialRampToValueAtTime(300, now + 0.03);
+    osc.connect(gain); gain.connect(ctx.destination);
+    
+    gain.gain.setValueAtTime(1.0, now); // VOLUME MAX
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    osc.start(now); osc.stop(now + 0.04);
+  } catch(e){}
+}
+
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
 </script>
 </body>
