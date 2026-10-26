@@ -11,6 +11,7 @@
     --bg-main: #f1f5f9; --bg-panel: #ffffff; --bg-card: #f8fafc;
     --text-main: #0f172a; --text-muted: #475569; --border-color: #cbd5e1;
     --tim1: #ef4444; --tim2: #3b82f6; --tim3: #22c55e; --tim4: #a855f7;
+    --tim5: #f97316; --tim6: #14b8a6; --tim7: #ec4899; --tim8: #84cc16;
   }
 
   html, body {
@@ -84,17 +85,22 @@
   .player-panel { flex: 1.5; overflow: hidden; }
   .player-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; padding-right: 4px; flex: 1;}
   .player-row { background: var(--bg-card); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; border: 1px solid var(--border-color); border-left: 5px solid transparent; }
+  
+  /* Kelas warna border kiri tim */
   .player-row.t1 { border-left-color: var(--tim1); } .player-row.t2 { border-left-color: var(--tim2); }
   .player-row.t3 { border-left-color: var(--tim3); } .player-row.t4 { border-left-color: var(--tim4); }
+  .player-row.t5 { border-left-color: var(--tim5); } .player-row.t6 { border-left-color: var(--tim6); }
+  .player-row.t7 { border-left-color: var(--tim7); } .player-row.t8 { border-left-color: var(--tim8); }
+
   .device-count { font-size: 11px; background: var(--border-color); padding: 4px 10px; border-radius: 12px; color: var(--text-main); white-space: nowrap;}
   .btn-del-player { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 11px; margin-left: 6px; }
 
   .qr-panel { flex-shrink: 0; }
-  .qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; }
-  .qr-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
-  .qr-card h3 { margin: 0; font-size: 13px; }
-  .qr-wrapper { background: #ffffff; padding: 8px; border-radius: 8px; display: inline-block; border: 1px solid #e2e8f0;}
-  .qr-wrapper canvas, .qr-wrapper img { width: 80px !important; height: 80px !important; cursor: pointer; display: block;}
+  .qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 8px; }
+  .qr-card { background: var(--bg-card); padding: 8px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
+  .qr-card h3 { margin: 0; font-size: 12px; }
+  .qr-wrapper { background: #ffffff; padding: 6px; border-radius: 8px; display: inline-block; border: 1px solid #e2e8f0;}
+  .qr-wrapper canvas, .qr-wrapper img { width: 70px !important; height: 70px !important; cursor: pointer; display: block;}
   .btn-zoom { background: #64748b; color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%;}
 
   #qrModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.8); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;}
@@ -137,7 +143,6 @@
     <h1>📝 Buat Room</h1>
     <p>Masukkan ID Room (tanpa spasi)</p>
     
-    <!-- Tampilkan jumlah tim di sini -->
     <div class="team-info-badge" id="setupTeamInfo">Menunggu data tim...</div>
 
     <input type="text" id="newRoomId" placeholder="Contoh: CCA2026" value="CCA2026" style="text-transform: uppercase;">
@@ -223,7 +228,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getDatabase, ref, onValue, set, remove, push, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
@@ -249,24 +254,17 @@
   let isTimerHidden = false;
 
   // ==========================================
-  // CEK SESI LOGIN (MENGGUNAKAN SESSION STORAGE)
+  // CEK SESI LOGIN (MURNI MENGGUNAKAN SESSION)
   // ==========================================
-  // Kita tidak memakai onAuthStateChanged lagi untuk redirect, 
-  // agar tidak terjadi race condition (bentrok waktu) dengan Firebase.
-  
   const isLoggedIn = sessionStorage.getItem('isHostLoggedIn');
   
   if (!isLoggedIn) {
-    // Jika tidak ada tiket login, tendang paksa!
     window.location.replace('login.html');
   } else {
-    // Jika ada tiket login, jalankan aplikasi
     const savedRoom = sessionStorage.getItem('hostRoomId');
     const savedTeamCount = sessionStorage.getItem('hostTeamCount');
     
-    if (savedTeamCount) {
-      teamCount = parseInt(savedTeamCount);
-    }
+    if (savedTeamCount) teamCount = parseInt(savedTeamCount);
 
     document.getElementById('setupTeamInfo').textContent = `Kuis akan dimainkan oleh ${teamCount} Tim`;
 
@@ -280,33 +278,12 @@
     }
   }
 
-    const savedRoom = sessionStorage.getItem('hostRoomId');
-    const savedTeamCount = sessionStorage.getItem('hostTeamCount');
-    
-    // BACA JUMLAH TIM DARI LOGIN
-    if (savedTeamCount) {
-      teamCount = parseInt(savedTeamCount);
-    }
-
-    // Tampilkan info di layar setup
-    document.getElementById('setupTeamInfo').textContent = `Kuis akan dimainkan oleh ${teamCount} Tim`;
-
-    if (savedRoom) {
-      roomId = savedRoom;
-      document.getElementById('setupScreen').style.display = 'none';
-      mulaiHost();
-    } else {
-      document.getElementById('setupScreen').style.display = 'flex';
-      document.getElementById('appContainer').style.display = 'none';
-    }
-  });
-
-    window.logoutHost = () => {
+  window.logoutHost = () => {
     if (confirm('Logout dari Host? (Sesi Room akan berakhir)')) {
       sessionStorage.clear();
       localStorage.clear();
       signOut(auth).then(() => {
-        window.location.replace('login.html'); // Gunakan replace agar tidak bisa di-back
+        window.location.replace('login.html');
       });
     }
   };
@@ -314,7 +291,6 @@
   window.buatRoom = () => {
     const newId = document.getElementById('newRoomId').value.trim().toUpperCase();
     if (!newId) { alert('ID Room tidak boleh kosong!'); return; }
-    
     roomId = newId;
     sessionStorage.setItem('hostRoomId', roomId);
     document.getElementById('setupScreen').style.display = 'none';
@@ -323,9 +299,7 @@
 
   function mulaiHost() {
     document.getElementById('appContainer').style.display = 'flex';
-    document.getElementById('roomIdLabel').textContent = roomId;
-
-    // SUNTIKKAN INFORMASI JUMLAH TIM DI HEADER
+    
     const headerTitle = document.querySelector('.header h1');
     if(headerTitle) headerTitle.innerHTML = `Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">${roomId}</span> <span style="color:var(--text-muted); font-size: 14px; margin-left: 10px;">(${teamCount} Tim)</span>`;
 
@@ -422,7 +396,6 @@
     });
   }
 
-  // ... fungsi bantuan suara & QR tetap sama
   window.sembunyikanTimer = () => {
     document.getElementById('timerOverlay').style.display = 'none';
     document.getElementById('btnShowTimer').style.display = 'inline-block';
@@ -477,13 +450,12 @@
     if (playerListenerRef) playerListenerRef();
     playerListenerRef = onValue(ref(db, `rooms/${roomId}/players`), snap => {
       const players = snap.val() || {};
-      const teams = {1: [], 2: [], 3: [], 4: []};
+      const teams = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: []};
       Object.entries(players).forEach(([key, p]) => { if (teams[p.team]) teams[p.team].push({ key, name: p.name }); });
       
       const listEl = document.getElementById('playerList');
       listEl.innerHTML = '';
       
-      // LOOPING SESUAI JUMLAH TIM YANG DIPILIH
       for (let i = 1; i <= teamCount; i++) {
         const namesHTML = teams[i].length > 0 
           ? teams[i].map(p => `${p.name} <button class="btn-del-player" onclick="hapusPemain('${p.key}')">✕</button>`).join(', ')
@@ -563,13 +535,12 @@
     const grid = document.getElementById('qrGrid');
     grid.innerHTML = '';
     
-    // LOOPING SESUAI JUMLAH TIM YANG DIPILIH
     for (let i = 1; i <= teamCount; i++) {
       const card = document.createElement('div');
       card.className = 'qr-card';
       card.innerHTML = `<h3 style="color:var(--tim${i}); font-weight:800;">Tim ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
       grid.appendChild(card);
-      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
+      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 70, height: 70, colorDark: "#000000", colorLight: "#ffffff" });
     }
   }
 
