@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Host • Cerdas Cermat</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+  :root, [data-theme="dark"]{
+    --bg:#0b1120; --bg-grad-1:#1e293b; --bg-grad-2:#0b1120;
+    --card:#1e293b; --card-2:#0b1120; --line:#334155;
+    --text:#e2e8f0; --muted:#94a3b8;
+    --blue:#38bdf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+  }
+  [data-theme="light"]{
+    --bg:#f1f5f9; --bg-grad-1:#e2e8f0; --bg-grad-2:#f8fafc;
+    --card:#ffffff; --card-2:#f8fafc; --line:#cbd5e1;
+    --text:#0f172a; --muted:#64748b;
+    --blue:#0284c7; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;
+    padding:clamp(10px,2vw,24px);
+    background:radial-gradient(circle at top,var(--bg-grad-1),var(--bg-grad-2) 70%);
+    color:var(--text);min-height:100dvh;transition:background .3s,color .3s}
+  h1{font-size:clamp(18px,2.5vw,22px);margin:0 0 4px}
+  h2{font-size:clamp(12px,1.6vw,14px);margin:0 0 12px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1px}
+
+  .center-panel{max-width:420px;margin:8vh auto;background:var(--card);
+    padding:28px;border-radius:16px;border:1px solid var(--line);transition:.3s}
+  .center-panel label{display:block;font-size:13px;color:var(--muted);
+    margin-bottom:6px;font-weight:600;letter-spacing:.5px}
+  .center-panel input{width:100%;margin-bottom:14px;padding:12px;border-radius:10px;
+    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:15px;font-family:inherit}
+  .center-panel input.mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:1px;text-transform:lowercase}
+  .center-panel input:focus{outline:2px solid var(--blue);outline-offset:0}
+  .center-panel button{width:100%;padding:12px;border-radius:10px;border:none;
+    background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+  .center-panel button:disabled{opacity:.5;cursor:not-allowed}
+  .hint{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px;line-height:1.4}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
+
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    flex-wrap:wrap;padding:12px 16px;background:var(--card);border-radius:14px;
+    border:1px solid var(--line);margin-bottom:14px}
+  header .room-wrap{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  header .room{font-family:ui-monospace,Consolas,monospace;
+    font-size:clamp(16px,2.4vw,22px);font-weight:900;letter-spacing:2px;color:var(--blue)}
+  header .team-count{font-size:13px;color:var(--muted)}
+  header button{padding:8px 14px;border-radius:9px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:14px}
+  header button:hover{filter:brightness(1.15)}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:clamp(12px,2vw,16px);margin-bottom:14px;transition:.3s}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .row input[type=number]{width:80px;padding:10px;border-radius:9px;
+    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:15px}
+  .panel button{padding:10px 14px;border-radius:9px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:14px;transition:.15s}
+  .panel button:hover{filter:brightness(1.15)}
+  .panel button.primary{background:var(--blue);color:#fff;border:none}
+  .panel button.success{background:var(--green);color:#fff;border:none}
+  .panel button.danger{background:var(--red);color:#fff;border:none}
+  .panel button:disabled{opacity:.4;cursor:not-allowed;filter:none}
+
+  .timer-display{font-family:ui-monospace,Consolas,monospace;
+    font-size:clamp(40px,7vw,56px);font-weight:900;text-align:center;
+    margin-top:14px;color:var(--green);letter-spacing:2px}
+  .timer-display.urgent{color:var(--amber)}
+  .timer-display.done{color:var(--red);font-size:clamp(28px,5vw,40px)}
+
+  .buzzer-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:10px 14px;border-radius:10px;background:var(--card-2);
+    border:2px dashed var(--line);font-weight:700;margin-bottom:12px}
+  .buzzer-status.armed{border-color:var(--green);color:var(--green);animation:pulse 2s ease-in-out infinite}
+  .buzzer-status.locked{border-color:var(--amber);color:var(--amber)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+
+  .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
+    padding:12px;margin-bottom:8px}
+  .team-title{font-weight:700;font-size:15px;margin-bottom:4px}
+  .team-title .badge{font-size:11px;background:var(--line);padding:2px 8px;
+    border-radius:20px;margin-left:6px;font-weight:600}
+  .team-members{color:var(--muted);font-size:13px}
+
+  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+  .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
+    padding:10px;text-align:center}
+  .qr-label{font-weight:700;margin-bottom:6px;font-size:14px}
+  .qr-item canvas{width:100% !important;height:auto !important;image-rendering:pixelated}
+
+  .chat-fab{position:fixed;right:20px;bottom:20px;width:58px;height:58px;border-radius:50%;
+    background:var(--blue);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:900;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+    transition:transform .15s}
+  .chat-fab:hover{transform:scale(1.08)}
+  .chat-unread{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;
+    min-width:22px;height:22px;border-radius:11px;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;padding:0 6px;
+    border:2px solid var(--bg)}
+  .chat-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;
+    transition:opacity .28s ease;z-index:950}
+  .chat-backdrop.show{opacity:1;pointer-events:auto}
+  .chat-drawer{position:fixed;top:0;right:0;width:min(380px,92vw);height:100dvh;
+    background:var(--card);border-left:1px solid var(--line);transform:translateX(100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:960;
+    display:flex;flex-direction:column;box-shadow:-8px 0 24px rgba(0,0,0,.35)}
+  .chat-drawer.open{transform:translateX(0)}
+  .chat-drawer-header{display:flex;justify-content:space-between;align-items:center;
+    padding:16px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
+  .chat-drawer-header h3{margin:0;font-size:16px}
+  .chat-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);cursor:pointer;font-size:14px;
+    display:flex;align-items:center;justify-content:center}
+  .chat-list{flex:1;overflow-y:auto;background:transparent;padding:12px 16px;font-size:14px}
+  .chat-msg{padding:6px 0;border-bottom:1px solid var(--line)}
+  .chat-msg:last-child{border-bottom:none}
+  .chat-who{font-weight:700;color:var(--blue);font-size:12px;margin-bottom:2px}
+  .chat-text{color:var(--text)}
+  .chat-time{font-size:10px;color:var(--muted);margin-left:6px}
+  .chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);flex-shrink:0}
+  .chat-input input{flex:1;padding:10px;border-radius:9px;border:1px solid var(--line);
+    background:var(--card-2);color:var(--text);font-size:14px;min-width:0}
+  .chat-input button{padding:10px 16px;border-radius:9px;border:none;
+    background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:14px;flex-shrink:0}
+
+  .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
+  .popup.show{display:flex}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .popup-content{background:var(--card);padding:clamp(28px,5vw,48px);
+    border-radius:24px;text-align:center;max-width:min(92vw,560px);width:100%;
+    border:3px solid var(--green);box-shadow:0 20px 60px rgba(34,197,94,.4);
+    animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+  .popup-trophy{font-size:clamp(60px,12vw,90px);margin-bottom:8px;animation:bounce 1s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .popup-label{font-size:clamp(13px,2vw,16px);color:var(--muted);
+    text-transform:uppercase;letter-spacing:3px;font-weight:700}
+  .popup-team{font-size:clamp(26px,5vw,38px);font-weight:900;color:var(--blue);margin:10px 0 6px}
+  .popup-name{font-size:clamp(34px,7vw,52px);font-weight:900;color:var(--green);margin-bottom:24px;line-height:1.1}
+  .popup-btn{padding:16px 32px;border-radius:14px;border:none;
+    background:var(--green);color:#fff;font-size:clamp(16px,2.5vw,20px);font-weight:800;
+    cursor:pointer;letter-spacing:1px;box-shadow:0 8px 24px rgba(34,197,94,.4);transition:.15s}
+  .popup-btn:hover{transform:scale(1.05)}
+
+  @media (max-width:640px){
+    header{gap:8px;padding:10px 12px}
+    header .room{font-size:16px}
+    .row button{flex:1 1 auto;min-width:0;padding:9px 10px;font-size:13px}
+    .qr-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+  }
+</style>
+</head>
+<body>
+
+<div id="loginView" class="center-panel">
+  <h1 style="text-align:center">🎯 Host Login</h1>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div id="loginMsg" class="err"></div>
+</div>
+
+<div id="settingsView" class="center-panel" style="display:none">
+  <h1 style="text-align:center">⚙ Settings Room</h1>
+  <label for="settingRoomId">Room ID (huruf kecil & angka, 3–20 karakter)</label>
+  <input id="settingRoomId" class="mono" maxlength="20" placeholder="contoh: cerdas2025"
+         oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9]/g, '')">
+  <div class="hint">URL QR: <code>...?room=<span id="previewRoom">…</span></code></div>
+  <label for="settingTeamCount">Jumlah Tim</label>
+  <input id="settingTeamCount" type="number" min="1" max="20" value="4">
+  <div class="hint">QR dibuat untuk Tim 1 s.d. Tim N. Jumlah pemain per tim <strong>bebas</strong>.</div>
+  <button onclick="saveSettings()">💾 Simpan &amp; Lanjutkan</button>
+  <div id="settingsMsg" class="err"></div>
+</div>
+
+<div id="hostView" style="display:none;max-width:1200px;margin:0 auto">
+  <header>
+    <div class="room-wrap">
+      <span>Room:</span><span class="room" id="roomId">-</span>
+      <span class="team-count" id="teamCountLabel">- tim</span>
+    </div>
+    <div class="row">
+      <button id="themeBtn" onclick="toggleTheme()">☀ Light</button>
+      <button onclick="openSettings()">⚙ Settings</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <h2>⏱ Timer Quiz (independen)</h2>
+    <div class="row">
+      <input id="duration" type="number" min="5" max="600" value="30"> <span>detik</span>
+      <button class="primary" onclick="startTimer()">▶ Start</button>
+      <button onclick="stopTimer()">⏸ Stop</button>
+      <button class="danger" onclick="resetTimer()">↺ Reset</button>
+    </div>
+    <div id="timerDisplay" class="timer-display">—</div>
+  </section>
+
+  <section class="panel">
+    <h2>🔔 Tombol Cepat (independen)</h2>
+    <div id="buzzerStatus" class="buzzer-status">Status: <span id="buzzerText">TERTUTUP</span></div>
+    <div class="row">
+      <button class="success" onclick="armBuzzer()">🔓 Buka Buzzer</button>
+      <button onclick="disarmBuzzer()">🔒 Tutup Buzzer</button>
+      <button class="danger" onclick="resetState()">↺ Reset State</button>
+    </div>
+  </section>
+
+  <section class="panel" style="text-align:center">
+    <h2>🏆 Siapa Cepat Tekan Tombol?</h2>
+    <div id="fastestDisplay"><em style="color:var(--muted)">Menunggu…</em></div>
+  </section>
+
+  <section class="panel">
+    <h2>👥 Pemain</h2>
+    <div id="playersList"></div>
+    <h3 style="margin:16px 0 8px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">
+      QR Code Registrasi per Tim</h3>
+    <div id="qrList" class="qr-grid"></div>
+  </section>
+</div>
+
+<button id="chatFab" class="chat-fab" onclick="toggleChat()" title="Buka chat">
+  💬<span id="chatUnread" class="chat-unread" style="display:none">0</span>
+</button>
+<div id="chatBackdrop" class="chat-backdrop" onclick="toggleChat()"></div>
+<aside id="chatDrawer" class="chat-drawer" aria-hidden="true">
+  <header class="chat-drawer-header">
+    <h3>💬 Chat</h3>
+    <button class="chat-close" onclick="toggleChat()" title="Tutup">✕</button>
+  </header>
+  <div id="chatList" class="chat-list"></div>
+  <div class="chat-input">
+    <input id="chatInput" placeholder="Ketik pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
+    <button onclick="kirimChat()">➤</button>
+  </div>
+</aside>
+
+<div id="winnerPopup" class="popup">
+  <div class="popup-content">
+    <div class="popup-trophy">🏆</div>
+    <div class="popup-label">TERCEPAT MENEKAN TOMBOL</div>
+    <div class="popup-team" id="popupTeam">Tim 1</div>
+    <div class="popup-name" id="popupName">Budi</div>
+    <button class="popup-btn" onclick="lanjutkanGame()">Lanjutkan ▶</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, onValue, set, remove, get, push, serverTimestamp,
+         query, limitToLast, update }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ============================================================
+   🔥 GANTI BLOK INI DENGAN firebaseConfig ANDA (Langkah 6)
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "GANTI_API_KEY",
+  authDomain: "GANTI.firebaseapp.com",
+  databaseURL: "https://GANTI-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "GANTI",
+  storageBucket: "GANTI.appspot.com",
+  messagingSenderId: "GANTI",
+  appId: "GANTI"
+};
+/* ============================================================ */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+let serverOffset = 0;
+onValue(ref(db, '.info/serverTimeOffset'), s => serverOffset = s.val() || 0);
+const serverNow = () => Date.now() + serverOffset;
+
+let roomId = localStorage.getItem('cc_room') || '';
+let teamCount = parseInt(localStorage.getItem('cc_team_count') || '0') || 0;
+let user = null;
+let fastestState = null;
+let playersData = {};
+let buzzerState = { armed: false };
+let timerInterval = null;
+let wasLocked = false;
+let listenersReady = false;
+let chatOpen = false;
+let lastChatCount = 0;
+let unreadChat = 0;
+
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('cc_theme_host', t);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = t === 'dark' ? '☀ Light' : '🌙 Dark';
+}
+window.toggleTheme = () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+};
+applyTheme(localStorage.getItem('cc_theme_host') || 'dark');
+
+window.login = async () => {
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value;
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch (e) { document.getElementById('loginMsg').textContent = e.message; }
+};
+window.logout = () => signOut(auth);
+
+onAuthStateChanged(auth, u => {
+  user = u;
+  document.getElementById('loginView').style.display = u ? 'none' : 'block';
+  if (u){
+    if (roomId && teamCount > 0){ showHostView(); }
+    else { showSettingsView(); }
+  } else {
+    document.getElementById('settingsView').style.display = 'none';
+    document.getElementById('hostView').style.display = 'none';
+  }
+});
+
+function showSettingsView(){
+  document.getElementById('settingsView').style.display = 'block';
+  document.getElementById('hostView').style.display = 'none';
+  document.getElementById('settingRoomId').value = roomId;
+  document.getElementById('settingTeamCount').value = teamCount || 4;
+  document.getElementById('settingsMsg').textContent = '';
+  updateRoomPreview();
+  const inp = document.getElementById('settingRoomId');
+  if (!inp.dataset.listener){
+    inp.addEventListener('input', updateRoomPreview);
+    inp.dataset.listener = '1';
+  }
+}
+function updateRoomPreview(){
+  const v = document.getElementById('settingRoomId').value || '…';
+  document.getElementById('previewRoom').textContent = v;
+}
+window.openSettings = () => showSettingsView();
+
+function showHostView(){
+  document.getElementById('settingsView').style.display = 'none';
+  document.getElementById('hostView').style.display = 'block';
+  document.getElementById('roomId').textContent = roomId;
+  document.getElementById('teamCountLabel').textContent = `${teamCount} tim`;
+  renderQRs();
+  if (!listenersReady){ initListeners(); listenersReady = true; }
+  renderPlayers();
+  renderFastest();
+  renderBuzzerStatus();
+}
+
+window.saveSettings = async () => {
+  const msg = document.getElementById('settingsMsg');
+  const newRoom = document.getElementById('settingRoomId').value.trim().toLowerCase();
+  const newTeams = parseInt(document.getElementById('settingTeamCount').value) || 0;
+  msg.className = 'err';
+
+  if (!/^[a-z0-9]{3,20}$/.test(newRoom)){
+    msg.textContent = 'Room ID hanya boleh huruf kecil & angka, 3–20 karakter.';
+    return;
+  }
+  if (newTeams < 1 || newTeams > 20){
+    msg.textContent = 'Jumlah tim harus 1–20.';
+    return;
+  }
+  try {
+    const snap = await get(ref(db, `rooms/${newRoom}/players`));
+    if (snap.exists() && newRoom !== roomId){
+      if (!confirm(`Room "${newRoom}" sudah pernah dipakai. Lanjutkan?`)) return;
+    }
+  } catch (e){}
+
+  roomId = newRoom;
+  teamCount = newTeams;
+  localStorage.setItem('cc_room', roomId);
+  localStorage.setItem('cc_team_count', teamCount);
+  listenersReady = false;
+  showHostView();
+};
+
+function initListeners(){
+  onValue(ref(db, `rooms/${roomId}/state`), snap => {
+    const val = snap.val();
+    fastestState = val;
+    const isLocked = !!(val && val.locked);
+    if (isLocked && !wasLocked){ showFastestPopup(val); playFanfare(); }
+    if (!isLocked && wasLocked){ hideFastestPopup(); }
+    wasLocked = isLocked;
+    renderFastest();
+    renderBuzzerStatus();
+  });
+  onValue(ref(db, `rooms/${roomId}/players`), snap => {
+    playersData = snap.val() || {};
+    renderPlayers();
+  });
+  onValue(ref(db, `rooms/${roomId}/timer`), snap => startCountdown(snap.val()));
+  onValue(ref(db, `rooms/${roomId}/buzzer`), snap => {
+    buzzerState = snap.val() || { armed: false };
+    renderBuzzerStatus();
+  });
+  onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(100)), snap => {
+    const data = snap.val() || {};
+    const msgs = Object.entries(data).map(([k,v]) => ({key:k, ...v}))
+      .sort((a,b) => (a.ts||0) - (b.ts||0));
+    renderChat(msgs);
+  });
+}
+
+function renderFastest(){
+  const el = document.getElementById('fastestDisplay');
+  if (!fastestState || !fastestState.locked){
+    el.innerHTML = '<em style="color:var(--muted)">Menunggu…</em>';
+    return;
+  }
+  el.innerHTML = `<div style="font-size:22px;font-weight:900;color:var(--green)">
+    🏆 Tim ${fastestState.team} — ${esc(fastestState.name)}</div>`;
+}
+function renderBuzzerStatus(){
+  const s = document.getElementById('buzzerStatus');
+  const t = document.getElementById('buzzerText');
+  s.className = 'buzzer-status';
+  if (fastestState?.locked){ s.classList.add('locked'); t.textContent = 'TERKUNCI (sudah ada yang menekan)'; }
+  else if (buzzerState.armed){ s.classList.add('armed'); t.textContent = 'TERBUKA — pemain bisa menekan'; }
+  else { t.textContent = 'TERTUTUP'; }
+}
+function renderPlayers(){
+  const perTim = {};
+  Object.values(playersData).forEach(p => (perTim[p.team] ||= []).push(p.name));
+  const allTeams = new Set();
+  for (let t=1; t<=teamCount; t++) allTeams.add(t);
+  Object.keys(perTim).forEach(t => allTeams.add(parseInt(t)));
+  const sorted = Array.from(allTeams).sort((a,b) => a-b);
+  const html = sorted.map(t => {
+    const names = perTim[t] || [];
+    const extra = t > teamCount;
+    return `<div class="team-card">
+      <div class="team-title">Tim ${t}<span class="badge">${names.length} device</span>
+        ${extra ? '<span class="badge" style="background:var(--amber);color:#000">di luar setelan</span>' : ''}
+      </div>
+      <div class="team-members">${names.length ? names.map(esc).join(', ') : '<em>belum ada</em>'}</div>
+    </div>`;
+  });
+  document.getElementById('playersList').innerHTML = html.join('');
+}
+function renderQRs(){
+  const c = document.getElementById('qrList');
+  c.innerHTML = '';
+  const baseUrl = new URL('player.html', location.href);
+  for (let t=1; t<=teamCount; t++){
+    const div = document.createElement('div');
+    div.className = 'qr-item';
+    div.innerHTML = `<div class="qr-label">Tim ${t}</div><canvas></canvas>`;
+    c.appendChild(div);
+    const url = new URL(baseUrl);
+    url.searchParams.set('room', roomId);
+    url.searchParams.set('team', t);
+    QRCode.toCanvas(div.querySelector('canvas'), url.toString(), {width:220, margin:1});
+  }
+}
+function renderChat(msgs){
+  const el = document.getElementById('chatList');
+  if (!el) return;
+  const prevLen = lastChatCount;
+  lastChatCount = msgs.length;
+  el.innerHTML = msgs.map(m => `
+    <div class="chat-msg">
+      <div class="chat-who">Tim ${m.team}${m.name ? ' • '+esc(m.name) : ''}
+        <span class="chat-time">${m.ts ? new Date(m.ts).toLocaleTimeString() : ''}</span></div>
+      <div class="chat-text">${esc(m.text)}</div>
+    </div>`).join('');
+  if (chatOpen){
+    el.scrollTop = el.scrollHeight;
+  } else if (prevLen > 0 && msgs.length > prevLen){
+    const newMsgs = msgs.slice(prevLen).filter(m => m.team !== 0);
+    if (newMsgs.length > 0){
+      unreadChat += newMsgs.length;
+      updateUnreadBadge();
+    }
+  }
+}
+window.toggleChat = () => {
+  chatOpen = !chatOpen;
+  const drawer = document.getElementById('chatDrawer');
+  const backdrop = document.getElementById('chatBackdrop');
+  drawer.classList.toggle('open', chatOpen);
+  backdrop.classList.toggle('show', chatOpen);
+  drawer.setAttribute('aria-hidden', chatOpen ? 'false' : 'true');
+  if (chatOpen){
+    unreadChat = 0;
+    updateUnreadBadge();
+    setTimeout(() => {
+      const el = document.getElementById('chatList');
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 300);
+  }
+};
+function updateUnreadBadge(){
+  const badge = document.getElementById('chatUnread');
+  if (!badge) return;
+  if (unreadChat > 0){ badge.style.display = 'flex'; badge.textContent = unreadChat > 99 ? '99+' : unreadChat; }
+  else { badge.style.display = 'none'; }
+}
+
+function startCountdown(timer){
+  clearInterval(timerInterval);
+  const el = document.getElementById('timerDisplay');
+  if (!timer || !timer.running || !timer.startedAt){
+    el.textContent = '—'; el.className = 'timer-display'; return;
+  }
+  const endAt = timer.startedAt + timer.duration * 1000;
+  const tick = () => {
+    const remaining = Math.max(0, endAt - serverNow());
+    el.textContent = (remaining/1000).toFixed(1);
+    el.className = 'timer-display';
+    if (remaining < 5000) el.classList.add('urgent');
+    if (remaining <= 0){
+      el.textContent = 'TIME UP!'; el.classList.add('done');
+      clearInterval(timerInterval);
+      playTimeUp();
+    }
+  };
+  tick();
+  timerInterval = setInterval(tick, 100);
+}
+window.startTimer = async () => {
+  const dur = parseInt(document.getElementById('duration').value) || 30;
+  await set(ref(db, `rooms/${roomId}/timer`), { running: true, duration: dur, startedAt: serverTimestamp() });
+};
+window.stopTimer = async () => update(ref(db, `rooms/${roomId}/timer`), {running:false});
+window.resetTimer = async () => remove(ref(db, `rooms/${roomId}/timer`));
+window.armBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:true, armedAt: serverTimestamp()});
+window.disarmBuzzer = async () => set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
+window.resetState = async () => remove(ref(db, `rooms/${roomId}/state`));
+
+function showFastestPopup(val){
+  document.getElementById('popupTeam').textContent = `Tim ${val.team}`;
+  document.getElementById('popupName').textContent = val.name || '—';
+  document.getElementById('winnerPopup').classList.add('show');
+}
+function hideFastestPopup(){
+  document.getElementById('winnerPopup').classList.remove('show');
+}
+window.lanjutkanGame = async () => {
+  hideFastestPopup();
+  await remove(ref(db, `rooms/${roomId}/state`));
+};
+window.kirimChat = async () => {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  await set(push(ref(db, `rooms/${roomId}/chat`)), { name:'Host', team:0, text, ts: serverTimestamp() });
+  input.value = '';
+  input.focus();
+};
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && chatOpen) toggleChat();
+});
+
+let actx;
+function getAC(){
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function note(ctx, freq, start, dur, vol){
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'square'; osc.frequency.value = freq;
+  osc.connect(gain); gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0, start);
+  gain.gain.linearRampToValueAtTime(vol, start + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+  osc.start(start); osc.stop(start + dur);
+}
+function playFanfare(){
+  try {
+    const ctx = getAC();
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+    notes.forEach((f, i) => {
+      note(ctx, f, now + i*0.11, 0.28, 0.5);
+      note(ctx, f*2, now + i*0.11, 0.20, 0.18);
+    });
+    [523.25, 659.25, 783.99, 1046.5].forEach(f => note(ctx, f, now + notes.length*0.11, 0.6, 0.4));
+  } catch(e){}
+}
+function playTimeUp(){
+  try {
+    const ctx = getAC();
+    const now = ctx.currentTime;
+    [880, 660, 440].forEach((f, i) => note(ctx, f, now + i*0.18, 0.35, 0.5));
+  } catch(e){}
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+</script>
+</body>
+</html>
