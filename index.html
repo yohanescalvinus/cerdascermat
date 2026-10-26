@@ -219,7 +219,6 @@
 
   <div class="dashboard-grid">
     
-    <!-- KIRI -->
     <div style="display:flex; flex-direction:column; gap:12px;">
       
       <section class="panel" style="margin-bottom:0;">
@@ -265,7 +264,6 @@
       </section>
     </div>
 
-    <!-- KANAN -->
     <div class="right-column">
       
       <section class="panel chat-panel" id="chatPanel" style="margin-bottom:0;">
@@ -453,16 +451,14 @@ async function showHostView(){
   document.getElementById('roomId').textContent = roomId;
   document.getElementById('teamCountLabel').textContent = `${teamCount} tim`;
   
-  // --- PENGAMAN ANTI-CRASH ---
   try {
     if(user) {
        await set(ref(db, `rooms/${roomId}/timer`), null);
        await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
     }
   } catch(e) {
-    console.warn("Peringatan: Gagal mereset state awal (mungkin terblokir Rules), tapi halaman tetap lanjut.");
+    console.warn("Peringatan reset state:", e.message);
   }
-  // ---------------------------
 
   qrVisibleState = {};
   for(let i=1; i<=teamCount; i++) qrVisibleState[i] = false;
