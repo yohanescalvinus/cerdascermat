@@ -28,7 +28,6 @@
   h2{font-size:clamp(11px,1.4vw,13px);margin:0 0 10px;color:var(--muted);
     text-transform:uppercase;letter-spacing:1px; font-weight: 700;}
 
-  /* --- LOGIN & SETTINGS PANEL --- */
   .center-panel{max-width:420px;margin:8vh auto;background:var(--card);
     padding:28px;border-radius:16px;border:1px solid var(--line);transition:.3s}
   .center-panel label{display:block;font-size:13px;color:var(--muted);
@@ -44,7 +43,6 @@
   .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
   .ok{color:var(--green);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
 
-  /* --- HEADER --- */
   header{display:flex;justify-content:space-between;align-items:center;gap:12px;
     flex-wrap:wrap;padding:10px 16px;background:var(--card);border-radius:14px;
     border:1px solid var(--line);margin-bottom:12px}
@@ -57,7 +55,6 @@
   header button:hover{filter:brightness(1.15)}
   header button.btn-reset { background: var(--red); color: white; border: none; }
 
-  /* --- PANELS --- */
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:clamp(10px,1.5vw,14px);margin-bottom:12px;transition:.3s}
   
@@ -77,7 +74,6 @@
   .panel button.danger{background:var(--red);color:#fff;border:none}
   .panel button:disabled{opacity:.4;cursor:not-allowed;filter:none}
 
-  /* --- TIMER & BUZZER --- */
   .timer-display-wrapper { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 12px; padding: 12px; background: var(--card-2); border-radius: 12px; border: 1px solid var(--line);}
   .timer-display{font-family:ui-monospace,Consolas,monospace;
     font-size:clamp(32px,5vw,48px);font-weight:900;text-align:center;
@@ -98,7 +94,6 @@
   .buzzer-status.locked{border-color:var(--amber);color:var(--amber)}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
 
-  /* --- PEMAIN --- */
   .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
     padding:10px;margin-bottom:6px; display: flex; justify-content: space-between; align-items: center;}
   .team-title{font-weight:700;font-size:14px;}
@@ -106,7 +101,6 @@
     border-radius:20px;margin-left:6px;font-weight:600}
   .team-members{color:var(--muted);font-size:12px; text-align: right; max-width: 60%;}
 
-  /* --- QR CODE (KONTRAS PUTIH) --- */
   .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
   .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
     padding:10px;display:flex;flex-direction:column;align-items:center;}
@@ -120,15 +114,14 @@
     border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
   }
   
-  /* --- LAYOUT UTAMA & KANAN DINAMIS --- */
   .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;}
   
   .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; }
   
   .chat-panel { display: flex; flex-direction: column; flex: 1; min-height: 150px; transition: flex 0.3s ease; }
+  /* QR Panel selalu ada, tapi mengecil jika tidak ada isinya */
   .qr-panel { display: flex; flex-direction: column; flex-shrink: 0; transition: all 0.3s ease; }
 
-  /* --- CHAT --- */
   .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
     border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px}
   .chat-msg{padding:6px 0;border-bottom:1px solid var(--line)}
@@ -148,7 +141,6 @@
   }
   .btn-clear-chat:hover { filter: brightness(1.2); }
 
-  /* --- POPUPS --- */
   .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
   .popup.show{display:flex}
@@ -291,7 +283,8 @@
         </div>
       </section>
 
-      <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0; display: none;">
+      <!-- Panel QR selalu ada, namun tingginya dinamis -->
+      <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0;">
         <div class="panel-header-row">
           <h2>📱 QR Code Registrasi</h2>
         </div>
@@ -578,15 +571,12 @@ function renderQRs(){
   }
 
   const baseUrl = new URL('player.html', location.href);
-  let anyQrVisible = false; 
-
+  
   for (let t=1; t<=teamCount; t++){
     const div = document.createElement('div');
     div.className = 'qr-item';
     
     const isVisible = qrVisibleState[t];
-    if (isVisible) anyQrVisible = true;
-
     const btnText = isVisible ? 'Sembunyikan' : 'Tampilkan';
     const btnClass = isVisible ? 'danger' : 'primary';
     const displayStyle = isVisible ? 'flex' : 'none';
@@ -615,11 +605,16 @@ function renderQRs(){
     }
   }
 
+  // Logika Lebar/Tinggi Dinamis (Live Chat vs QR)
   const qrPanel = document.getElementById('qrPanel');
-  if (anyQrVisible) {
-    qrPanel.style.display = 'flex';
+  const qrCanvasCount = document.querySelectorAll('.qr-canvas-container[style*="display: flex"]').length;
+  
+  if (qrCanvasCount === 0) {
+    // Jika semua QR tertutup, panel QR mengecil (hanya menyisakan tombolnya saja)
+    qrPanel.style.minHeight = 'auto';
   } else {
-    qrPanel.style.display = 'none';
+    // Jika ada QR yang terbuka, panel QR membesar
+    qrPanel.style.minHeight = '200px';
   }
 }
 
