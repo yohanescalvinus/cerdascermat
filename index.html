@@ -13,20 +13,19 @@
     --blue:#38bdf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
   }
   [data-theme="light"]{
-    --bg:#e5e7eb; --bg-grad-1:#f3f4f6; --bg-grad-2:#d1d5db;
-    --card:#f9fafb; --card-2:#f3f4f6; --line:#d1d5db;
-    --text:#1f2937; --muted:#6b7280;
-    --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+    --bg:#f1f5f9; --bg-grad-1:#e2e8f0; --bg-grad-2:#f8fafc;
+    --card:#ffffff; --card-2:#f8fafc; --line:#cbd5e1;
+    --text:#0f172a; --muted:#64748b;
+    --blue:#0284c7; --green:#16a34a; --red:#dc2626; --amber:#d97706;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;
-    padding:clamp(10px,2vw,16px);
+    padding:clamp(10px,2vw,24px);
     background:radial-gradient(circle at top,var(--bg-grad-1),var(--bg-grad-2) 70%);
-    color:var(--text);min-height:100dvh;transition:background .3s,color .3s; overflow-x: hidden;}
-  
+    color:var(--text);min-height:100dvh;transition:background .3s,color .3s}
   h1{font-size:clamp(18px,2.5vw,22px);margin:0 0 4px}
-  h2{font-size:clamp(11px,1.4vw,13px);margin:0 0 10px;color:var(--muted);
-    text-transform:uppercase;letter-spacing:1px; font-weight: 700;}
+  h2{font-size:clamp(12px,1.6vw,14px);margin:0 0 12px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1px}
 
   .center-panel{max-width:420px;margin:8vh auto;background:var(--card);
     padding:28px;border-radius:16px;border:1px solid var(--line);transition:.3s}
@@ -40,110 +39,98 @@
     background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
   .center-panel button:disabled{opacity:.5;cursor:not-allowed}
   .hint{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px;line-height:1.4}
-  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
 
   header{display:flex;justify-content:space-between;align-items:center;gap:12px;
-    flex-wrap:wrap;padding:10px 16px;background:var(--card);border-radius:14px;
-    border:1px solid var(--line);margin-bottom:12px}
+    flex-wrap:wrap;padding:12px 16px;background:var(--card);border-radius:14px;
+    border:1px solid var(--line);margin-bottom:14px}
   header .room-wrap{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
   header .room{font-family:ui-monospace,Consolas,monospace;
-    font-size:clamp(16px,2.4vw,20px);font-weight:900;letter-spacing:2px;color:var(--blue)}
+    font-size:clamp(16px,2.4vw,22px);font-weight:900;letter-spacing:2px;color:var(--blue)}
   header .team-count{font-size:13px;color:var(--muted)}
   header button{padding:8px 14px;border-radius:9px;border:1px solid var(--line);
-    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px; transition:.15s}
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:14px}
   header button:hover{filter:brightness(1.15)}
-  header button.btn-reset { background: var(--red); color: white; border: none; }
 
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
-    padding:clamp(10px,1.5vw,14px);margin-bottom:12px;transition:.3s}
-  
-  .panel-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;}
-  .panel-header-row h2 { margin: 0; }
-  .controls-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  
-  .input-time { width: 60px; padding: 8px; border-radius: 8px; border: 1px solid var(--line);
-    background: var(--card-2); color: var(--text); font-size: 14px; text-align: center; font-weight: bold; }
-  
-  .panel button{padding:8px 12px;border-radius:8px;border:1px solid var(--line);
-    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px;transition:.15s;
-    display: flex; align-items: center; justify-content: center; gap: 4px;}
+    padding:clamp(12px,2vw,16px);margin-bottom:14px;transition:.3s}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .row input[type=number]{width:80px;padding:10px;border-radius:9px;
+    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:15px}
+  .panel button{padding:10px 14px;border-radius:9px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:14px;transition:.15s}
   .panel button:hover{filter:brightness(1.15)}
   .panel button.primary{background:var(--blue);color:#fff;border:none}
   .panel button.success{background:var(--green);color:#fff;border:none}
   .panel button.danger{background:var(--red);color:#fff;border:none}
   .panel button:disabled{opacity:.4;cursor:not-allowed;filter:none}
 
-  .timer-display-wrapper { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding: 12px 20px; background: var(--card-2); border-radius: 12px; border: 1px solid var(--line);}
   .timer-display{font-family:ui-monospace,Consolas,monospace;
-    font-size:clamp(32px,5vw,48px);font-weight:900;text-align:center;
-    color:var(--green);letter-spacing:2px; line-height: 1; flex: 1;}
+    font-size:clamp(40px,7vw,56px);font-weight:900;text-align:center;
+    margin-top:14px;color:var(--green);letter-spacing:2px}
   .timer-display.urgent{color:var(--amber)}
-  .timer-display.done{color:var(--red);font-size:clamp(24px,4vw,32px)}
-  
-  .btn-show-timer {
-    background: var(--card); color: var(--blue); border: 2px solid var(--blue); border-radius: 8px;
-    padding: 8px 16px; font-size: 13px; font-weight: bold; cursor: pointer; display: none; 
-  }
-  .btn-show-timer:hover { background: var(--blue); color: white; }
+  .timer-display.done{color:var(--red);font-size:clamp(28px,5vw,40px)}
 
   .buzzer-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
     padding:10px 14px;border-radius:10px;background:var(--card-2);
-    border:2px dashed var(--line);font-weight:700;margin-bottom:12px; font-size: 13px;}
+    border:2px dashed var(--line);font-weight:700;margin-bottom:12px}
   .buzzer-status.armed{border-color:var(--green);color:var(--green);animation:pulse 2s ease-in-out infinite}
   .buzzer-status.locked{border-color:var(--amber);color:var(--amber)}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
 
-  .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
-    padding:10px;margin-bottom:6px; display: flex; justify-content: space-between; align-items: center;}
-  .team-title{font-weight:700;font-size:14px;}
+  .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
+    padding:12px;margin-bottom:8px}
+  .team-title{font-weight:700;font-size:15px;margin-bottom:4px}
   .team-title .badge{font-size:11px;background:var(--line);padding:2px 8px;
     border-radius:20px;margin-left:6px;font-weight:600}
-  .team-members{color:var(--muted);font-size:12px; text-align: right; max-width: 60%;}
+  .team-members{color:var(--muted);font-size:13px}
 
-  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
   .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
-    padding:10px;display:flex;flex-direction:column;align-items:center;}
-  .qr-label{font-weight:700;margin-bottom:8px;font-size:13px;width:100%;text-align:center;}
-  
-  .qr-canvas-container { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 120px; background: #ffffff; border-radius: 8px; padding: 8px;}
-  .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; }
+    padding:10px;text-align:center}
+  .qr-label{font-weight:700;margin-bottom:6px;font-size:14px}
+  .qr-item canvas{width:100% !important;height:auto !important;image-rendering:pixelated}
 
-  .qr-toggle-btn {
-    margin-top: 10px; padding: 6px 8px; font-size: 11px; border-radius: 6px;
-    border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
-  }
-  
-  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;}
-  
-  .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; min-height: 550px;}
-  
-  .chat-panel { display: flex; flex-direction: column; flex: 1; transition: flex 0.3s ease; }
-  .qr-panel { display: flex; flex-direction: column; flex-shrink: 0; transition: all 0.3s ease; }
-
-  .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
-    border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px}
+  .chat-fab{position:fixed;right:20px;bottom:20px;width:58px;height:58px;border-radius:50%;
+    background:var(--blue);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:900;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+    transition:transform .15s}
+  .chat-fab:hover{transform:scale(1.08)}
+  .chat-unread{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;
+    min-width:22px;height:22px;border-radius:11px;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;padding:0 6px;
+    border:2px solid var(--bg)}
+  .chat-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;
+    transition:opacity .28s ease;z-index:950}
+  .chat-backdrop.show{opacity:1;pointer-events:auto}
+  .chat-drawer{position:fixed;top:0;right:0;width:min(380px,92vw);height:100dvh;
+    background:var(--card);border-left:1px solid var(--line);transform:translateX(100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:960;
+    display:flex;flex-direction:column;box-shadow:-8px 0 24px rgba(0,0,0,.35)}
+  .chat-drawer.open{transform:translateX(0)}
+  .chat-drawer-header{display:flex;justify-content:space-between;align-items:center;
+    padding:16px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
+  .chat-drawer-header h3{margin:0;font-size:16px}
+  .chat-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);cursor:pointer;font-size:14px;
+    display:flex;align-items:center;justify-content:center}
+  .chat-list{flex:1;overflow-y:auto;background:transparent;padding:12px 16px;font-size:14px}
   .chat-msg{padding:6px 0;border-bottom:1px solid var(--line)}
   .chat-msg:last-child{border-bottom:none}
-  .chat-who{font-weight:700;color:var(--blue);font-size:11px;margin-bottom:2px; display:flex; justify-content: space-between;}
-  .chat-time{font-size:9px;color:var(--muted);font-weight:normal;}
+  .chat-who{font-weight:700;color:var(--blue);font-size:12px;margin-bottom:2px}
   .chat-text{color:var(--text)}
-  .chat-input{display:flex;gap:6px}
-  .chat-input input{flex:1;padding:10px;border-radius:8px;border:1px solid var(--line);
-    background:var(--card-2);color:var(--text);font-size:13px;min-width:0}
-  .chat-input button{padding:10px 16px;border-radius:8px;border:none;
-    background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:13px;flex-shrink:0}
-  
-  .btn-clear-chat {
-    padding:4px 8px; font-size:11px; border-radius:6px; background:var(--red);
-    color:white; border:none; cursor:pointer; font-weight:bold;
-  }
-  .btn-clear-chat:hover { filter: brightness(1.2); }
+  .chat-time{font-size:10px;color:var(--muted);margin-left:6px}
+  .chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);flex-shrink:0}
+  .chat-input input{flex:1;padding:10px;border-radius:9px;border:1px solid var(--line);
+    background:var(--card-2);color:var(--text);font-size:14px;min-width:0}
+  .chat-input button{padding:10px 16px;border-radius:9px;border:none;
+    background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:14px;flex-shrink:0}
 
   .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
   .popup.show{display:flex}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .popup-content{background:var(--card);padding:clamp(24px,4vw,40px);
+  .popup-content{background:var(--card);padding:clamp(28px,5vw,48px);
     border-radius:24px;text-align:center;max-width:min(92vw,560px);width:100%;
     border:3px solid var(--green);box-shadow:0 20px 60px rgba(34,197,94,.4);
     animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
@@ -159,28 +146,37 @@
     cursor:pointer;letter-spacing:1px;box-shadow:0 8px 24px rgba(34,197,94,.4);transition:.15s}
   .popup-btn:hover{transform:scale(1.05)}
 
-  @media (max-width: 900px){
-    .dashboard-grid { grid-template-columns: 1fr; }
-    .right-column { height: auto; min-height: auto;}
-    .chat-panel { height: 300px; flex: none; }
+  @media (max-width:640px){
+    header{gap:8px;padding:10px 12px}
+    header .room{font-size:16px}
+    .row button{flex:1 1 auto;min-width:0;padding:9px 10px;font-size:13px}
+    .qr-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+  }
+
+  .qr-canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .qr-canvas-container img,
+  .qr-canvas-container canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
   }
 </style>
 </head>
 <body>
 
-<!-- LOGIN VIEW -->
 <div id="loginView" class="center-panel">
   <h1 style="text-align:center">🎯 Host Login</h1>
   <input id="email" type="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
-  <div style="text-align: center; margin-top: 12px;">
-    <a href="#" onclick="lupaPassword()" style="font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 600;">Lupa Password?</a>
-  </div>
   <div id="loginMsg" class="err"></div>
 </div>
 
-<!-- SETTINGS VIEW -->
 <div id="settingsView" class="center-panel" style="display:none">
   <h1 style="text-align:center">⚙ Settings Room</h1>
   <label for="settingRoomId">Room ID (huruf kecil & angka, 3–20 karakter)</label>
@@ -194,108 +190,70 @@
   <div id="settingsMsg" class="err"></div>
 </div>
 
-<!-- HOST VIEW -->
-<div id="hostView" style="display:none;max-width:1400px;margin:0 auto">
-  
+<div id="hostView" style="display:none;max-width:1200px;margin:0 auto">
   <header>
     <div class="room-wrap">
       <span>Room:</span><span class="room" id="roomId">-</span>
       <span class="team-count" id="teamCountLabel">- tim</span>
     </div>
-    <div class="controls-group" style="flex:unset; justify-content:flex-end; margin-top:0;">
-      <button onclick="toggleTheme()" id="themeBtn">☀ Light</button>
+    <div class="row">
+      <button id="themeBtn" onclick="toggleTheme()">☀ Light</button>
       <button onclick="openSettings()">⚙ Settings</button>
-      <button onclick="resetAllAndLogout()" class="btn-reset" title="Hapus semua state, chat, & cache lalu Logout">⚠ Reset Total</button>
       <button onclick="logout()">Logout</button>
     </div>
   </header>
 
-  <!-- POP-UP TIMER DIGITAL RAKSASA -->
-  <div id="timerModal" class="popup" style="display:none; z-index: 10000;">
-    <div class="popup-content" style="border-color:var(--blue); max-width: 800px; padding: 40px;">
-      <div class="popup-label" style="color:var(--blue); font-size: 20px; margin-bottom: 20px;">WAKTU TERSISA</div>
-      <div id="modalTimerText" style="font-family:ui-monospace,Consolas,monospace; font-size:clamp(80px, 15vw, 180px); font-weight:900; color:var(--green); line-height: 1; margin-bottom: 30px; letter-spacing: 5px;">
-        30.0
-      </div>
-      <button class="popup-btn" onclick="tutupPopupTimer()" style="background:var(--red); box-shadow:0 8px 24px rgba(239,68,68,.4); font-size:18px; padding:16px 32px;">Sembunyikan Timer</button>
+  <section class="panel">
+    <h2>⏱ Timer Quiz (independen)</h2>
+    <div class="row">
+      <input id="duration" type="number" min="5" max="600" value="30"> <span>detik</span>
+      <button class="primary" onclick="startTimer()">▶ Start</button>
+      <button onclick="stopTimer()">⏸ Stop</button>
+      <button class="danger" onclick="resetTimer()">↺ Reset</button>
     </div>
-  </div>
+    <div id="timerDisplay" class="timer-display">—</div>
+  </section>
 
-  <div class="dashboard-grid">
-    
-    <!-- KIRI: Timer, Buzzer, Pemain -->
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      
-      <section class="panel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>⏱ Timer Quiz</h2>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;color:var(--muted);">
-            <input type="checkbox" id="tickSoundToggle" checked onchange="toggleTickSound()"> Suara Tik
-          </label>
-        </div>
-        <div class="controls-group">
-          <input id="duration" class="input-time" type="number" min="5" max="600" value="30"> <span style="font-size:13px;color:var(--muted);">detik</span>
-          <button class="primary" onclick="startTimer()">▶ Start</button>
-          <button onclick="stopTimer()">⏸ Stop</button>
-          <button class="danger" onclick="resetTimer()">↺ Reset</button>
-        </div>
-        
-        <div class="timer-display-wrapper">
-          <div style="width: 130px; display:flex; justify-content:flex-start;">
-            <button class="btn-show-timer" id="btnShowTimer" onclick="bukaPopupTimer()">🔍 Munculkan</button>
-          </div>
-          <div id="timerDisplay" class="timer-display" style="text-align: center;">—</div>
-          <div style="width: 130px;"></div>
-        </div>
-      </section>
-
-      <section class="panel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>🔔 Tombol Cepat</h2>
-        </div>
-        <div id="buzzerStatus" class="buzzer-status">Status: <span id="buzzerText">TERTUTUP</span></div>
-        <div class="controls-group">
-          <button class="success" onclick="armBuzzer()">🔓 Buka</button>
-          <button onclick="disarmBuzzer()">🔒 Tutup</button>
-          <button class="danger" onclick="resetState()">↺ Reset</button>
-        </div>
-      </section>
-
-      <section class="panel" style="margin-bottom:0; flex:1;">
-        <div class="panel-header-row">
-          <h2>👥 Pemain</h2>
-        </div>
-        <div id="playersList" style="max-height:250px;overflow-y:auto;padding-right:5px;"></div>
-      </section>
+  <section class="panel">
+    <h2>🔔 Tombol Cepat (independen)</h2>
+    <div id="buzzerStatus" class="buzzer-status">Status: <span id="buzzerText">TERTUTUP</span></div>
+    <div class="row">
+      <button class="success" onclick="armBuzzer()">🔓 Buka Buzzer</button>
+      <button onclick="disarmBuzzer()">🔒 Tutup Buzzer</button>
+      <button class="danger" onclick="resetState()">↺ Reset State</button>
     </div>
+  </section>
 
-    <!-- KANAN: Live Chat (Atas) & QR (Bawah) -->
-    <div class="right-column">
-      
-      <section class="panel chat-panel" id="chatPanel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>💬 Live Chat</h2>
-          <button class="btn-clear-chat" onclick="clearChat()">Hapus Chat</button>
-        </div>
-        <div id="chatList" class="chat-list"></div>
-        <div class="chat-input">
-          <input id="chatInput" placeholder="Broadcast pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
-          <button onclick="kirimChat()">➤</button>
-        </div>
-      </section>
+  <section class="panel" style="text-align:center">
+    <h2>🏆 Siapa Cepat Tekan Tombol?</h2>
+    <div id="fastestDisplay"><em style="color:var(--muted)">Menunggu…</em></div>
+  </section>
 
-      <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0;">
-        <div class="panel-header-row">
-          <h2>📱 QR Code Registrasi</h2>
-        </div>
-        <div id="qrList" class="qr-grid"></div>
-      </section>
-    </div>
-
-  </div>
+  <section class="panel">
+    <h2>👥 Pemain</h2>
+    <div id="playersList"></div>
+    <h3 style="margin:16px 0 8px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">
+      QR Code Registrasi per Tim</h3>
+    <div id="qrList" class="qr-grid"></div>
+  </section>
 </div>
 
-<!-- POP-UP PEMENANG -->
+<button id="chatFab" class="chat-fab" onclick="toggleChat()" title="Buka chat">
+  💬<span id="chatUnread" class="chat-unread" style="display:none">0</span>
+</button>
+<div id="chatBackdrop" class="chat-backdrop" onclick="toggleChat()"></div>
+<aside id="chatDrawer" class="chat-drawer" aria-hidden="true">
+  <header class="chat-drawer-header">
+    <h3>💬 Chat</h3>
+    <button class="chat-close" onclick="toggleChat()" title="Tutup">✕</button>
+  </header>
+  <div id="chatList" class="chat-list"></div>
+  <div class="chat-input">
+    <input id="chatInput" placeholder="Ketik pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
+    <button onclick="kirimChat()">➤</button>
+  </div>
+</aside>
+
 <div id="winnerPopup" class="popup">
   <div class="popup-content">
     <div class="popup-trophy">🏆</div>
@@ -308,12 +266,15 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail }
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, onValue, set, remove, get, push, serverTimestamp,
          query, limitToLast, update }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+/* ============================================================
+   🔥 GANTI BLOK INI DENGAN firebaseConfig ANDA (Langkah 6)
+   ============================================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
   authDomain: "cerdascermat-a3206.firebaseapp.com",
@@ -323,6 +284,7 @@ const firebaseConfig = {
   messagingSenderId: "1098230358098",
   appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
 };
+/* ============================================================ */
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -339,13 +301,11 @@ let fastestState = null;
 let playersData = {};
 let buzzerState = { armed: false };
 let timerInterval = null;
-let tickInterval = null; 
 let wasLocked = false;
 let listenersReady = false;
+let chatOpen = false;
 let lastChatCount = 0;
-let isTickSoundOn = true;
-let qrVisibleState = {}; 
-let isTimerModalManuallyClosed = false; 
+let unreadChat = 0;
 
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
@@ -365,66 +325,9 @@ window.login = async () => {
   const msg = document.getElementById('loginMsg');
   msg.textContent = '';
   try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch (e) { msg.textContent = "Login Gagal: " + e.message; }
+  catch (e) { msg.textContent = e.message; }
 };
-
-window.lupaPassword = async () => {
-  const email = document.getElementById('email').value.trim();
-  const msg = document.getElementById('loginMsg');
-  
-  if (!email) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = 'Masukkan email Anda terlebih dahulu di kolom Email.';
-    return;
-  }
-  
-  try {
-    await sendPasswordResetEmail(auth, email);
-    msg.style.color = 'var(--green)';
-    msg.textContent = '✅ Tautan reset password telah dikirim ke email Anda. Silakan cek Kotak Masuk atau Spam.';
-  } catch (error) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = 'Gagal mengirim email: ' + error.message;
-  }
-};
-
-window.clearChat = async () => {
-  if (!confirm('Hapus semua riwayat chat?')) return;
-  try {
-    await set(ref(db, `rooms/${roomId}/chat`), null);
-    document.getElementById('chatList').innerHTML = '';
-  } catch(e) {
-    alert("Gagal menghapus chat. Pastikan aturan Firebase Rules mengizinkan penghapusan data.");
-  }
-};
-
-window.logout = async () => {
-  try {
-    await signOut(auth);
-    localStorage.removeItem('cc_theme_host');
-    window.location.reload();
-  } catch(e) { alert('Gagal logout: ' + e.message); }
-};
-
-window.resetAllAndLogout = async () => {
-  if (!confirm('⚠ PERINGATAN ⚠\nIni akan menghapus Timer, Status Buzzer, Data Pemenang, Semua Chat, dan Cache Memori.\n\nLanjutkan Reset Total?')) return;
-  
-  try {
-    if (roomId) {
-      await set(ref(db, `rooms/${roomId}/timer`), null);
-      await set(ref(db, `rooms/${roomId}/buzzer`), null);
-      await set(ref(db, `rooms/${roomId}/state`), null);
-      await set(ref(db, `rooms/${roomId}/chat`), null);
-    }
-    await signOut(auth);
-    localStorage.removeItem('cc_room');
-    localStorage.removeItem('cc_team_count');
-    localStorage.removeItem('cc_theme_host');
-    window.location.reload();
-  } catch (e) {
-    alert('Gagal reset total: ' + e.message);
-  }
-};
+window.logout = () => signOut(auth);
 
 onAuthStateChanged(auth, u => {
   user = u;
@@ -445,6 +348,11 @@ function showSettingsView(){
   document.getElementById('settingTeamCount').value = teamCount || 4;
   document.getElementById('settingsMsg').textContent = '';
   updateRoomPreview();
+  const inp = document.getElementById('settingRoomId');
+  if (!inp.dataset.listener){
+    inp.addEventListener('input', updateRoomPreview);
+    inp.dataset.listener = '1';
+  }
 }
 function updateRoomPreview(){
   const v = document.getElementById('settingRoomId').value || '…';
@@ -452,31 +360,17 @@ function updateRoomPreview(){
 }
 window.openSettings = () => showSettingsView();
 
-async function showHostView(){
+function showHostView(){
   document.getElementById('settingsView').style.display = 'none';
   document.getElementById('hostView').style.display = 'block';
   document.getElementById('roomId').textContent = roomId;
   document.getElementById('teamCountLabel').textContent = `${teamCount} tim`;
-  
-  if(user) {
-     await set(ref(db, `rooms/${roomId}/timer`), null);
-     await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
-  }
-
-  qrVisibleState = {};
-  for(let i=1; i<=teamCount; i++) qrVisibleState[i] = false;
-
   renderQRs();
-  
   if (!listenersReady){ initListeners(); listenersReady = true; }
   renderPlayers();
+  renderFastest();
   renderBuzzerStatus();
 }
-
-window.toggleSingleQR = (teamId) => {
-  qrVisibleState[teamId] = !qrVisibleState[teamId];
-  renderQRs();
-};
 
 window.saveSettings = async () => {
   const msg = document.getElementById('settingsMsg');
@@ -508,13 +402,20 @@ window.saveSettings = async () => {
 };
 
 function initListeners(){
+  // Reset state lokal saat (re)init
+  fastestState = null;
+  playersData = {};
+  buzzerState = { armed: false };
+  wasLocked = false;
+
   onValue(ref(db, `rooms/${roomId}/state`), snap => {
     const val = snap.val();
     fastestState = val;
     const isLocked = !!(val && val.locked);
-    if (isLocked && !wasLocked){ showFastestPopup(val); playHorn(); }
+    if (isLocked && !wasLocked){ showFastestPopup(val); playFanfare(); }
     if (!isLocked && wasLocked){ hideFastestPopup(); }
     wasLocked = isLocked;
+    renderFastest();
     renderBuzzerStatus();
   });
   onValue(ref(db, `rooms/${roomId}/players`), snap => {
@@ -526,7 +427,7 @@ function initListeners(){
     buzzerState = snap.val() || { armed: false };
     renderBuzzerStatus();
   });
-  onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
+  onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(100)), snap => {
     const data = snap.val() || {};
     const msgs = Object.entries(data).map(([k,v]) => ({key:k, ...v}))
       .sort((a,b) => (a.ts||0) - (b.ts||0));
@@ -534,12 +435,21 @@ function initListeners(){
   });
 }
 
+function renderFastest(){
+  const el = document.getElementById('fastestDisplay');
+  if (!fastestState || !fastestState.locked){
+    el.innerHTML = '<em style="color:var(--muted)">Menunggu…</em>';
+    return;
+  }
+  el.innerHTML = `<div style="font-size:22px;font-weight:900;color:var(--green)">
+    🏆 Tim ${fastestState.team} — ${esc(fastestState.name)}</div>`;
+}
 function renderBuzzerStatus(){
   const s = document.getElementById('buzzerStatus');
   const t = document.getElementById('buzzerText');
   s.className = 'buzzer-status';
-  if (fastestState?.locked){ s.classList.add('locked'); t.textContent = 'TERKUNCI'; }
-  else if (buzzerState.armed){ s.classList.add('armed'); t.textContent = 'TERBUKA'; }
+  if (fastestState?.locked){ s.classList.add('locked'); t.textContent = 'TERKUNCI (sudah ada yang menekan)'; }
+  else if (buzzerState.armed){ s.classList.add('armed'); t.textContent = 'TERBUKA — pemain bisa menekan'; }
   else { t.textContent = 'TERTUTUP'; }
 }
 function renderPlayers(){
@@ -554,168 +464,119 @@ function renderPlayers(){
     const extra = t > teamCount;
     return `<div class="team-card">
       <div class="team-title">Tim ${t}<span class="badge">${names.length} device</span>
-        ${extra ? '<span class="badge" style="background:var(--amber);color:#000">ext</span>' : ''}
+        ${extra ? '<span class="badge" style="background:var(--amber);color:#000">di luar setelan</span>' : ''}
       </div>
-      <div class="team-members">${names.length ? names.map(esc).join(', ') : '<em>-</em>'}</div>
+      <div class="team-members">${names.length ? names.map(esc).join(', ') : '<em>belum ada</em>'}</div>
     </div>`;
   });
   document.getElementById('playersList').innerHTML = html.join('');
 }
-
 function renderQRs(){
   const c = document.getElementById('qrList');
   c.innerHTML = '';
 
+  // Cek apakah library lokal berhasil dimuat
   if (typeof QRCode === 'undefined') {
-    c.innerHTML = '<div style="color:var(--red);font-size:12px;">Gagal memuat QR.</div>';
+    c.innerHTML = '<div style="color:var(--red);grid-column:1/-1;padding:10px;">Gagal memuat library QR lokal (qrcode.min.js). Pastikan file sudah di-upload di folder yang sama.</div>';
     return;
   }
 
   const baseUrl = new URL('player.html', location.href);
-  let adaYangTampil = false;
 
   for (let t=1; t<=teamCount; t++){
     const div = document.createElement('div');
     div.className = 'qr-item';
-    
-    const isVisible = qrVisibleState[t];
-    if(isVisible) adaYangTampil = true;
-
-    const btnText = isVisible ? 'Sembunyikan' : 'Tampilkan';
-    const btnClass = isVisible ? 'danger' : 'primary';
-    const displayStyle = isVisible ? 'flex' : 'none';
-
-    div.innerHTML = `
-      <div class="qr-label">Tim ${t}</div>
-      <button class="qr-toggle-btn ${btnClass}" onclick="toggleSingleQR(${t})">${btnText} QR</button>
-      <div class="qr-canvas-container" id="qr-canvas-${t}" style="display: ${displayStyle}; margin-top:6px;">
-      </div>
-    `;
+    const containerId = `qr-tim-${t}`;
+    div.innerHTML = `<div class="qr-label">Tim ${t}</div><div class="qr-canvas-container" id="${containerId}"></div>`;
     c.appendChild(div);
-    
-    if (isVisible) {
-      const url = new URL(baseUrl);
-      url.searchParams.set('room', roomId);
-      url.searchParams.set('team', t);
-      
-      new QRCode(document.getElementById(`qr-canvas-${t}`), {
+
+    const url = new URL(baseUrl);
+    url.searchParams.set('room', roomId);
+    url.searchParams.set('team', t);
+
+    const container = document.getElementById(containerId);
+    if (!container) continue;
+
+    try {
+      new QRCode(container, {
         text: url.toString(),
-        width: 150,
-        height: 150,
+        width: 200,
+        height: 200,
         colorDark : "#000000",
         colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.M
+        correctLevel : QRCode.CorrectLevel.H
       });
+    } catch (err) {
+      container.innerHTML = `<div style="color:var(--red);font-size:12px;">Gagal membuat QR: ${esc(err.message||err)}</div>`;
     }
   }
-
-  const qrPanel = document.getElementById('qrPanel');
-  if (adaYangTampil) {
-    qrPanel.style.minHeight = '250px'; 
-  } else {
-    qrPanel.style.minHeight = 'auto'; 
-  }
 }
-
 function renderChat(msgs){
   const el = document.getElementById('chatList');
   if (!el) return;
+  const prevLen = lastChatCount;
+  lastChatCount = msgs.length;
   el.innerHTML = msgs.map(m => `
     <div class="chat-msg">
       <div class="chat-who">Tim ${m.team}${m.name ? ' • '+esc(m.name) : ''}
-        <span class="chat-time">${m.ts ? new Date(m.ts).toLocaleTimeString().slice(0,5) : ''}</span></div>
+        <span class="chat-time">${m.ts ? new Date(m.ts).toLocaleTimeString() : ''}</span></div>
       <div class="chat-text">${esc(m.text)}</div>
     </div>`).join('');
-  el.scrollTop = el.scrollHeight;
+  if (chatOpen){
+    el.scrollTop = el.scrollHeight;
+  } else if (prevLen > 0 && msgs.length > prevLen){
+    const newMsgs = msgs.slice(prevLen).filter(m => m.team !== 0);
+    if (newMsgs.length > 0){
+      unreadChat += newMsgs.length;
+      updateUnreadBadge();
+    }
+  }
+}
+window.toggleChat = () => {
+  chatOpen = !chatOpen;
+  const drawer = document.getElementById('chatDrawer');
+  const backdrop = document.getElementById('chatBackdrop');
+  drawer.classList.toggle('open', chatOpen);
+  backdrop.classList.toggle('show', chatOpen);
+  drawer.setAttribute('aria-hidden', chatOpen ? 'false' : 'true');
+  if (chatOpen){
+    unreadChat = 0;
+    updateUnreadBadge();
+    setTimeout(() => {
+      const el = document.getElementById('chatList');
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 300);
+  }
+};
+function updateUnreadBadge(){
+  const badge = document.getElementById('chatUnread');
+  if (!badge) return;
+  if (unreadChat > 0){ badge.style.display = 'flex'; badge.textContent = unreadChat > 99 ? '99+' : unreadChat; }
+  else { badge.style.display = 'none'; }
 }
 
 function startCountdown(timer){
   clearInterval(timerInterval);
-  clearTimeout(tickInterval); 
-  
   const el = document.getElementById('timerDisplay');
-  const modal = document.getElementById('timerModal');
-  const modalText = document.getElementById('modalTimerText');
-  const btnShow = document.getElementById('btnShowTimer');
-  
   if (!timer || !timer.running || !timer.startedAt){
-    el.textContent = '—'; el.className = 'timer-display'; 
-    modal.style.display = 'none';
-    if (btnShow) btnShow.style.display = 'none';
-    return;
+    el.textContent = '—'; el.className = 'timer-display'; return;
   }
-  
-  if (btnShow) btnShow.style.display = 'inline-block';
-
-  if (!isTimerModalManuallyClosed) {
-      modal.style.display = 'flex';
-  }
-  
-  const totalDuration = timer.duration * 1000;
-  const endAt = timer.startedAt + totalDuration;
-  
-  const scheduleTick = () => {
-      if(!isTickSoundOn) return;
-      playTick();
-      
-      const remainingMs = Math.max(0, endAt - serverNow());
-      const secondsLeft = Math.ceil(remainingMs / 1000);
-      
-      let delay = 1000;
-      if (secondsLeft <= 3) delay = 200; 
-      else if (secondsLeft <= 10) delay = 500; 
-
-      tickInterval = setTimeout(scheduleTick, delay);
-  };
-
-  if(isTickSoundOn) scheduleTick();
-
+  const endAt = timer.startedAt + timer.duration * 1000;
   const tick = () => {
     const remaining = Math.max(0, endAt - serverNow());
-    const secondsStr = (remaining/1000).toFixed(1);
-    
-    el.textContent = secondsStr;
+    el.textContent = (remaining/1000).toFixed(1);
     el.className = 'timer-display';
     if (remaining < 5000) el.classList.add('urgent');
-    
-    if(modalText) {
-        modalText.textContent = secondsStr;
-        if (remaining < 5000) modalText.style.color = 'var(--amber)';
-    }
-
     if (remaining <= 0){
       el.textContent = 'TIME UP!'; el.classList.add('done');
-      if(modalText) { modalText.textContent = 'TIME UP!'; modalText.style.color = 'var(--red)'; }
       clearInterval(timerInterval);
-      clearTimeout(tickInterval); 
-      playHorn(); 
-      if (btnShow) btnShow.style.display = 'none'; 
+      playTimeUp();
     }
   };
   tick();
-  timerInterval = setInterval(tick, 50); 
+  timerInterval = setInterval(tick, 100);
 }
-
-window.tutupPopupTimer = () => {
-  document.getElementById('timerModal').style.display = 'none';
-  isTimerModalManuallyClosed = true;
-};
-
-window.bukaPopupTimer = () => {
-  isTimerModalManuallyClosed = false;
-  document.getElementById('timerModal').style.display = 'flex';
-};
-
-window.toggleTickSound = () => {
-  isTickSoundOn = document.getElementById('tickSoundToggle').checked;
-  if(!isTickSoundOn) {
-     clearInterval(tickInterval); 
-     clearTimeout(tickInterval);
-  }
-};
-
 window.startTimer = async () => {
-  isTimerModalManuallyClosed = false; 
   const dur = parseInt(document.getElementById('duration').value) || 30;
   await set(ref(db, `rooms/${roomId}/timer`), { running: true, duration: dur, startedAt: serverTimestamp() });
 };
@@ -746,62 +607,45 @@ window.kirimChat = async () => {
   input.focus();
 };
 
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && chatOpen) toggleChat();
+});
+
 let actx;
 function getAC(){
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
   if (actx.state === 'suspended') actx.resume();
   return actx;
 }
-
-function playHorn(){
+function note(ctx, freq, start, dur, vol){
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'square'; osc.frequency.value = freq;
+  osc.connect(gain); gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0, start);
+  gain.gain.linearRampToValueAtTime(vol, start + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+  osc.start(start); osc.stop(start + dur);
+}
+function playFanfare(){
   try {
     const ctx = getAC();
     const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sawtooth';
-    
-    osc.frequency.setValueAtTime(150, now);
-    osc.frequency.exponentialRampToValueAtTime(100, now + 0.5);
-    
-    const dist = ctx.createWaveShaper();
-    const curve = new Float32Array(44100);
-    for (let i = 0; i < 44100; i++) {
-        const x = i * 2 / 44100 - 1;
-        curve[i] = (3 + 10) * x * 20 * (Math.PI / 180) / (Math.PI + 10 * Math.abs(x));
-    }
-    dist.curve = curve;
-    
-    osc.connect(dist);
-    dist.connect(gain);
-    gain.connect(ctx.destination);
-    
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(1.0, now + 0.05); 
-    gain.gain.setValueAtTime(1.0, now + 0.4);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-    
-    osc.start(now); osc.stop(now + 0.6);
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+    notes.forEach((f, i) => {
+      note(ctx, f, now + i*0.11, 0.28, 0.5);
+      note(ctx, f*2, now + i*0.11, 0.20, 0.18);
+    });
+    [523.25, 659.25, 783.99, 1046.5].forEach(f => note(ctx, f, now + notes.length*0.11, 0.6, 0.4));
   } catch(e){}
 }
-
-function playTick(){
+function playTimeUp(){
   try {
     const ctx = getAC();
     const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square'; 
-    osc.frequency.setValueAtTime(800, now);
-    osc.frequency.exponentialRampToValueAtTime(300, now + 0.03);
-    osc.connect(gain); gain.connect(ctx.destination);
-    
-    gain.gain.setValueAtTime(1.0, now); 
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-    osc.start(now); osc.stop(now + 0.04);
+    [880, 660, 440].forEach((f, i) => note(ctx, f, now + i*0.18, 0.35, 0.5));
   } catch(e){}
 }
-
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
 </script>
 </body>
