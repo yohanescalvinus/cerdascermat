@@ -81,7 +81,6 @@
 
   /* BUZZER */
   .buzzer-panel { flex: 0 0 auto; }
-  /* Tampilan status di panel utama dibuat lebih kecil karena popup sudah menangani */
   .buzzer-status { text-align: center; font-size: 20px; font-weight: 900; padding: 12px; border-radius: 8px; border: 2px dashed var(--border-color); transition: 0.3s; letter-spacing: 1px;}
   .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: #fee2e2; }
   .buzzer-status.open { color: #16a34a; border-color: #22c55e; background: #dcfce7; }
@@ -318,8 +317,10 @@
   let playerListenerRef = null;
   let isTimerHidden = false;
 
-  // State untuk mengecek apakah popup sudah ditampilkan
-  let popupWinnerShown = false;
+  // Variabel bantu untuk melacak state
+  let currentPopupTeam = "";
+  let currentPopupName = "";
+  let isPopupVisible = false;
 
   const isLoggedIn = sessionStorage.getItem('isHostLoggedIn');
   
@@ -374,37 +375,37 @@
     generateQRs();
     loadDataPemain();
 
-    // CEK DEFAULT BUZZER SAAT LOGIN
+    // PEMANTAU STATUS BUZZER
     onValue(ref(db, `rooms/${roomId}/state`), snap => {
       const state = snap.val();
       const statusEl = document.getElementById('buzzerStatus');
-      const isLocked = state && state.locked;
-
+      
+      // JIKA DATA KOSONG (BARU MASUK), PAKSA JADI TERTUTUP
       if (state === null) {
         set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' });
         return;
       }
 
+      const isLocked = state && state.locked;
+
       if (!isLocked) {
         statusEl.textContent = 'STATUS: TERBUKA';
         statusEl.className = 'buzzer-status open';
         
-        // Jika sebelumnya ada pemenang, kita jangan tutup popup, user yang tutup manual
-        // Tapi kalau status jadi terbuka karena ditekan buka, pastikan popup hilang
-        if (state.name !== 'Ditutup Host') {
-           tutupWinnerPopup(); 
+        // JIKA POPUP MASIH TERBUKA SAAT HOST BUKA BUZZER, TUTUP POPUP
+        if (isPopupVisible) {
+          document.getElementById('winnerPopup').style.display = 'none';
+          isPopupVisible = false;
         }
-        
-        popupWinnerShown = false;
-
       } else {
         statusEl.textContent = 'STATUS: TERKUNCI';
         statusEl.className = 'buzzer-status locked';
         
-        // JIKA ADA PEMENANG DAN POPUP BELUM MUNCUL
-        if (state.name !== 'Ditutup Host' && !popupWinnerShown) {
-          popupWinnerShown = true;
-          showWinnerPopup(state.team, state.name);
+        // TAMPILKAN POPUP JIKA ADA PEMENANG (BUKAN DITUTUP MANUAL)
+        if (state.name !== 'Ditutup Host') {
+          if (!isPopupVisible || currentPopupTeam !== state.team || currentPopupName !== state.name) {
+             showWinnerPopup(state.team, state.name);
+          }
         }
       }
     });
@@ -468,9 +469,13 @@
   }
 
   // ==========================================
-  // FITUR POP-UP PEMENANG
+  // FITUR POP-UP PEMENANG (LOGIK BARU BEBAS ERROR)
   // ==========================================
   function showWinnerPopup(team, name) {
+    currentPopupTeam = team;
+    currentPopupName = name;
+    isPopupVisible = true;
+
     const popup = document.getElementById('winnerPopup');
     document.getElementById('popupTeam').textContent = `TIM ${team}`;
     document.getElementById('popupTeam').style.color = `var(--tim${team})`;
@@ -482,11 +487,15 @@
     playHorn(); // Bunyikan suara
   }
 
-  window.tutupWinnerPopup = () => {
+  window.tutupWinnerPopup = async () => {
     document.getElementById('winnerPopup').style.display = 'none';
-    popupWinnerShown = false; // Reset status
-    // Klik tutup juga otomatis me-reset sistem (kembali ke default terbuka)
-    resetBuzzer(); 
+    isPopupVisible = false;
+    
+    // Tutup popup = Hapus State di database (Kembali kosong)
+    try {
+      await remove(ref(db, `rooms/${roomId}/state`));
+      await remove(ref(db, `rooms/${roomId}/buzzer`));
+    } catch (e) { console.log(e); }
   };
   // ==========================================
 
@@ -578,19 +587,21 @@
     }
   };
 
+  // FUNGSI TOMBOL BAWAH
   window.bukaBuzzer = async () => { 
-    tutupWinnerPopup(); // Pastikan popup hilang
+    if (isPopupVisible) await tutupWinnerPopup();
     await remove(ref(db, `rooms/${roomId}/state`)); 
     await set(ref(db, `rooms/${roomId}/buzzer`), { armed: false });
   };
 
   window.tutupBuzzer = async () => { 
+    if (isPopupVisible) await tutupWinnerPopup();
     await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); 
     await set(ref(db, `rooms/${roomId}/buzzer`), { armed: true });
   };
 
   window.resetBuzzer = async () => { 
-    tutupWinnerPopup(); // Pastikan popup hilang
+    if (isPopupVisible) await tutupWinnerPopup();
     await remove(ref(db, `rooms/${roomId}/state`)); 
     await remove(ref(db, `rooms/${roomId}/buzzer`));
   };
