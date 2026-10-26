@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Cerdas Cermat</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f1f5f9; color: #0f172a;
+  }
+  .login-box {
+    background: #ffffff; padding: 30px; border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #cbd5e1;
+    width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px;
+  }
+  .login-box h1 { text-align: center; color: #3b82f6; margin-bottom: 5px; }
+  .login-box p { text-align: center; font-size: 13px; color: #475569; margin-bottom: 10px; }
+  .login-box input {
+    padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;
+    font-size: 15px; background: #f8fafc; color: #0f172a; outline: none;
+  }
+  .login-box input:focus { border-color: #3b82f6; }
+  .login-box button {
+    padding: 12px; border-radius: 8px; border: none; background: #3b82f6; color: white;
+    font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
+  }
+  .login-box button:hover { background: #2563eb; }
+  #loginError { color: #ef4444; font-size: 13px; text-align: center; display: none; font-weight: bold;}
+</style>
+</head>
+<body>
+
+<div class="login-box">
+  <h1>🔐 Host Login</h1>
+  <p>Masuk untuk mengelola kuis</p>
+  <input type="email" id="loginEmail" placeholder="Email Host" value="host@cerdascermat.cloud">
+  <input type="password" id="loginPassword" placeholder="Password" value="Secret123">
+  <button onclick="prosesLogin()">Masuk Panel Host</button>
+  <div id="loginError">Email atau Password salah!</div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
+    authDomain: "cerdascermat-a3206.firebaseapp.com",
+    databaseURL: "https://cerdascermat-a3206-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "cerdascermat-a3206",
+    storageBucket: "cerdascermat-a3206.firebasestorage.app",
+    messagingSenderId: "1098230358098",
+    appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.prosesLogin = async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    
+    if (!email || !pass) { errEl.textContent = 'Email dan Password wajib diisi!'; errEl.style.display = 'block'; return; }
+    
+    try {
+      errEl.style.display = 'none';
+      await signInWithEmailAndPassword(auth, email, pass);
+      
+      // JIKA BERHASIL: Simpan sesi dan arahkan ke index.html
+      sessionStorage.setItem('isHostLoggedIn', 'true');
+      window.location.href = 'index.html';
+      
+    } catch (e) {
+      errEl.textContent = 'Login Gagal: ' + (e.message.includes('auth/invalid-credential') ? 'Email atau Password salah.' : e.message);
+      errEl.style.display = 'block';
+    }
+  };
+</script>
+</body>
+</html>
