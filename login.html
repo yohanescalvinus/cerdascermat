@@ -29,6 +29,7 @@
     font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 10px;
   }
   .login-box button:hover { background: #2563eb; }
+  .login-box button:disabled { background: #94a3b8; cursor: not-allowed; }
   #loginError { color: #ef4444; font-size: 13px; text-align: center; display: none; font-weight: bold;}
 </style>
 </head>
@@ -51,7 +52,7 @@
     <option value="4" selected>4 Tim</option>
   </select>
 
-  <button onclick="prosesLogin()">Masuk Panel Host</button>
+  <button id="btnLogin" onclick="prosesLogin()">Masuk Panel Host</button>
   <div id="loginError">Email atau Password salah!</div>
 </div>
 
@@ -72,20 +73,16 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // PENTING: Paksa logout (bersihkan sesi) setiap kali halaman login ini dibuka.
-  // Ini mencegah "boot loop" atau login otomatis yang tidak diinginkan.
-  signOut(auth).then(() => {
-    // Bersihkan juga sisa memori browser
-    sessionStorage.clear();
-    localStorage.clear();
-  });
+  // Bersihkan memori lokal setiap kali halaman login dibuka
+  sessionStorage.clear();
+  localStorage.clear();
 
   window.prosesLogin = async () => {
     const email = document.getElementById('loginEmail').value.trim();
     const pass = document.getElementById('loginPassword').value;
     const teamCount = document.getElementById('loginTeamCount').value;
     const errEl = document.getElementById('loginError');
-    const btn = document.querySelector('button');
+    const btn = document.getElementById('btnLogin');
     
     if (!email || !pass) { errEl.textContent = 'Email dan Password wajib diisi!'; errEl.style.display = 'block'; return; }
     
@@ -94,11 +91,14 @@
       btn.textContent = '⏳ Memproses...';
       btn.disabled = true;
 
+      // 1. Login ke Firebase
       await signInWithEmailAndPassword(auth, email, pass);
       
-      // Simpan sesi login dan jumlah tim
+      // 2. Simpan data ke sesi browser
       sessionStorage.setItem('isHostLoggedIn', 'true');
       sessionStorage.setItem('hostTeamCount', teamCount);
+      
+      // 3. Arahkan ke index.html
       window.location.href = 'index.html';
       
     } catch (e) {
