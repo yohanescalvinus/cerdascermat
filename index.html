@@ -568,7 +568,8 @@ function renderQRs(){
     return;
   }
 
-  const baseUrl = new URL('player.html', location.href);
+  const baseUrl = new URL('player.html', window.location.href);
+  baseUrl.search = ''; // Memastikan tidak ada parameter nyasar dari URL host
   let adaYangTampil = false;
 
   for (let t=1; t<=teamCount; t++){
