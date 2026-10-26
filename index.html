@@ -102,6 +102,7 @@
   .qr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .qr-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
   .qr-card h3 { margin: 0; font-size: 13px; color: var(--text-main);}
+  
   /* Kotak putih pelindung QR agar kamera HP mudah scan */
   .qr-wrapper { background: #ffffff; padding: 8px; border-radius: 8px; display: inline-block; }
   .qr-wrapper canvas, .qr-wrapper img { width: 80px !important; height: 80px !important; cursor: pointer; display: block;}
@@ -233,12 +234,20 @@
     localStorage.setItem('cc_theme', isLight ? 'light' : 'dark');
   };
   
-  // Cek tema tersimpan
   if (localStorage.getItem('cc_theme') === 'light') {
     document.body.classList.add('light-mode');
     document.getElementById('btnTheme').textContent = '🌙 Dark Mode';
   }
-  // ====================================================
+
+  // ============ FUNGSI URL PLAYER YANG KEBAL GITHUB ============
+  function getPlayerBaseUrl() {
+    // Mengambil origin (https://domain.com) dan path (folder)
+    let url = window.location.origin + window.location.pathname;
+    // Hapus nama file html di belakang jika ada (misal /index.html atau /host.html)
+    url = url.substring(0, url.lastIndexOf('/') + 1);
+    // Gabungkan dengan player.html
+    return url + 'player.html';
+  }
 
   // Audio Context untuk Suara Host
   let actx;
@@ -376,8 +385,12 @@
     document.getElementById('qrModalTitle').textContent = `Scan untuk Tim ${teamNumber}`;
     target.innerHTML = '';
     
-    const baseUrl = window.location.href.split('?')[0].replace('index.html', 'player.html').replace('host.html', 'player.html');
-    new QRCode(target, { text: `${baseUrl}?room=${roomId}&team=${teamNumber}`, width: 300, height: 300, colorDark: "#000000", colorLight: "#ffffff" });
+    const baseUrl = getPlayerBaseUrl();
+    new QRCode(target, { 
+      text: `${baseUrl}?room=${roomId}&team=${teamNumber}`, 
+      width: 300, height: 300, 
+      colorDark: "#000000", colorLight: "#ffffff" 
+    });
     
     modal.style.display = 'flex';
   };
@@ -388,17 +401,20 @@
   };
 
   function generateQRs() {
-    const baseUrl = window.location.href.split('?')[0].replace('index.html', 'player.html').replace('host.html', 'player.html');
+    const baseUrl = getPlayerBaseUrl();
     const grid = document.getElementById('qrGrid');
     grid.innerHTML = '';
     for (let i = 1; i <= 4; i++) {
       const card = document.createElement('div');
       card.className = 'qr-card';
-      // Menambahkan div pembungkus putih (.qr-wrapper) agar QR pasti terbaca kamera
       card.innerHTML = `<h3>Tim ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
       grid.appendChild(card);
       
-      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
+      new QRCode(document.getElementById(`qr-mini-${i}`), { 
+        text: `${baseUrl}?room=${roomId}&team=${i}`, 
+        width: 80, height: 80, 
+        colorDark: "#000000", colorLight: "#ffffff" 
+      });
     }
   }
 
