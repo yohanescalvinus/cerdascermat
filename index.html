@@ -13,7 +13,7 @@
     --blue:#38bdf8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
   }
   [data-theme="light"]{
-    --bg:#e5e7eb; --bg-grad-1:#f3f4f6; --bg-grad-2:#d1d5db; /* Crem/Abu soft */
+    --bg:#e5e7eb; --bg-grad-1:#f3f4f6; --bg-grad-2:#d1d5db;
     --card:#f9fafb; --card-2:#f3f4f6; --line:#d1d5db;
     --text:#1f2937; --muted:#6b7280;
     --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
@@ -52,6 +52,7 @@
   header button{padding:8px 14px;border-radius:9px;border:1px solid var(--line);
     background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px}
   header button:hover{filter:brightness(1.15)}
+  header button.btn-reset { background: var(--red); color: white; border: none; }
 
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:clamp(10px,1.5vw,14px);margin-bottom:12px;transition:.3s}
@@ -95,25 +96,13 @@
   .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; border-radius: 4px; }
 
   .qr-toggle-btn {
-    margin-top: 8px;
-    padding: 4px 8px;
-    font-size: 11px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    font-weight: bold;
-    transition: 0.2s;
+    margin-top: 8px; padding: 4px 8px; font-size: 11px; border-radius: 6px;
+    border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
   }
   
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .dashboard-grid .full-width { grid-column: 1 / -1; }
-
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .chat-panel { display: flex; flex-direction: column; height: 240px; }
+  .chat-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
   .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
     border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;font-size:12px}
   .chat-msg{padding:4px 0;border-bottom:1px solid var(--line)}
@@ -126,6 +115,12 @@
     background:var(--card-2);color:var(--text);font-size:12px;min-width:0}
   .chat-input button{padding:8px 12px;border-radius:8px;border:none;
     background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:12px;flex-shrink:0}
+  
+  .btn-clear-chat {
+    padding: 4px 8px; font-size: 10px; border-radius: 4px; background: var(--line);
+    color: var(--text); border: none; cursor: pointer; font-weight: bold;
+  }
+  .btn-clear-chat:hover { background: var(--red); color: white; }
 
   .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
@@ -186,27 +181,22 @@
     <div class="row">
       <button onclick="toggleTheme()" id="themeBtn">☀ Light</button>
       <button onclick="openSettings()">⚙ Settings</button>
+      <button onclick="resetAllAndLogout()" class="btn-reset" title="Hapus semua state, chat, & cache lalu Logout">⚠ Reset Total</button>
       <button onclick="logout()">Logout</button>
     </div>
   </header>
 
-  <!-- POP-UP TIMER ANALOG RAKSASA -->
+  <!-- POP-UP TIMER DIGITAL RAKSASA -->
   <div id="timerModal" class="popup" style="display:none; z-index: 10000;">
-    <div class="popup-content" style="border-color:var(--blue); max-width: 500px;">
-      <div class="popup-label" style="color:var(--blue)">WAKTU TERSISA</div>
+    <div class="popup-content" style="border-color:var(--blue); max-width: 800px; padding: 40px;">
+      <div class="popup-label" style="color:var(--blue); font-size: 20px; margin-bottom: 20px;">WAKTU TERSISA</div>
       
-      <div style="position:relative; width:240px; height:240px; margin:20px auto; border-radius:50%; border:8px solid var(--line); background:var(--card-2);">
-        <div style="position:absolute; top:10px; left:50%; transform:translateX(-50%); width:4px; height:15px; background:var(--muted);"></div>
-        <div style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); width:4px; height:15px; background:var(--muted);"></div>
-        <div style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:15px; height:4px; background:var(--muted);"></div>
-        <div style="position:absolute; right:10px; top:50%; transform:translateY(-50%); width:15px; height:4px; background:var(--muted);"></div>
-        
-        <div id="analogHand" style="position:absolute; bottom:50%; left:calc(50% - 4px); width:8px; height:100px; background:var(--red); transform-origin: bottom center; transform: rotate(0deg); border-radius:4px; transition: transform 0.1s linear;"></div>
-        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:16px; height:16px; background:var(--text); border-radius:50%; z-index:2;"></div>
+      <!-- Angka Digital Raksasa -->
+      <div id="modalTimerText" style="font-family:ui-monospace,Consolas,monospace; font-size:clamp(80px, 15vw, 180px); font-weight:900; color:var(--green); line-height: 1; margin-bottom: 30px; letter-spacing: 5px;">
+        30.0
       </div>
-
-      <div id="modalTimerText" style="font-family:ui-monospace,Consolas,monospace; font-size:48px; font-weight:900; color:var(--green); margin-bottom:20px;">30.0</div>
-      <button class="popup-btn" onclick="tutupPopupTimer()" style="background:var(--red); box-shadow:0 8px 24px rgba(239,68,68,.4); font-size:16px; padding:12px 24px;">Sembunyikan Timer</button>
+      
+      <button class="popup-btn" onclick="tutupPopupTimer()" style="background:var(--red); box-shadow:0 8px 24px rgba(239,68,68,.4); font-size:18px; padding:16px 32px;">Sembunyikan Timer</button>
     </div>
   </div>
 
@@ -256,7 +246,10 @@
       </section>
 
       <section class="panel chat-panel" style="margin-bottom:0;">
-        <h2>💬 Live Chat</h2>
+        <div class="chat-header-row">
+          <h2 style="margin:0;">💬 Live Chat</h2>
+          <button class="btn-clear-chat" onclick="clearChat()">Hapus Chat</button>
+        </div>
         <div id="chatList" class="chat-list"></div>
         <div class="chat-input">
           <input id="chatInput" placeholder="Broadcast pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
@@ -266,7 +259,6 @@
 
       <section class="panel" style="margin-bottom:0; flex:1;">
         <h2>📱 QR Code Registrasi</h2>
-        <!-- Grid QR Code, Toggle per Masing-masing ada di dalam JS -->
         <div id="qrList" class="qr-grid"></div>
       </section>
     </div>
@@ -322,7 +314,7 @@ let wasLocked = false;
 let listenersReady = false;
 let lastChatCount = 0;
 let isTickSoundOn = true;
-let qrVisibleState = {}; // Menyimpan status tampil/sembunyi per tim
+let qrVisibleState = {}; 
 
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
@@ -342,7 +334,48 @@ window.login = async () => {
   try { await signInWithEmailAndPassword(auth, email, pass); }
   catch (e) { document.getElementById('loginMsg').textContent = e.message; }
 };
-window.logout = () => signOut(auth);
+
+// --- FITUR CLEAR & LOGOUT ---
+window.clearChat = async () => {
+  if (!confirm('Hapus semua riwayat chat?')) return;
+  await remove(ref(db, `rooms/${roomId}/chat`));
+};
+
+window.logout = async () => {
+  try {
+    await signOut(auth);
+    localStorage.removeItem('cc_theme_host'); // Bersihkan cache tema
+    window.location.reload(); // Refresh agar kembali ke halaman login bersih
+  } catch(e) { alert('Gagal logout: ' + e.message); }
+};
+
+window.resetAllAndLogout = async () => {
+  if (!confirm('⚠ PERINGATAN ⚠\nIni akan menghapus Timer, Status Buzzer, Data Pemenang, Semua Chat, dan Cache Memori.\n\nLanjutkan Reset Total?')) return;
+  
+  try {
+    // 1. Hapus state di Firebase
+    if (roomId) {
+      await remove(ref(db, `rooms/${roomId}/timer`));
+      await remove(ref(db, `rooms/${roomId}/buzzer`));
+      await remove(ref(db, `rooms/${roomId}/state`));
+      await remove(ref(db, `rooms/${roomId}/chat`));
+    }
+    
+    // 2. Logout
+    await signOut(auth);
+    
+    // 3. Bersihkan localStorage (Cache)
+    localStorage.removeItem('cc_room');
+    localStorage.removeItem('cc_team_count');
+    localStorage.removeItem('cc_theme_host');
+    
+    // 4. Reload
+    window.location.reload();
+  } catch (e) {
+    alert('Gagal reset total: ' + e.message);
+  }
+};
+// ----------------------------
 
 onAuthStateChanged(auth, u => {
   user = u;
@@ -381,7 +414,6 @@ async function showHostView(){
      await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
   }
 
-  // Inisialisasi status QR default jadi tertutup semua
   qrVisibleState = {};
   for(let i=1; i<=teamCount; i++) qrVisibleState[i] = false;
 
@@ -395,7 +427,7 @@ async function showHostView(){
 
 window.toggleSingleQR = (teamId) => {
   qrVisibleState[teamId] = !qrVisibleState[teamId];
-  renderQRs(); // Render ulang untuk update tampilan
+  renderQRs();
 };
 
 window.saveSettings = async () => {
@@ -511,17 +543,14 @@ function renderQRs(){
     const btnClass = isVisible ? 'danger' : 'primary';
     const displayStyle = isVisible ? 'flex' : 'none';
 
-    // Render tombol dan wadah canvas
     div.innerHTML = `
       <div class="qr-label">Tim ${t}</div>
       <button class="qr-toggle-btn ${btnClass}" onclick="toggleSingleQR(${t})">${btnText} QR</button>
       <div class="qr-canvas-container" id="qr-canvas-${t}" style="display: ${displayStyle}; margin-top:6px;">
-        <!-- QR akan digambar di sini -->
       </div>
     `;
     c.appendChild(div);
     
-    // Hanya gambar QR jika sedang terlihat (menghemat proses render)
     if (isVisible) {
       const url = new URL(baseUrl);
       url.searchParams.set('room', roomId);
@@ -558,7 +587,6 @@ function startCountdown(timer){
   const el = document.getElementById('timerDisplay');
   const modal = document.getElementById('timerModal');
   const modalText = document.getElementById('modalTimerText');
-  const analogHand = document.getElementById('analogHand');
   
   if (!timer || !timer.running || !timer.startedAt){
     el.textContent = '—'; el.className = 'timer-display'; 
@@ -595,12 +623,10 @@ function startCountdown(timer){
     el.className = 'timer-display';
     if (remaining < 5000) el.classList.add('urgent');
     
-    if(modalText) modalText.textContent = secondsStr;
-    if(remaining < 5000 && modalText) modalText.style.color = 'var(--amber)';
-    
-    const progress = remaining / totalDuration;
-    const degrees = (progress * 360) - 90; 
-    if(analogHand) analogHand.style.transform = `rotate(${degrees}deg)`;
+    if(modalText) {
+        modalText.textContent = secondsStr;
+        if (remaining < 5000) modalText.style.color = 'var(--amber)';
+    }
 
     if (remaining <= 0){
       el.textContent = 'TIME UP!'; el.classList.add('done');
