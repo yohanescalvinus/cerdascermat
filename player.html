@@ -86,7 +86,8 @@
   <div class="chat-section">
     <div id="chatList" class="chat-list"></div>
     <div class="chat-input">
-      <input id="chatInput" placeholder="Ketik pesan ke Host..." onkeypress="if(event.key==='Enter')kirimChat()">
+      <!-- Menggunakan id="chatMessage" agar tidak bentrok dengan form nama -->
+      <input id="chatMessage" placeholder="Ketik pesan ke Host..." onkeypress="if(event.key==='Enter')kirimChat()">
       <button onclick="kirimChat()">Kirim</button>
     </div>
   </div>
@@ -150,28 +151,40 @@
 
   onAuthStateChanged(auth, u => {
     user = u;
-    if (!u || myPlayerKey || authHandled) return;
+    if (!u || authHandled) return;
     authHandled = true;
 
+    // Cek apakah nama pernah disimpan di HP ini
     const saved = localStorage.getItem(`cc_name_${roomId}_${teamId}`);
-    if (saved) { myName = saved; mulaiMain(); } 
-    else { document.getElementById('nameView').style.display = 'flex'; document.getElementById('nameInput').focus(); }
+    if (saved) { 
+      myName = saved; 
+      // Gunakan ID unik berbasis Nama untuk mencegah duplikasi
+      myPlayerKey = `Tim${teamId}_${myName.replace(/\s+/g, '_')}`; 
+      mulaiMain(); 
+    } 
+    else { 
+      document.getElementById('nameView').style.display = 'flex'; 
+      document.getElementById('nameInput').focus(); 
+    }
   });
 
   window.simpanNama = async () => {
     if (!user) { alert('Tunggu koneksi...'); return; }
-    if (isStarting || myPlayerKey) return;
+    if (isStarting) return;
     const name = document.getElementById('nameInput').value.trim();
     if (!name) { alert('Nama wajib diisi'); return; }
     
     myName = name;
+    // GUNAKAN ID UNIK: Tim2_Budi (Mencegah ganda saat refresh)
+    myPlayerKey = `Tim${teamId}_${myName.replace(/\s+/g, '_')}`;
+    
     localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
     document.getElementById('nameView').style.display = 'none';
     try { await mulaiMain(); } catch (e) {}
   };
 
   async function mulaiMain() {
-    if (isStarting || myPlayerKey || !myName) return;
+    if (isStarting || !myName) return;
     isStarting = true;
     try {
       document.getElementById('mainView').style.display = 'flex';
@@ -179,9 +192,11 @@
       identityEl.textContent = `Tim ${teamId} • ${myName}`;
       identityEl.style.color = teamColors[teamId];
 
-      const playerRef = push(ref(db, `rooms/${roomId}/players`));
-      myPlayerKey = playerRef.key;
+      // Tulis data ke Firebase (karena ID-nya unik, ini akan menimpa yang lama, bukan menggandakan)
+      const playerRef = ref(db, `rooms/${roomId}/players/${myPlayerKey}`);
       await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
+      
+      // Hapus dari database saat player menutup tab
       try { await onDisconnect(playerRef).remove(); } catch (e) {}
 
       if (!listenersAttached) {
@@ -207,7 +222,6 @@
       }
       ui();
     } catch (e) {
-      myPlayerKey = null;
       document.getElementById('mainView').style.display = 'none';
       document.getElementById('nameView').style.display = 'flex';
       alert('Gagal masuk: ' + e.message);
@@ -265,11 +279,18 @@
     tick(); timerInterval = setInterval(tick, 100);
   }
 
+  // FUNGSI CHAT YANG SUDAH DIPERBAIKI (Menggunakan chatMessage)
   window.kirimChat = async () => {
     if (!myName) return;
-    const input = document.getElementById('chatInput'), text = input.value.trim();
+    const input = document.getElementById('chatMessage'); 
+    const text = input.value.trim();
     if (!text) return;
-    try { await set(push(ref(db, `rooms/${roomId}/chat`)), { name: myName, team: teamId, text: text, ts: serverTimestamp() }); input.value = ''; } catch (e) {}
+    try { 
+      await set(push(ref(db, `rooms/${roomId}/chat`)), { name: myName, team: teamId, text: text, ts: serverTimestamp() }); 
+      input.value = ''; 
+    } catch (e) {
+      alert('Gagal kirim chat: ' + e.message);
+    }
   };
 
   function renderChat(msgs) {
