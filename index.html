@@ -281,7 +281,6 @@
   let playerListenerRef = null;
   let isTimerHidden = false;
 
-  // Variabel untuk melacak Pop-up
   let currentWinnerKey = ""; 
   let isPopupVisible = false;
 
@@ -359,7 +358,6 @@
         statusEl.textContent = 'STATUS: TERBUKA';
         statusEl.className = 'buzzer-status open';
         
-        // JIKA POPUP MASIH TERBUKA, TUTUP POPUP
         if (isPopupVisible) {
           document.getElementById('winnerPopup').style.display = 'none';
           isPopupVisible = false;
@@ -368,10 +366,8 @@
         statusEl.textContent = 'STATUS: TERKUNCI';
         statusEl.className = 'buzzer-status locked';
         
-        // TAMPILKAN POPUP JIKA ADA PEMENANG
         if (state.name !== 'Ditutup Host') {
           const winnerId = `Tim${state.team}_${state.name}`;
-          // Cek apakah pop-up untuk pemenang ini belum ditampilkan
           if (!isPopupVisible || currentWinnerKey !== winnerId) {
              currentWinnerKey = winnerId;
              showWinnerPopup(state.team, state.name);
@@ -440,55 +436,40 @@
     });
   }
 
-  // FITUR POP-UP PEMENANG
   function showWinnerPopup(team, name) {
     isPopupVisible = true;
-
     const popup = document.getElementById('winnerPopup');
     document.getElementById('popupTeam').textContent = `TIM ${team}`;
     document.getElementById('popupTeam').style.color = `var(--tim${team})`;
-    
     document.getElementById('popupName').textContent = name;
     document.getElementById('popupName').style.color = `var(--tim${team})`;
-    
     popup.style.display = 'flex';
-    playHorn(); // Bunyikan suara
+    playHorn();
   }
 
   window.tutupWinnerPopup = async () => {
     document.getElementById('winnerPopup').style.display = 'none';
     isPopupVisible = false;
     currentWinnerKey = "";
-    
-    // Tutup popup = Hapus State di database (Kembali kosong)
     try {
       await remove(ref(db, `rooms/${roomId}/state`));
       await remove(ref(db, `rooms/${roomId}/buzzer`));
     } catch (e) { console.log(e); }
   };
-  
-  // PERBAIKAN FITUR PAKSA SINKRON (HAPUS PEMAIN GHOST)
+
   window.paksaSinkron = async (e) => {
     const btn = e ? e.target : document.activeElement;
     if(btn) { btn.textContent = '⏳ Memuat...'; btn.disabled = true; }
-    
     try {
-      // Cek koneksi pemain (Firebase akan otomatis menghapus pemain yang sudah mati koneksinya)
       const playersRef = ref(db, `rooms/${roomId}/players`);
       const snapshot = await get(playersRef);
-      
       if (snapshot.exists()) {
         const players = snapshot.val();
         for (const [key, p] of Object.entries(players)) {
-          // Trik memaksa Firebase memperbarui status koneksi: 
-          // (Pemain yang mati koneksinya tidak akan terupdate, Host yang membersihkan)
           await set(ref(db, `rooms/${roomId}/players/${key}`), p);
         }
       }
-    } catch(err) {
-      console.error(err);
-    }
-
+    } catch(err) { console.error(err); }
     loadDataPemain();
     setTimeout(() => { if(btn) { btn.textContent = '🔄 Paksa Sinkron'; btn.disabled = false; } }, 800);
   };
@@ -574,24 +555,38 @@
     }
   };
 
+  // --- PERBAIKAN LOGIKA TOMBOL BUZZER ---
   window.bukaBuzzer = async () => { 
-    if (isPopupVisible) await tutupWinnerPopup();
-    await remove(ref(db, `rooms/${roomId}/state`)); 
-    await set(ref(db, `rooms/${roomId}/buzzer`), { armed: false });
+    document.getElementById('winnerPopup').style.display = 'none';
+    isPopupVisible = false;
+    currentWinnerKey = "";
+    try {
+      await remove(ref(db, `rooms/${roomId}/state`)); 
+      await set(ref(db, `rooms/${roomId}/buzzer`), { armed: false });
+    } catch(e) { console.error(e); }
   };
 
   window.tutupBuzzer = async () => { 
-    if (isPopupVisible) await tutupWinnerPopup();
-    await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); 
-    await set(ref(db, `rooms/${roomId}/buzzer`), { armed: true });
+    document.getElementById('winnerPopup').style.display = 'none';
+    isPopupVisible = false;
+    currentWinnerKey = "";
+    try {
+      await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); 
+      await set(ref(db, `rooms/${roomId}/buzzer`), { armed: true });
+    } catch(e) { console.error(e); }
   };
 
   window.resetBuzzer = async () => { 
-    if (isPopupVisible) await tutupWinnerPopup();
-    await remove(ref(db, `rooms/${roomId}/state`)); 
-    await remove(ref(db, `rooms/${roomId}/buzzer`));
+    document.getElementById('winnerPopup').style.display = 'none';
+    isPopupVisible = false;
+    currentWinnerKey = "";
+    try {
+      await remove(ref(db, `rooms/${roomId}/state`)); 
+      await remove(ref(db, `rooms/${roomId}/buzzer`));
+    } catch(e) { console.error(e); }
   };
-  
+  // ----------------------------------------
+
   window.hapusPemain = async (playerKey) => {
     if(confirm('Keluarkan pemain ini?')) await remove(ref(db, `rooms/${roomId}/players/${playerKey}`));
   };
