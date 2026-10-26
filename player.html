@@ -62,7 +62,8 @@
     font-variant-numeric: tabular-nums; color: #64748b; 
     transition: color 0.3s, transform 0.1s;
   }
-  .timer-player.urgent { color: #ef4444; transform: scale(1.1); }
+  /* Animasi saat detik terakhir */
+  .timer-player.urgent { color: #ef4444; transform: scale(1.15); font-weight: 900;}
   .timer-player.done { color: #ef4444; }
 
   .push-btn {
@@ -165,21 +166,24 @@
   let user = null, myName = null, myPlayerKey = null, state = 'idle';
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
-  let prevTimerSecond = -1; // Menyimpan detik terakhir untuk mencegah bip dobel
+  let prevTimerSecond = -1;
 
-  // SISTEM SUARA
+  // SISTEM SUARA VOLUME MAKSIMAL
   let actx;
-  function beep(freq = 880, dur = 0.15, vol = 0.2) {
+  function beep(freq = 880, dur = 0.15, vol = 1.0, type = 'square') {
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       if (actx.state === 'suspended') actx.resume(); 
       const o = actx.createOscillator(), g = actx.createGain();
-      o.type = 'square'; 
+      o.type = type; 
       o.frequency.value = freq;
       o.connect(g); 
       g.connect(actx.destination);
+      
+      // Set volume ke angka maksimal (1.0)
       g.gain.setValueAtTime(vol, actx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+      
       o.start(); o.stop(actx.currentTime + dur);
     } catch (e) { console.log('Audio error:', e); }
   }
@@ -188,7 +192,6 @@
   document.body.addEventListener('touchstart', function unlockAudio() {
     if (!actx) {
       actx = new (window.AudioContext || window.webkitAudioContext)();
-      beep(400, 0.1);
     }
     document.body.removeEventListener('touchstart', unlockAudio);
   }, { once: true });
@@ -224,7 +227,7 @@
     localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
     document.getElementById('nameView').style.display = 'none';
     
-    beep(800, 0.1); // Bunyi masuk
+    beep(800, 0.2, 1.0); // Bunyi masuk
     try { await mulaiMain(); } catch (e) {}
   };
 
@@ -244,21 +247,18 @@
       if (!listenersAttached) {
         listenersAttached = true;
         
-        let prevLocked = null; // null agar tidak bunyi saat inisialisasi awal
+        let prevLocked = null; 
         onValue(ref(db, `rooms/${roomId}/state`), snap => {
           stateData = snap.val();
           const isLocked = stateData && stateData.locked;
           
-          // SUARA BUKA / TUTUP BUZZER
           if (prevLocked !== null && prevLocked !== isLocked) {
             if (!isLocked) {
-              // Host Buka Buzzer -> Bunyi "Horn" panjang
-              beep(600, 0.4, 0.3); 
-              setTimeout(() => beep(900, 0.4, 0.3), 150);
+              beep(600, 0.4, 1.0); 
+              setTimeout(() => beep(900, 0.4, 1.0), 150);
             } else {
-              // Host Tutup Buzzer (atau ada yang menang) -> Bunyi "Dung"
               if (stateData.name === 'Ditutup Host') {
-                beep(300, 0.3, 0.3); 
+                beep(300, 0.4, 1.0); 
               }
             }
           }
@@ -289,9 +289,9 @@
       return;
     }
     if (stateData.playerKey === myPlayerKey) {
-      if (state !== 'winner') { state = 'winner'; ui(); beep(1400, 0.3); } // Bunyi Menang
+      if (state !== 'winner') { state = 'winner'; ui(); beep(1400, 0.5, 1.0); }
     } else {
-      if (state !== 'loser') { state = 'loser'; ui(); beep(220, 0.2); } // Bunyi Kalah
+      if (state !== 'loser') { state = 'loser'; ui(); beep(220, 0.3, 1.0); }
     }
   }
 
@@ -306,7 +306,7 @@
 
   window.tekan = async () => {
     if (state !== 'idle' || !myPlayerKey) return;
-    state = 'pressed'; ui(); beep(900, 0.08);
+    state = 'pressed'; ui(); beep(900, 0.1, 1.0);
     
     try {
       await runTransaction(ref(db, `rooms/${roomId}/state`), current => {
@@ -320,7 +320,7 @@
 
   document.getElementById('btn').addEventListener('click', () => window.tekan());
 
-  // FUNGSI TIMER DENGAN SUARA BIP CEPAT (10 DETIK TERAKHIR)
+  // FUNGSI TIMER DENGAN SUARA BIP CEPAT & KERAS
   function startCountdown(timer) {
     clearInterval(timerInterval);
     const el = document.getElementById('timerPlayer');
@@ -328,7 +328,7 @@
     if (!timer || !timer.running) { 
       el.textContent = '—'; 
       el.classList.remove('urgent','done'); 
-      prevTimerSecond = -1; // Reset
+      prevTimerSecond = -1; 
       return; 
     }
     
@@ -338,20 +338,18 @@
       const remainingMs = Math.max(0, endAt - serverNow());
       const remainingSec = Math.ceil(remainingMs / 1000);
       
-      // Update tampilan desimal (misal: 9.8)
       el.textContent = (remainingMs / 1000).toFixed(1);
 
-      // BUNYI BIP CEPAT DI 10 DETIK TERAKHIR
+      // Bunyi bip 10 detik terakhir
       if (remainingSec <= 10 && remainingSec > 0) {
         el.classList.add('urgent');
         
-        // Pastikan bip hanya bunyi 1 kali per detik
         if (remainingSec !== prevTimerSecond) {
           prevTimerSecond = remainingSec;
           
-          // Frekuensi makin tinggi saat mendekati 0
+          // Frekuensi makin tinggi, gelombang 'sawtooth' lebih tajam, volume 100%
           let freq = 800 + ((10 - remainingSec) * 50); 
-          beep(freq, 0.08, 0.3);
+          beep(freq, 0.1, 1.0, 'sawtooth');
         }
       } else {
         el.classList.remove('urgent');
@@ -361,7 +359,7 @@
         el.textContent = 'WAKTU HABIS'; 
         el.classList.add('done'); 
         clearInterval(timerInterval); 
-        beep(300, 0.6, 0.4); // Bunyi panjang waktu habis
+        beep(300, 0.8, 1.0, 'square');
       }
     };
     tick(); 
