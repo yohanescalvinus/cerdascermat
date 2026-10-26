@@ -64,7 +64,7 @@
   }
   .timer-player.urgent { color: #ef4444; transform: scale(1.15); font-weight: 900;}
   .timer-player.done { color: #ef4444; }
-  .timer-player.paused { color: #f59e0b; opacity: 0.8; } /* Warna saat di-pause */
+  .timer-player.paused { color: #f59e0b; opacity: 0.8; }
 
   .push-btn {
     width: 100%; max-width: 320px;
@@ -170,30 +170,45 @@
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
   let lastTickSecond = -1;
-  
-  // Variabel ini akan menyimpan status asli dari Firebase
   let liveTimerData = null;
 
+  // ==========================================
+  // SISTEM SUARA (AUDIO UNLOCK & VOLUME MAX)
+  // ==========================================
   let actx;
+  
   function initAudio() {
-    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-    if (actx.state === 'suspended') actx.resume();
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (actx.state === 'suspended') {
+      actx.resume();
+    }
   }
 
-  function playSound(freq = 880, dur = 0.15, vol = 1.0, type = 'sine') {
-    try {
-      initAudio();
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; o.frequency.value = freq;
-      o.connect(g); g.connect(actx.destination);
-      g.gain.setValueAtTime(vol, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
-      o.start(); o.stop(actx.currentTime + dur);
-    } catch (e) {}
-  }
-
+  // Paksa buka audio pada sentuhan pertama (Sangat penting untuk iOS/Android)
   document.addEventListener('click', initAudio, { once: true });
   document.addEventListener('touchstart', initAudio, { once: true });
+
+  function playSound(freq = 880, dur = 0.1, vol = 1.0, type = 'sine') {
+    try {
+      if (!actx) return;
+      if (actx.state === 'suspended') actx.resume();
+
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; 
+      o.frequency.value = freq;
+      o.connect(g); 
+      g.connect(actx.destination);
+      
+      // Volume Maksimal
+      g.gain.setValueAtTime(vol, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
+      
+      o.start(); o.stop(actx.currentTime + dur);
+    } catch (e) { console.log('Audio error:', e); }
+  }
+  // ==========================================
 
   signInAnonymously(auth).catch(e => console.error(e));
 
@@ -226,7 +241,9 @@
     localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
     document.getElementById('nameView').style.display = 'none';
     
+    initAudio(); // Buka suara saat klik simpan nama
     playSound(800, 0.2, 1.0, 'square');
+    
     try { await mulaiMain(); } catch (e) {}
   };
 
@@ -274,7 +291,7 @@
         });
 
         onValue(ref(db, `rooms/${roomId}/timer`), snap => { 
-          liveTimerData = snap.val(); // Simpan datanya
+          liveTimerData = snap.val();
           startCountdown(); 
         });
         
@@ -315,6 +332,7 @@
 
   window.tekan = async () => {
     if (state !== 'idle' || !myPlayerKey) return;
+    initAudio(); // Pastikan suara selalu terbuka
     state = 'pressed'; ui(); playSound(900, 0.1, 1.0, 'square');
     
     try {
@@ -329,11 +347,13 @@
 
   document.getElementById('btn').addEventListener('click', () => window.tekan());
 
-  // FUNGSI TIMER (SUARA & VISUAL DIPERBAIKI)
+  // ==========================================
+  // LOGIKA TIMER & SUARA DETAK JAM
+  // ==========================================
   function startCountdown() {
     clearInterval(timerInterval);
     const el = document.getElementById('timerPlayer');
-    const timer = liveTimerData; // Ambil data terbaru
+    const timer = liveTimerData; 
     
     if (!timer || !timer.running) { 
       el.textContent = '—'; 
@@ -345,7 +365,6 @@
     const endAt = timer.startedAt + timer.duration * 1000;
     
     timerInterval = setInterval(() => {
-      // JIKA PAUSE
       if (timer.isPaused) {
         el.classList.add('paused');
         return; 
@@ -356,7 +375,6 @@
       const remainingMs = Math.max(0, endAt - serverNow());
       const remainingSec = Math.ceil(remainingMs / 1000);
       
-      // Format HH:MM:SS atau MM:SS
       const h = Math.floor(remainingMs / 3600000);
       const m = Math.floor((remainingMs % 3600000) / 60000);
       const s = Math.floor((remainingMs % 60000) / 1000);
@@ -382,13 +400,17 @@
         return;
       }
 
-      // SUARA BIP DIPERBAIKI: Pastikan selalu dipanggil per detik jika tidak pause
+      // SUARA DETAK JAM (BUNYI SETIAP DETIK)
       if (remainingSec !== lastTickSecond) {
         lastTickSecond = remainingSec;
+        
+        // Paksa buka audio (jaga-jaga jika browser menutupnya)
+        if (actx && actx.state === 'suspended') actx.resume();
+
         if (remainingSec <= 10) {
-          playSound(1200, 0.1, 1.0, 'sawtooth');
+          playSound(1200, 0.1, 1.0, 'sawtooth'); // Suara tajam 10 detik terakhir
         } else {
-          playSound(600, 0.05, 1.0, 'sine');
+          playSound(600, 0.05, 1.0, 'sine'); // Suara tik jam biasa
         }
       }
     }, 100);
