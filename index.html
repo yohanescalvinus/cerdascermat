@@ -28,11 +28,21 @@
     flex-shrink: 0;
   }
   .header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px;}
-  .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; color: white;}
+  
+  /* Grup Tombol Kanan Atas */
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; color: white; transition: 0.2s;}
   .btn-red { background: #ef4444; }
   .btn-red:hover { background: #dc2626; }
   .btn-gray { background: #475569; }
   .btn-gray:hover { background: #334155; }
+  .btn-blue { background: #3b82f6; }
+  .btn-blue:hover { background: #2563eb; }
   
   /* Grid Utama (Kiri & Kanan) */
   .grid-container {
@@ -55,17 +65,13 @@
   }
   .panel-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;}
   
-  /* Tombol */
-  .btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; color: #fff; transition: 0.2s;}
+  /* Tombol Utama */
+  .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; color: #fff; transition: 0.2s;}
   .btn:active { transform: scale(0.95); }
   .btn-primary { background: #3b82f6; }
-  .btn-primary:hover { background: #2563eb; }
   .btn-success { background: #22c55e; }
-  .btn-success:hover { background: #16a34a; }
-  .btn-danger { background: #ef4444; }
-  .btn-danger:hover { background: #dc2626; }
   .btn-warning { background: #f59e0b; }
-  .btn-warning:hover { background: #d97706; }
+  .btn-danger { background: #ef4444; }
   .btn-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
   /* Panel Timer */
@@ -112,12 +118,13 @@
 
 <div class="app-container">
   
-  <!-- HEADER -->
+  <!-- HEADER DENGAN TOMBOL LENGKAP -->
   <div class="header">
     <h1>Host Panel <span style="color:#475569">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
-    <div style="display: flex; gap: 8px;">
-      <button class="btn-sm btn-gray" onclick="if(confirm('Hapus semua chat?')) remove(ref(db, 'rooms/'+roomId+'/chat'))">Hapus Chat</button>
+    <div class="header-actions">
+      <button class="btn-sm btn-blue" onclick="if(confirm('Hapus semua chat?')) remove(ref(db, 'rooms/'+roomId+'/chat'))">Hapus Chat</button>
       <button class="btn-sm btn-red" onclick="resetTotal()">Reset Total</button>
+      <button class="btn-sm btn-gray" onclick="exitHost()">✕ Keluar</button>
     </div>
   </div>
 
@@ -333,6 +340,12 @@
     location.reload();
   };
 
+  window.exitHost = () => {
+    if(confirm('Keluar dari Host Panel?')) {
+      window.location.href = 'about:blank'; // Atau arahkan ke halaman login jika ada
+    }
+  };
+
   window.startTimer = async () => {
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
     await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: serverNow(), duration: dur });
@@ -352,7 +365,6 @@
 
   // ============ FUNGSI PENDUKUNG ============
   function generateQRs() {
-    // Mendeteksi URL file player (mengasumsikan nama filenya player.html)
     const currentUrl = window.location.href.split('?')[0];
     const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'player.html';
 
