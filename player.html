@@ -2,117 +2,57 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Pemain</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
-    margin: 0; padding: 0;
-    height: 100%;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
+    margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden;
+    font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0;
   }
   .center-panel {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     height: 100%; padding: 24px; text-align: center; gap: 12px;
   }
   .center-panel input {
     padding: 12px 16px; font-size: 16px; border-radius: 8px;
-    border: 1px solid #334155; background: #1e293b; color: #e2e8f0;
-    width: 100%; max-width: 280px;
+    border: 1px solid #334155; background: #1e293b; color: #e2e8f0; width: 100%; max-width: 280px;
   }
   .center-panel button {
     padding: 12px 24px; font-size: 16px; border-radius: 8px;
-    border: none; background: #3b82f6; color: #fff; cursor: pointer;
-    font-weight: 600;
+    border: none; background: #3b82f6; color: #fff; cursor: pointer; font-weight: 600;
   }
   .center-panel button:active { transform: scale(0.97); }
 
-  #mainView {
-    display: none;
-    flex-direction: column;
-    height: 100%;
-    padding: 12px;
-    gap: 12px;
-  }
-  header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 12px; background: #1e293b; border-radius: 8px;
-  }
+  #mainView { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #1e293b; border-radius: 8px; flex-shrink: 0;}
   #identity { font-weight: 600; font-size: 14px; }
-  .exit-btn {
-    background: #ef4444; color: #fff; border: none;
-    padding: 6px 12px; border-radius: 6px; cursor: pointer;
-    font-size: 13px;
-  }
+  .exit-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
 
-  .timer-player {
-    text-align: center; font-size: 48px; font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: #94a3b8; padding: 8px 0;
-    transition: color 0.2s;
-  }
+  .timer-player { text-align: center; font-size: 48px; font-weight: 700; font-variant-numeric: tabular-nums; color: #94a3b8; padding: 4px 0; flex-shrink: 0;}
   .timer-player.urgent { color: #f59e0b; }
   .timer-player.done { color: #ef4444; }
 
   .push-btn {
-    flex: 1;
-    min-height: 140px;
-    font-size: 36px;
-    font-weight: 800;
-    border-radius: 16px;
-    border: none;
-    cursor: pointer;
-    background: #3b82f6;
-    color: #fff;
-    transition: transform 0.05s, background 0.2s;
-    letter-spacing: 2px;
+    flex: 1; min-height: 120px; font-size: 36px; font-weight: 800; border-radius: 16px; border: none; cursor: pointer;
+    background: #3b82f6; color: #fff; transition: transform 0.05s, background 0.2s; letter-spacing: 2px;
   }
   .push-btn:active { transform: scale(0.98); }
   .push-btn.pressed { background: #f59e0b; }
   .push-btn.winner  { background: #22c55e; }
   .push-btn.loser   { background: #64748b; }
 
-  .status {
-    text-align: center; font-size: 15px; min-height: 22px;
-    color: #cbd5e1; padding: 0 8px;
-  }
+  .status { text-align: center; font-size: 15px; min-height: 22px; color: #cbd5e1; padding: 0 8px; flex-shrink: 0;}
 
-  .chat-section {
-    display: flex; flex-direction: column;
-    background: #1e293b; border-radius: 8px;
-    overflow: hidden;
-    height: 200px;
-    flex-shrink: 0;
-  }
-  .chat-list {
-    flex: 1; overflow-y: auto; padding: 8px 12px;
-    display: flex; flex-direction: column; gap: 6px;
-    font-size: 13px;
-  }
-  .chat-msg {
-    background: #0f172a; padding: 6px 10px; border-radius: 6px;
-    max-width: 85%;
-  }
-  .chat-msg.mine {
-    background: #1d4ed8; align-self: flex-end;
-  }
+  .chat-section { display: flex; flex-direction: column; background: #1e293b; border-radius: 8px; overflow: hidden; height: 200px; flex-shrink: 0; }
+  .chat-list { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+  .chat-msg { background: #0f172a; padding: 6px 10px; border-radius: 6px; max-width: 85%; }
+  .chat-msg.mine { background: #1d4ed8; align-self: flex-end; }
   .chat-who { font-size: 11px; opacity: 0.7; margin-bottom: 2px; }
   .chat-text { word-wrap: break-word; }
-  .chat-input {
-    display: flex; border-top: 1px solid #334155;
-  }
-  .chat-input input {
-    flex: 1; border: none; background: transparent;
-    color: #e2e8f0; padding: 10px 12px; font-size: 14px;
-    outline: none;
-  }
-  .chat-input button {
-    border: none; background: #3b82f6; color: #fff;
-    padding: 0 16px; cursor: pointer; font-weight: 600;
-  }
+  .chat-input { display: flex; border-top: 1px solid #334155; }
+  .chat-input input { flex: 1; border: none; background: transparent; color: #e2e8f0; padding: 10px 12px; font-size: 14px; outline: none; }
+  .chat-input button { border: none; background: #3b82f6; color: #fff; padding: 0 16px; cursor: pointer; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -130,9 +70,7 @@
   </header>
 
   <div id="timerPlayer" class="timer-player">—</div>
-
   <button id="btn" class="push-btn">TEKAN</button>
-
   <div id="status" class="status"></div>
 
   <div class="chat-section">
@@ -149,7 +87,6 @@
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getDatabase, ref, onValue, set, remove, push, runTransaction, serverTimestamp, query, limitToLast, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // ============ KONFIGURASI (SUDAH DIISI OTOMATIS) ============
   const firebaseConfig = {
     apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
     authDomain: "cerdascermat-a3206.firebaseapp.com",
@@ -159,294 +96,29 @@
     messagingSenderId: "1098230358098",
     appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
   };
-  // ===========================================================
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // Server offset
   let serverOffset = 0;
-  onValue(ref(db, '.info/serverTimeOffset'), snap => {
-    serverOffset = snap.val() || 0;
-  });
+  onValue(ref(db, '.info/serverTimeOffset'), snap => { serverOffset = snap.val() || 0; });
   const serverNow = () => Date.now() + serverOffset;
 
-  // Params
   const params = new URLSearchParams(location.search);
   const roomId = (params.get('room') || '').toUpperCase();
   const teamId = parseInt(params.get('team') || 0);
 
   if (!roomId || !teamId) {
-    document.body.innerHTML = '<div class="center-panel"><h2>Link tidak valid</h2><p>Scan ulang QR dari host.</p></div>';
-    throw new Error('Invalid URL params');
+    document.body.innerHTML = '<div class="center-panel"><h2>Link tidak valid</h2></div>';
+    throw new Error('Invalid URL');
   }
 
-  // State
-  let user = null;
-  let myName = null;
-  let myPlayerKey = null;
-  let state = 'idle';
-  let timerInterval = null;
-  let stateData = null;
-  let isStarting = false;
-  let authHandled = false;
-  let listenersAttached = false;
+  let user = null, myName = null, myPlayerKey = null, state = 'idle';
+  let timerInterval = null, stateData = null;
+  let isStarting = false, authHandled = false, listenersAttached = false;
 
-  // ============ AUTH ============
-  signInAnonymously(auth).catch(e => {
-    console.error('Auth error:', e);
-    document.body.innerHTML = '<div class="center-panel"><h2>Gagal terhubung</h2><p>' + e.message + '</p></div>';
-  });
-
-  onAuthStateChanged(auth, u => {
-    user = u;
-    if (!u) return;
-    if (myPlayerKey) return;
-    if (authHandled) return;
-    authHandled = true;
-
-    const saved = localStorage.getItem(`cc_name_${roomId}_${teamId}`);
-    if (saved) {
-      myName = saved;
-      mulaiMain();
-    } else {
-      document.getElementById('nameView').style.display = 'flex';
-      document.getElementById('nameInput').focus();
-    }
-  });
-
-  window.simpanNama = async () => {
-    if (!user) { alert('Belum terhubung. Tunggu sebentar…'); return; }
-    if (isStarting || myPlayerKey) return;
-
-    const name = document.getElementById('nameInput').value.trim();
-    if (!name) { alert('Nama wajib diisi'); return; }
-    if (name.length > 20) { alert('Maksimal 20 karakter'); return; }
-
-    myName = name;
-    localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
-    document.getElementById('nameView').style.display = 'none';
-
-    try {
-      await mulaiMain();
-    } catch (e) {}
-  };
-
-  // ============ MAIN ============
-  async function mulaiMain() {
-    if (isStarting) return;
-    if (myPlayerKey) return;
-    if (!myName) return;
-
-    isStarting = true;
-
-    try {
-      document.getElementById('mainView').style.display = 'flex';
-      document.getElementById('identity').textContent = `Tim ${teamId} • ${myName}`;
-
-      const playerRef = push(ref(db, `rooms/${roomId}/players`));
-      myPlayerKey = playerRef.key;
-
-      await set(playerRef, {
-        team: teamId,
-        name: myName,
-        joinedAt: serverTimestamp()
-      });
-
-      try {
-        await onDisconnect(playerRef).remove();
-      } catch (e) {}
-
-      if (!listenersAttached) {
-        listenersAttached = true;
-
-        onValue(ref(db, `rooms/${roomId}/state`), snap => {
-          stateData = snap.val();
-          updateStateFromServer();
-        });
-
-        onValue(ref(db, `rooms/${roomId}/timer`), snap => {
-          startCountdown(snap.val());
-        });
-
-        onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
-          const data = snap.val() || {};
-          const msgs = Object.entries(data)
-            .map(([k, v]) => ({ key: k, ...v }))
-            .sort((a, b) => (a.ts || 0) - (b.ts || 0));
-          renderChat(msgs);
-        });
-      }
-
-      ui();
-    } catch (e) {
-      console.error('[MAIN] FAILED:', e);
-      myPlayerKey = null;
-      document.getElementById('mainView').style.display = 'none';
-      document.getElementById('nameView').style.display = 'flex';
-
-      let msg = e.message || String(e);
-      if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
-        msg = 'Izin Firebase ditolak (PERMISSION_DENIED).\n\nPastikan Firebase Rules mengizinkan write ke:\nrooms/' + roomId + '/players';
-      }
-      alert('Gagal bergabung:\n\n' + msg);
-    } finally {
-      isStarting = false;
-    }
-  }
-
-  function updateStateFromServer() {
-    if (!stateData || !stateData.locked) {
-      if (state === 'winner' || state === 'loser' || state === 'pressed') {
-        state = 'idle';
-        ui();
-      }
-      return;
-    }
-    if (stateData.playerKey === myPlayerKey) {
-      if (state !== 'winner') { state = 'winner'; ui(); beep(1400); }
-    } else {
-      if (state !== 'loser') { state = 'loser'; ui(); beep(220); }
-    }
-  }
-
-  // ============ UI ============
-  function ui() {
-    const btn = document.getElementById('btn');
-    const status = document.getElementById('status');
-
-    btn.className = 'push-btn ' + state;
-    btn.textContent = (
-      state === 'idle'    ? 'TEKAN' :
-      state === 'pressed' ? '…' :
-      state === 'winner'  ? 'TERCEPAT!' : 'TERKUNCI'
-    );
-
-    status.textContent = (
-      state === 'idle'    ? 'Siap!' :
-      state === 'pressed' ? 'Menunggu konfirmasi…' :
-      state === 'winner'  ? '🏆 Kamu tercepat!' :
-                            `Terkunci — Tim ${stateData?.team} (${stateData?.name}) lebih cepat.`
-    );
-  }
-
-  // ============ BUZZER ============
-  window.tekan = async () => {
-    if (state !== 'idle') return;
-    if (!myPlayerKey) {
-      if (!isStarting && myName && user) await mulaiMain();
-      if (!myPlayerKey) return;
-    }
-
-    state = 'pressed';
-    ui();
-    beep(900, 0.08);
-
-    const stateRef = ref(db, `rooms/${roomId}/state`);
-    try {
-      const result = await runTransaction(stateRef, current => {
-        if (current) return;
-        return {
-          locked: true,
-          team: teamId,
-          name: myName,
-          playerKey: myPlayerKey,
-          ts: Date.now()
-        };
-      });
-    } catch (e) {
-      console.error('[TEKAN] transaction error:', e.message);
-    }
-
-    setTimeout(() => {
-      if (state === 'pressed') {
-        if (stateData && stateData.locked) {
-          updateStateFromServer();
-        } else {
-          state = 'idle';
-          ui();
-        }
-      }
-    }, 3000);
-  };
-
-  document.getElementById('btn').addEventListener('click', () => window.tekan());
-
-  // ============ TIMER ============
-  function startCountdown(timer) {
-    clearInterval(timerInterval);
-    const el = document.getElementById('timerPlayer');
-    if (!timer || !timer.running) {
-      el.textContent = '—';
-      el.classList.remove('urgent', 'done');
-      return;
-    }
-    const endAt = timer.startedAt + timer.duration * 1000;
-    const tick = () => {
-      const remaining = Math.max(0, endAt - serverNow());
-      el.textContent = (remaining / 1000).toFixed(1);
-      if (remaining < 5000) el.classList.add('urgent');
-      if (remaining <= 0) {
-        el.textContent = 'TIME UP!';
-        el.classList.remove('urgent');
-        el.classList.add('done');
-        clearInterval(timerInterval);
-      }
-    };
-    tick();
-    timerInterval = setInterval(tick, 100);
-  }
-
-  // ============ CHAT ============
-  window.kirimChat = async () => {
-    if (!myName) return;
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-
-    try {
-      const chatRef = push(ref(db, `rooms/${roomId}/chat`));
-      await set(chatRef, {
-        name: myName,
-        team: teamId,
-        text: text,
-        ts: serverTimestamp()
-      });
-      input.value = '';
-    } catch (e) {
-      console.error('[CHAT] send error:', e);
-    }
-  };
-
-  function renderChat(msgs) {
-    const el = document.getElementById('chatList');
-    el.innerHTML = msgs.map(m => `
-      <div class="chat-msg ${m.name === myName && m.team === teamId ? 'mine' : ''}">
-        <div class="chat-who">Tim ${m.team}${m.name ? ' • ' + m.name : ''}</div>
-        <div class="chat-text">${escapeHtml(m.text)}</div>
-      </div>
-    `).join('');
-    el.scrollTop = el.scrollHeight;
-  }
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  }
-
-  // ============ EXIT ============
-  window.exitGame = async () => {
-    if (!confirm('Keluar dari permainan?')) return;
-    if (myPlayerKey) {
-      try {
-        await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`));
-      } catch (e) {}
-    }
-    localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
-    document.body.innerHTML = '<div class="center-panel"><h2>Anda telah keluar</h2><p>Tutup tab ini atau scan QR lagi untuk bergabung.</p></div>';
-  };
-
-  // ============ BEEP ============
+  // AUDIO PLAYER (Bip saat buzzer dibuka)
   let actx;
   function beep(freq = 880, dur = 0.12) {
     try {
@@ -460,6 +132,150 @@
       o.start(); o.stop(actx.currentTime + dur);
     } catch (e) {}
   }
+
+  signInAnonymously(auth).catch(e => console.error(e));
+
+  onAuthStateChanged(auth, u => {
+    user = u;
+    if (!u || myPlayerKey || authHandled) return;
+    authHandled = true;
+
+    const saved = localStorage.getItem(`cc_name_${roomId}_${teamId}`);
+    if (saved) { myName = saved; mulaiMain(); } 
+    else { document.getElementById('nameView').style.display = 'flex'; document.getElementById('nameInput').focus(); }
+  });
+
+  window.simpanNama = async () => {
+    if (!user) { alert('Tunggu koneksi...'); return; }
+    if (isStarting || myPlayerKey) return;
+    const name = document.getElementById('nameInput').value.trim();
+    if (!name) { alert('Nama wajib diisi'); return; }
+    
+    myName = name;
+    localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
+    document.getElementById('nameView').style.display = 'none';
+    try { await mulaiMain(); } catch (e) {}
+  };
+
+  async function mulaiMain() {
+    if (isStarting || myPlayerKey || !myName) return;
+    isStarting = true;
+    try {
+      document.getElementById('mainView').style.display = 'flex';
+      document.getElementById('identity').textContent = `Tim ${teamId} • ${myName}`;
+
+      const playerRef = push(ref(db, `rooms/${roomId}/players`));
+      myPlayerKey = playerRef.key;
+      await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
+      try { await onDisconnect(playerRef).remove(); } catch (e) {}
+
+      if (!listenersAttached) {
+        listenersAttached = true;
+        
+        let prevLocked = false;
+        onValue(ref(db, `rooms/${roomId}/state`), snap => {
+          stateData = snap.val();
+          const isLocked = stateData && stateData.locked;
+          
+          // Jika sebelumnya terkunci, sekarang terbuka -> Bunyikan Bip
+          if (prevLocked && !isLocked) beep(900, 0.1);
+          prevLocked = isLocked;
+
+          updateStateFromServer();
+        });
+
+        onValue(ref(db, `rooms/${roomId}/timer`), snap => { startCountdown(snap.val()); });
+        onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
+          const data = snap.val() || {};
+          const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+          renderChat(msgs);
+        });
+      }
+      ui();
+    } catch (e) {
+      myPlayerKey = null;
+      document.getElementById('mainView').style.display = 'none';
+      document.getElementById('nameView').style.display = 'flex';
+      alert('Gagal: ' + e.message);
+    } finally { isStarting = false; }
+  }
+
+  function updateStateFromServer() {
+    if (!stateData || !stateData.locked) {
+      if (state !== 'idle') { state = 'idle'; ui(); }
+      return;
+    }
+    if (stateData.playerKey === myPlayerKey) {
+      if (state !== 'winner') { state = 'winner'; ui(); beep(1400); }
+    } else {
+      if (state !== 'loser') { state = 'loser'; ui(); beep(220); }
+    }
+  }
+
+  function ui() {
+    const btn = document.getElementById('btn'), status = document.getElementById('status');
+    btn.className = 'push-btn ' + state;
+    btn.textContent = (state === 'idle' ? 'TEKAN' : state === 'pressed' ? '…' : state === 'winner' ? 'TERCEPAT!' : 'TERKUNCI');
+    status.textContent = (state === 'idle' ? 'Siap!' : state === 'pressed' ? 'Menunggu…' : state === 'winner' ? '🏆 Kamu tercepat!' : `Terkunci — Tim ${stateData?.team} (${stateData?.name})`);
+  }
+
+  window.tekan = async () => {
+    if (state !== 'idle') return;
+    if (!myPlayerKey) return;
+    state = 'pressed'; ui(); beep(900, 0.08);
+    
+    try {
+      await runTransaction(ref(db, `rooms/${roomId}/state`), current => {
+        if (current) return;
+        return { locked: true, team: teamId, name: myName, playerKey: myPlayerKey, ts: Date.now() };
+      });
+    } catch (e) {}
+    
+    setTimeout(() => { if (state === 'pressed') { if (stateData && stateData.locked) updateStateFromServer(); else { state = 'idle'; ui(); } } }, 3000);
+  };
+
+  document.getElementById('btn').addEventListener('click', () => window.tekan());
+
+  function startCountdown(timer) {
+    clearInterval(timerInterval);
+    const el = document.getElementById('timerPlayer');
+    if (!timer || !timer.running) { el.textContent = '—'; el.classList.remove('urgent','done'); return; }
+    const endAt = timer.startedAt + timer.duration * 1000;
+    const tick = () => {
+      const remaining = Math.max(0, endAt - serverNow());
+      el.textContent = (remaining / 1000).toFixed(1);
+      if (remaining < 5000) el.classList.add('urgent');
+      if (remaining <= 0) { el.textContent = 'TIME UP!'; el.classList.remove('urgent'); el.classList.add('done'); clearInterval(timerInterval); }
+    };
+    tick(); timerInterval = setInterval(tick, 100);
+  }
+
+  window.kirimChat = async () => {
+    if (!myName) return;
+    const input = document.getElementById('chatInput'), text = input.value.trim();
+    if (!text) return;
+    try { await set(push(ref(db, `rooms/${roomId}/chat`)), { name: myName, team: teamId, text: text, ts: serverTimestamp() }); input.value = ''; } catch (e) {}
+  };
+
+  function renderChat(msgs) {
+    const el = document.getElementById('chatList');
+    el.innerHTML = msgs.map(m => `
+      <div class="chat-msg ${m.name === myName && m.team === teamId ? 'mine' : ''}">
+        <div class="chat-who">${m.name === 'Host' ? 'HOST' : 'Tim ' + m.team + ' • ' + m.name}</div>
+        <div class="chat-text">${escapeHtml(m.text)}</div>
+      </div>
+    `).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+
+  window.exitGame = async () => {
+    if (!confirm('Keluar?')) return;
+    if (myPlayerKey) try { await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`)); } catch(e){}
+    localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
+    document.body.innerHTML = '<div class="center-panel"><h2>Anda telah keluar</h2></div>';
+  };
 </script>
 </body>
 </html>
