@@ -7,11 +7,8 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
-  /* Kunci Layar: No Scroll */
   html, body {
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden; 
+    height: 100vh; width: 100vw; overflow: hidden; 
     font-family: system-ui, -apple-system, sans-serif;
     background: #0f172a; color: #e2e8f0;
   }
@@ -21,51 +18,30 @@
     height: 100%; padding: 12px; gap: 12px;
   }
 
-  /* Header Panel */
+  /* HEADER */
   .header {
     display: flex; justify-content: space-between; align-items: center;
-    background: #1e293b; padding: 10px 16px; border-radius: 10px;
-    flex-shrink: 0;
+    background: #1e293b; padding: 10px 16px; border-radius: 10px; flex-shrink: 0;
   }
   .header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px;}
-  
-  /* Grup Tombol Kanan Atas */
-  .header-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  
+  .header-actions { display: flex; gap: 8px; align-items: center; }
   .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; color: white; transition: 0.2s;}
-  .btn-red { background: #ef4444; }
-  .btn-red:hover { background: #dc2626; }
-  .btn-gray { background: #475569; }
-  .btn-gray:hover { background: #334155; }
-  .btn-blue { background: #3b82f6; }
-  .btn-blue:hover { background: #2563eb; }
+  .btn-blue { background: #3b82f6; } .btn-blue:hover { background: #2563eb; }
+  .btn-red { background: #ef4444; } .btn-red:hover { background: #dc2626; }
+  .btn-gray { background: #475569; } .btn-gray:hover { background: #334155; }
   
-  /* Grid Utama (Kiri & Kanan) */
+  /* LAYOUT UTAMA */
   .grid-container {
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 12px; 
-    flex: 1;
-    min-height: 0; 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; 
   }
-
-  .column {
-    display: flex; flex-direction: column; gap: 12px; min-height: 0;
-  }
-
-  /* Panel Dasar */
+  .column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
   .panel {
     background: #1e293b; border-radius: 10px; padding: 12px;
-    display: flex; flex-direction: column; gap: 8px;
-    position: relative;
+    display: flex; flex-direction: column; gap: 8px; position: relative;
   }
   .panel-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;}
   
-  /* Tombol Utama */
+  /* TOMBOL */
   .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; color: #fff; transition: 0.2s;}
   .btn:active { transform: scale(0.95); }
   .btn-primary { background: #3b82f6; }
@@ -74,37 +50,42 @@
   .btn-danger { background: #ef4444; }
   .btn-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
-  /* Panel Timer */
+  /* TIMER */
   .timer-panel { flex: 0.8; justify-content: center; }
   .timer-display { font-size: 48px; font-weight: 800; text-align: center; color: #3b82f6; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
   .input-group { display: flex; gap: 6px; align-items: center; justify-content: center; font-size: 13px;}
   .input-group input { padding: 8px; border-radius: 6px; border: none; background: #0f172a; color: white; width: 60px; text-align: center; font-size: 16px; font-weight: bold;}
 
-  /* Panel Buzzer */
+  /* BUZZER */
   .buzzer-panel { flex: 0.9; justify-content: center; }
   .buzzer-status { text-align: center; font-size: 20px; font-weight: 800; padding: 12px; border-radius: 8px; border: 2px dashed #475569; transition: 0.3s;}
   .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
   .buzzer-status.open { color: #22c55e; border-color: #22c55e; background: rgba(34, 197, 94, 0.1); }
   .winner-box { font-size: 22px; font-weight: bold; text-align: center; color: #fbbf24; min-height: 30px; margin: 8px 0; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);}
 
-  /* Panel Pemain */
+  /* PEMAIN */
   .player-panel { flex: 1.5; overflow: hidden; }
   .player-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; padding-right: 4px; flex: 1;}
-  .player-row { background: #0f172a; padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; }
+  .player-row { background: #0f172a; padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; border-left: 4px solid transparent; }
+  .player-row.t1 { border-left-color: #ef4444; } .player-row.t2 { border-left-color: #3b82f6; }
+  .player-row.t3 { border-left-color: #f59e0b; } .player-row.t4 { border-left-color: #22c55e; }
   .device-count { font-size: 11px; background: #334155; padding: 4px 10px; border-radius: 12px; color: #cbd5e1; white-space: nowrap;}
-
-  /* Panel QR */
+  .btn-del-player { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 11px; margin-left: 6px; }
+  
+  /* QR CODE */
   .qr-panel { flex-shrink: 0; }
   .qr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .qr-card { background: #0f172a; padding: 10px; border-radius: 8px; text-align: center; }
-  .qr-card h3 { margin: 0 0 8px 0; font-size: 13px; color: #e2e8f0;}
+  .qr-card { background: #0f172a; padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;}
+  .qr-card h3 { margin: 0; font-size: 13px; color: #e2e8f0;}
+  .qr-card canvas, .qr-card img { width: 80px !important; height: 80px !important; border-radius: 4px; cursor: pointer;}
+  .btn-zoom { background: #334155; color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%;}
   
-  #qr-team1, #qr-team2, #qr-team3, #qr-team4 { display: flex; justify-content: center; }
-  /* Paksa gambar QR jadi kecil dan rapi */
-  #qr-team1 img, #qr-team2 img, #qr-team3 img, #qr-team4 img,
-  #qr-team1 canvas, #qr-team2 canvas, #qr-team3 canvas, #qr-team4 canvas { width: 100% !important; max-width: 100px; height: auto !important; border-radius: 4px;}
+  /* MODAL ZOOM QR */
+  #qrModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;}
+  #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important; border: 10px solid white; border-radius: 10px;}
+  #qrModal h2 { color: white; margin: 0; font-size: 28px;}
 
-  /* Panel Chat */
+  /* CHAT */
   .chat-panel { flex: 1; min-height: 0; }
   .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
   .chat-msg { background: #0f172a; padding: 8px 12px; border-radius: 6px; font-size: 13px; max-width: 90%; }
@@ -116,9 +97,14 @@
 </head>
 <body>
 
+<!-- MODAL ZOOM QR -->
+<div id="qrModal" onclick="tutupModalQR()">
+  <h2 id="qrModalTitle">Tim 1</h2>
+  <div id="qrModalTarget"></div>
+  <p style="color:#94a3b8; font-size:14px;">Klik di mana saja untuk menutup</p>
+</div>
+
 <div class="app-container">
-  
-  <!-- HEADER DENGAN TOMBOL LENGKAP -->
   <div class="header">
     <h1>Host Panel <span style="color:#475569">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
     <div class="header-actions">
@@ -129,11 +115,8 @@
   </div>
 
   <div class="grid-container">
-    
     <!-- KOLOM KIRI -->
     <div class="column">
-      
-      <!-- TIMER -->
       <div class="panel timer-panel">
         <p class="panel-title">⏱ Timer Kuis</p>
         <div class="timer-display" id="hostTimer">—</div>
@@ -144,7 +127,6 @@
         </div>
       </div>
 
-      <!-- BUZZER -->
       <div class="panel buzzer-panel">
         <p class="panel-title">🔔 Tombol Cepat (Buzzer)</p>
         <div class="buzzer-status" id="buzzerStatus">STATUS: —</div>
@@ -156,31 +138,21 @@
         </div>
       </div>
 
-      <!-- PEMAIN -->
       <div class="panel player-panel">
         <p class="panel-title">👥 Pemain Terhubung</p>
-        <div class="player-list" id="playerList">
-          <!-- Diisi otomatis oleh JS -->
-        </div>
+        <div class="player-list" id="playerList"></div>
       </div>
-
     </div>
 
     <!-- KOLOM KANAN -->
     <div class="column">
-      
-      <!-- QR CODE -->
       <div class="panel qr-panel">
         <p class="panel-title">📱 QR Code Registrasi Tim</p>
-        <div class="qr-grid">
-          <div class="qr-card"><h3>Tim 1</h3><div id="qr-team1"></div></div>
-          <div class="qr-card"><h3>Tim 2</h3><div id="qr-team2"></div></div>
-          <div class="qr-card"><h3>Tim 3</h3><div id="qr-team3"></div></div>
-          <div class="qr-card"><h3>Tim 4</h3><div id="qr-team4"></div></div>
+        <div class="qr-grid" id="qrGrid">
+          <!-- Diisi JS -->
         </div>
       </div>
 
-      <!-- CHAT -->
       <div class="panel chat-panel">
         <p class="panel-title">💬 Live Chat & Broadcast</p>
         <div class="chat-list" id="chatList"></div>
@@ -189,19 +161,16 @@
           <button class="btn btn-primary" onclick="kirimChatHost()">Kirim</button>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- Library Pembuat QR Code -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getDatabase, ref, onValue, set, remove, push, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // ============ KONFIGURASI FIREBASE ANDA ============
   const firebaseConfig = {
     apiKey: "AIzaSyB98iws-cuHwi5jOftorleJ1-lwxJby0l0",
     authDomain: "cerdascermat-a3206.firebaseapp.com",
@@ -211,7 +180,6 @@
     messagingSenderId: "1098230358098",
     appId: "1:1098230358098:web:301f0f0d25b220de75ff8b"
   };
-  // ==================================================
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -227,133 +195,126 @@
 
   let timerInterval = null;
 
-  // Login Host (Anonim)
-  signInAnonymously(auth).then(() => { initHost(); })
-    .catch(e => alert('Gagal login Host: ' + e.message));
+  // Audio Context untuk Suara Host
+  let actx;
+  function playHorn() {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'square'; o.frequency.setValueAtTime(800, actx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(400, actx.currentTime + 0.3);
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(0.2, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.5);
+      o.start(); o.stop(actx.currentTime + 0.5);
+    } catch (e) {}
+  }
+
+  signInAnonymously(auth).then(() => { initHost(); }).catch(e => alert('Gagal login: ' + e.message));
 
   function initHost() {
     generateQRs();
 
-    // 1. Pantau Status Buzzer & Pemenang
+    // STATE / BUZZER
+    let prevLocked = false;
     onValue(ref(db, `rooms/${roomId}/state`), snap => {
       const state = snap.val();
       const statusEl = document.getElementById('buzzerStatus');
       const winnerEl = document.getElementById('winnerDisplay');
+      const isLocked = state && state.locked;
 
-      if (!state || !state.locked) {
+      if (!isLocked) {
         statusEl.textContent = 'STATUS: TERBUKA';
         statusEl.className = 'buzzer-status open';
         winnerEl.innerHTML = '';
       } else {
         statusEl.textContent = 'STATUS: TERKUNCI';
         statusEl.className = 'buzzer-status locked';
-        
         if (state.name === 'Ditutup Host') {
           winnerEl.innerHTML = `🔒 Buzzer Ditutup Manual`;
         } else {
           winnerEl.innerHTML = `🏆 <span style="color:#22c55e">Tim ${state.team}</span> (${state.name})!`;
+          if (!prevLocked) playHorn(); // Bunyikan suara jika ada yang menang
         }
       }
+      prevLocked = isLocked;
     });
 
-    // 2. Pantau Timer
+    // TIMER
     onValue(ref(db, `rooms/${roomId}/timer`), snap => {
       const timer = snap.val();
       clearInterval(timerInterval);
       const el = document.getElementById('hostTimer');
-      
-      if (!timer || !timer.running) {
-        el.textContent = '—';
-        return;
-      }
+      if (!timer || !timer.running) { el.textContent = '—'; return; }
       const endAt = timer.startedAt + timer.duration * 1000;
       const tick = () => {
         const remaining = Math.max(0, endAt - serverNow());
         el.textContent = (remaining / 1000).toFixed(1);
-        if (remaining <= 0) {
-          el.textContent = 'WAKTU HABIS';
-          clearInterval(timerInterval);
-        }
+        if (remaining <= 0) { el.textContent = 'WAKTU HABIS'; clearInterval(timerInterval); }
       };
-      tick();
-      timerInterval = setInterval(tick, 100);
+      tick(); timerInterval = setInterval(tick, 100);
     });
 
-    // 3. Pantau Daftar Pemain
+    // PEMAIN
     onValue(ref(db, `rooms/${roomId}/players`), snap => {
       const players = snap.val() || {};
       const teams = {1: [], 2: [], 3: [], 4: []};
+      Object.entries(players).forEach(([key, p]) => { if (teams[p.team]) teams[p.team].push({ key, name: p.name }); });
       
-      Object.values(players).forEach(p => { 
-        if (teams[p.team]) teams[p.team].push(p.name); 
-      });
-
       const listEl = document.getElementById('playerList');
       listEl.innerHTML = '';
-      
       for (let i = 1; i <= 4; i++) {
-        const names = teams[i].join(', ') || '-';
+        const namesHTML = teams[i].length > 0 
+          ? teams[i].map(p => `${p.name} <button class="btn-del-player" onclick="hapusPemain('${p.key}')">✕</button>`).join(', ')
+          : '-';
         listEl.innerHTML += `
-          <div class="player-row">
-            <span style="color:#3b82f6">Tim ${i}</span>
-            <span style="font-size:12px; color:#cbd5e1; flex:1; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 10px;">${names}</span>
+          <div class="player-row t${i}">
+            <span style="color:#3b82f6; min-width:50px;">Tim ${i}</span>
+            <span style="font-size:12px; color:#cbd5e1; flex:1; text-align:left; padding:0 10px;">${namesHTML}</span>
             <span class="device-count">${teams[i].length} device</span>
           </div>
         `;
       }
     });
 
-    // 4. Pantau Live Chat
+    // CHAT
     onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
       const data = snap.val() || {};
       const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
       const el = document.getElementById('chatList');
-      
       el.innerHTML = msgs.map(m => `
         <div class="chat-msg ${m.name === 'Host' ? 'host' : ''}">
           <div class="chat-who">${m.name === 'Host' ? 'HOST (Broadcast)' : `Tim ${m.team} • ${m.name}`}</div>
           <div>${escapeHtml(m.text)}</div>
         </div>
       `).join('');
-      
       el.scrollTop = el.scrollHeight;
     });
   }
 
-  // ============ FUNGSI TOMBOL ============
+  // ============ FUNGSI ============
+  window.bukaBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
+  window.tutupBuzzer = async () => { await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); };
+  window.resetBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
+  
+  window.hapusPemain = async (playerKey) => {
+    if(confirm('Keluarkan pemain ini?')) await remove(ref(db, `rooms/${roomId}/players/${playerKey}`));
+  };
 
-  window.bukaBuzzer = async () => { 
-    await remove(ref(db, `rooms/${roomId}/state`)); 
-  };
-  
-  window.tutupBuzzer = async () => { 
-    await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); 
-  };
-  
-  window.resetBuzzer = async () => { 
-    await remove(ref(db, `rooms/${roomId}/state`)); 
-  };
-  
   window.resetTotal = async () => {
-    if(!confirm('PERINGATAN!\n\nReset Total akan menghapus SEMUA data (Pemain, Chat, Timer, Pemenang) di room ini. Lanjutkan?')) return;
+    if(!confirm('Hapus SEMUA data di room ini?')) return;
     await remove(ref(db, `rooms/${roomId}`));
     location.reload();
   };
 
-  window.exitHost = () => {
-    if(confirm('Keluar dari Host Panel?')) {
-      window.location.href = 'about:blank'; // Atau arahkan ke halaman login jika ada
-    }
-  };
+  window.exitHost = () => { if(confirm('Keluar?')) window.location.href = 'about:blank'; };
 
   window.startTimer = async () => {
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
     await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: serverNow(), duration: dur });
   };
-  
-  window.stopTimer = async () => { 
-    await remove(ref(db, `rooms/${roomId}/timer`)); 
-  };
+  window.stopTimer = async () => { await remove(ref(db, `rooms/${roomId}/timer`)); };
 
   window.kirimChatHost = async () => {
     const input = document.getElementById('hostChatInput');
@@ -363,25 +324,39 @@
     input.value = '';
   };
 
-  // ============ FUNGSI PENDUKUNG ============
-  function generateQRs() {
-    const currentUrl = window.location.href.split('?')[0];
-    const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'player.html';
+  // ============ QR MODAL ============
+  window.bukaModalQR = (teamNumber) => {
+    const modal = document.getElementById('qrModal');
+    const target = document.getElementById('qrModalTarget');
+    document.getElementById('qrModalTitle').textContent = `Scan untuk Tim ${teamNumber}`;
+    target.innerHTML = '';
+    
+    const baseUrl = window.location.href.split('?')[0].replace('index.html', 'player.html').replace('host.html', 'player.html');
+    new QRCode(target, { text: `${baseUrl}?room=${roomId}&team=${teamNumber}`, width: 300, height: 300, colorDark: "#000000", colorLight: "#ffffff" });
+    
+    modal.style.display = 'flex';
+  };
 
+  window.tutupModalQR = () => {
+    document.getElementById('qrModal').style.display = 'none';
+    document.getElementById('qrModalTarget').innerHTML = '';
+  };
+
+  function generateQRs() {
+    const baseUrl = window.location.href.split('?')[0].replace('index.html', 'player.html').replace('host.html', 'player.html');
+    const grid = document.getElementById('qrGrid');
+    grid.innerHTML = '';
     for (let i = 1; i <= 4; i++) {
-      const el = document.getElementById(`qr-team${i}`);
-      el.innerHTML = '';
-      new QRCode(el, { 
-        text: `${baseUrl}?room=${roomId}&team=${i}`, 
-        width: 120, height: 120, 
-        colorDark: "#000000", colorLight: "#ffffff" 
-      });
+      const card = document.createElement('div');
+      card.className = 'qr-card';
+      card.innerHTML = `<h3>Tim ${i}</h3><div id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
+      grid.appendChild(card);
+      
+      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
     }
   }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 </script>
 </body>
 </html>
