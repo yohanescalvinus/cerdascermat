@@ -64,7 +64,7 @@
   }
   .timer-player.urgent { color: #ef4444; transform: scale(1.15); font-weight: 900;}
   .timer-player.done { color: #ef4444; }
-  .timer-player.paused { color: #f59e0b; opacity: 0.8; }
+  .timer-player.paused { color: #f59e0b; opacity: 0.8; } /* Warna saat di-pause */
 
   .push-btn {
     width: 100%; max-width: 320px;
@@ -170,7 +170,9 @@
   let timerInterval = null, stateData = null;
   let isStarting = false, authHandled = false, listenersAttached = false;
   let lastTickSecond = -1;
-  let globalTimerState = null; // Menyimpan data timer dari database
+  
+  // Variabel ini akan menyimpan status asli dari Firebase
+  let liveTimerData = null;
 
   let actx;
   function initAudio() {
@@ -271,9 +273,8 @@
           updateStateFromServer();
         });
 
-        // TIMER LISTENER
         onValue(ref(db, `rooms/${roomId}/timer`), snap => { 
-          globalTimerState = snap.val();
+          liveTimerData = snap.val(); // Simpan datanya
           startCountdown(); 
         });
         
@@ -328,11 +329,11 @@
 
   document.getElementById('btn').addEventListener('click', () => window.tekan());
 
-  // FUNGSI TIMER DENGAN FITUR PAUSE & FORMAT JAM
+  // FUNGSI TIMER (SUARA & VISUAL DIPERBAIKI)
   function startCountdown() {
     clearInterval(timerInterval);
     const el = document.getElementById('timerPlayer');
-    const timer = globalTimerState;
+    const timer = liveTimerData; // Ambil data terbaru
     
     if (!timer || !timer.running) { 
       el.textContent = '—'; 
@@ -344,10 +345,10 @@
     const endAt = timer.startedAt + timer.duration * 1000;
     
     timerInterval = setInterval(() => {
-      // JIKA HOST MENEKAN PAUSE, TAMPILAN MEMBEKU
+      // JIKA PAUSE
       if (timer.isPaused) {
         el.classList.add('paused');
-        return; // Jangan hitung waktu, jangan bunyi bip
+        return; 
       } else {
         el.classList.remove('paused');
       }
@@ -381,10 +382,14 @@
         return;
       }
 
+      // SUARA BIP DIPERBAIKI: Pastikan selalu dipanggil per detik jika tidak pause
       if (remainingSec !== lastTickSecond) {
         lastTickSecond = remainingSec;
-        if (remainingSec <= 10) playSound(1200, 0.1, 1.0, 'sawtooth');
-        else playSound(600, 0.05, 1.0, 'sine');
+        if (remainingSec <= 10) {
+          playSound(1200, 0.1, 1.0, 'sawtooth');
+        } else {
+          playSound(600, 0.05, 1.0, 'sine');
+        }
       }
     }, 100);
   }
