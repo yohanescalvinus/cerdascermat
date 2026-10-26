@@ -40,6 +40,7 @@
   .btn-blue { background: #3b82f6; } .btn-blue:hover { background: #2563eb; }
   .btn-red { background: #ef4444; } .btn-red:hover { background: #dc2626; }
   .btn-gray { background: #64748b; } .btn-gray:hover { background: #475569; }
+  .btn-orange { background: #f59e0b; } .btn-orange:hover { background: #d97706; }
   
   /* LAYOUT UTAMA */
   .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
@@ -93,50 +94,25 @@
   #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 28px;}
 
-  /* ========================================= */
-  /* FITUR POP-UP TIMER RAKSASA (TIDAK MENUTUPI CHAT) */
-  /* ========================================= */
+  /* POP-UP TIMER RAKSASA */
   #timerOverlay {
-    display: none; position: fixed; 
-    top: 0; left: 0; 
-    width: 65vw; /* Hanya menutupi 65% layar kiri, menyisakan ruang chat di kanan */
-    height: 100vh; 
-    background: rgba(255, 255, 255, 0.95); 
-    z-index: 500;
+    display: none; position: fixed; top: 0; left: 0; width: 65vw; height: 100vh; 
+    background: rgba(255, 255, 255, 0.95); z-index: 500;
     flex-direction: column; align-items: center; justify-content: center;
     backdrop-filter: blur(4px);
   }
   #timerOverlay h1 { font-size: 28px; color: var(--text-muted); margin-bottom: -10px; font-weight: 600;}
   #popupTimerValue {
-    font-size: 25vw; /* Ukuran super raksasa */
-    font-weight: 900;
-    color: #3b82f6;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    transition: color 0.3s, transform 0.1s;
+    font-size: 25vw; font-weight: 900; color: #3b82f6;
+    font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s;
   }
-  #timerOverlay.urgent #popupTimerValue {
-    color: #ef4444;
-    transform: scale(1.05);
-    animation: pulse 1s infinite alternate;
-  }
-  @keyframes pulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.1); }
-  }
+  #timerOverlay.urgent #popupTimerValue { color: #ef4444; transform: scale(1.05); animation: pulse 1s infinite alternate; }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
   .btn-stop-overlay {
-    margin-top: 30px;
-    padding: 12px 30px;
-    font-size: 18px;
-    font-weight: 800;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+    margin-top: 30px; padding: 12px 30px; font-size: 18px; font-weight: 800;
+    background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer;
     box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
   }
-  .btn-stop-overlay:active { transform: scale(0.95); }
 
   /* CHAT */
   .chat-panel { flex: 1; min-height: 0; }
@@ -151,14 +127,12 @@
 </head>
 <body>
 
-<!-- POP-UP TIMER (Z-INDEX TINGGI) -->
 <div id="timerOverlay">
   <h1>SISA WAKTU</h1>
   <div id="popupTimerValue">—</div>
   <button class="btn-stop-overlay" onclick="stopTimer()">■ Hentikan Waktu</button>
 </div>
 
-<!-- MODAL ZOOM QR -->
 <div id="qrModal" onclick="tutupModalQR()">
   <h2 id="qrModalTitle">Tim 1</h2>
   <div class="qr-wrapper" id="qrModalTarget"></div>
@@ -169,6 +143,9 @@
   <div class="header">
     <h1>Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
     <div class="header-actions">
+      <!-- Tombol Paksa Sinkronisasi (Solusi jika nama pemain tidak muncul) -->
+      <button class="btn-sm btn-orange" onclick="paksaSinkron()">🔄 Paksa Sinkron</button>
+      
       <button class="btn-sm btn-blue" onclick="if(confirm('Hapus semua chat?')) remove(ref(db, 'rooms/'+roomId+'/chat'))">Hapus Chat</button>
       <button class="btn-sm btn-red" onclick="resetTotal()">Reset Total</button>
       <button class="btn-sm btn-gray" onclick="exitHost()">✕ Keluar</button>
@@ -180,7 +157,6 @@
     <div class="column">
       <div class="panel timer-panel">
         <p class="panel-title">⏱ Timer Kuis</p>
-        <!-- Timer display di sini disembunyikan saat overlay muncul -->
         <div class="input-group">
           <input type="number" id="timerInput" value="30" min="1" max="300"> <span>detik</span>
           <button class="btn btn-primary" onclick="startTimer()">▶ Start</button>
@@ -205,7 +181,7 @@
       </div>
     </div>
 
-    <!-- KOLOM KANAN (CHAT) -->
+    <!-- KOLOM KANAN -->
     <div class="column">
       <div class="panel qr-panel">
         <p class="panel-title">📱 QR Code Registrasi Tim</p>
@@ -254,10 +230,9 @@
 
   let timerInterval = null;
   let lastTickSecond = -1;
+  let playerListenerRef = null; // Menyimpan referensi listener pemain
 
-  // ==========================================
   // SISTEM SUARA HOST
-  // ==========================================
   let actx;
   document.addEventListener('click', () => {
     if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -268,8 +243,7 @@
     try {
       if (!actx) return;
       const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; 
-      o.frequency.value = freq;
+      o.type = type; o.frequency.value = freq;
       o.connect(g); g.connect(actx.destination);
       g.gain.setValueAtTime(vol, actx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
@@ -302,6 +276,7 @@
 
   function initHost() {
     generateQRs();
+    loadDataPemain(); // Panggil fungsi pemuat pemain
 
     // STATE / BUZZER
     let prevLocked = null;
@@ -315,15 +290,13 @@
         statusEl.textContent = 'STATUS: TERBUKA';
         statusEl.className = 'buzzer-status open';
         winnerEl.innerHTML = '';
-        
-        if (prevLocked === true) playSound(800, 0.3, 1.0, 'square'); // Bunyi saat Buka
-        
+        if (prevLocked === true) playSound(800, 0.3, 1.0, 'square');
       } else {
         statusEl.textContent = 'STATUS: TERKUNCI';
         statusEl.className = 'buzzer-status locked';
         if (state.name === 'Ditutup Host') {
           winnerEl.innerHTML = `🔒 Buzzer Ditutup Manual`;
-          if (prevLocked === false) playSound(300, 0.3, 1.0, 'square'); // Bunyi saat Tutup
+          if (prevLocked === false) playSound(300, 0.3, 1.0, 'square');
         } else {
           winnerEl.innerHTML = `🏆 <span style="color:var(--tim${state.team}); font-weight:800;">Tim ${state.team}</span> (${state.name})!`;
           if (prevLocked === false) playHorn();
@@ -345,7 +318,6 @@
         return; 
       }
       
-      // Tampilkan pop-up
       overlay.style.display = 'flex';
       overlay.classList.remove('urgent');
       
@@ -356,10 +328,7 @@
         const remainingSec = Math.ceil(remainingMs / 1000);
         
         popupVal.textContent = (remainingMs / 1000).toFixed(1);
-
-        if (remainingMs <= 10000) {
-          overlay.classList.add('urgent');
-        }
+        if (remainingMs <= 10000) overlay.classList.add('urgent');
 
         if (remainingMs <= 0) {
           clearInterval(timerInterval);
@@ -368,20 +337,38 @@
           return;
         }
 
-        // LOGIKA SUARA DETAK DI HOST
         if (remainingSec !== lastTickSecond) {
           lastTickSecond = remainingSec;
-          if (remainingSec <= 10) {
-            playSound(1200, 0.1, 1.0, 'sawtooth'); // Bip cepat 10 detik terakhir
-          } else {
-            playSound(600, 0.05, 1.0, 'sine'); // Tik jam biasa
-          }
+          if (remainingSec <= 10) playSound(1200, 0.1, 1.0, 'sawtooth');
+          else playSound(600, 0.05, 1.0, 'sine');
         }
       }, 100);
     });
 
-    // PEMAIN
-    onValue(ref(db, `rooms/${roomId}/players`), snap => {
+    // CHAT
+    onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
+      const data = snap.val() || {};
+      const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+      const el = document.getElementById('chatList');
+      el.innerHTML = msgs.map(m => `
+        <div class="chat-msg ${m.name === 'Host' ? 'host' : ''}">
+          <div class="chat-who">${m.name === 'Host' ? 'HOST (Broadcast)' : `Tim ${m.team} • ${m.name}`}</div>
+          <div>${escapeHtml(m.text)}</div>
+        </div>
+      `).join('');
+      el.scrollTop = el.scrollHeight;
+    });
+  }
+
+  // ==========================================
+  // FUNGSI PEMUAT DATA PEMAIN & PAKSA SINKRON
+  // ==========================================
+  function loadDataPemain() {
+    // Lepas listener lama jika ada (mencegah penumpukan memori)
+    if (playerListenerRef) playerListenerRef();
+
+    // Tarik data pemain baru
+    playerListenerRef = onValue(ref(db, `rooms/${roomId}/players`), snap => {
       const players = snap.val() || {};
       const teams = {1: [], 2: [], 3: [], 4: []};
       Object.entries(players).forEach(([key, p]) => { if (teams[p.team]) teams[p.team].push({ key, name: p.name }); });
@@ -401,24 +388,18 @@
         `;
       }
     });
-
-    // CHAT
-    onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
-      const data = snap.val() || {};
-      const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
-      const el = document.getElementById('chatList');
-      el.innerHTML = msgs.map(m => `
-        <div class="chat-msg ${m.name === 'Host' ? 'host' : ''}">
-          <div class="chat-who">${m.name === 'Host' ? 'HOST (Broadcast)' : `Tim ${m.team} • ${m.name}`}</div>
-          <div>${escapeHtml(m.text)}</div>
-        </div>
-      `).join('');
-      el.scrollTop = el.scrollHeight;
-    });
   }
 
+  // Fungsi manual jika tombol Paksa Sinkron diklik
+  window.paksaSinkron = () => {
+    const btn = event.target;
+    btn.textContent = '⏳ Memuat...';
+    loadDataPemain();
+    setTimeout(() => { btn.textContent = '🔄 Paksa Sinkron'; }, 800);
+  };
+
   // ==========================================
-  // FUNGSI TOMBOL
+  // FUNGSI TOMBOL LAINNYA
   // ==========================================
   window.bukaBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
   window.tutupBuzzer = async () => { await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); };
@@ -438,7 +419,6 @@
 
   window.startTimer = async () => {
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
-    // Saat start, aktifkan AudioContext secara paksa jika belum
     if (actx && actx.state === 'suspended') actx.resume();
     await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: serverNow(), duration: dur });
   };
@@ -472,7 +452,7 @@
       card.className = 'qr-card';
       card.innerHTML = `<h3 style="color:var(--tim${i}); font-weight:800;">Tim ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
       grid.appendChild(card);
-      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
+      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${teamNumber=i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
     }
   }
 
