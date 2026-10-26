@@ -40,7 +40,7 @@
     background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
   .center-panel button:disabled{opacity:.5;cursor:not-allowed}
   .hint{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px;line-height:1.4}
-  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;text-align:center;}
 
   header{display:flex;justify-content:space-between;align-items:center;gap:12px;
     flex-wrap:wrap;padding:10px 16px;background:var(--card);border-radius:14px;
@@ -50,77 +50,94 @@
     font-size:clamp(16px,2.4vw,20px);font-weight:900;letter-spacing:2px;color:var(--blue)}
   header .team-count{font-size:13px;color:var(--muted)}
   header button{padding:8px 14px;border-radius:9px;border:1px solid var(--line);
-    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px}
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px; transition:.15s}
   header button:hover{filter:brightness(1.15)}
   header button.btn-reset { background: var(--red); color: white; border: none; }
 
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:clamp(10px,1.5vw,14px);margin-bottom:12px;transition:.3s}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .row input[type=number]{width:70px;padding:8px;border-radius:9px;
-    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:14px}
-  .panel button{padding:8px 12px;border-radius:9px;border:1px solid var(--line);
-    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px;transition:.15s}
+  
+  .panel-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;}
+  .panel-header-row h2 { margin: 0; }
+  .controls-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  
+  .input-time { width: 60px; padding: 8px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card-2); color: var(--text); font-size: 14px; text-align: center; font-weight: bold; }
+  
+  .panel button{padding:8px 12px;border-radius:8px;border:1px solid var(--line);
+    background:var(--line);color:var(--text);font-weight:600;cursor:pointer;font-size:13px;transition:.15s;
+    display: flex; align-items: center; justify-content: center; gap: 4px;}
   .panel button:hover{filter:brightness(1.15)}
   .panel button.primary{background:var(--blue);color:#fff;border:none}
   .panel button.success{background:var(--green);color:#fff;border:none}
   .panel button.danger{background:var(--red);color:#fff;border:none}
   .panel button:disabled{opacity:.4;cursor:not-allowed;filter:none}
 
+  .timer-display-wrapper { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding: 12px 20px; background: var(--card-2); border-radius: 12px; border: 1px solid var(--line);}
   .timer-display{font-family:ui-monospace,Consolas,monospace;
     font-size:clamp(32px,5vw,48px);font-weight:900;text-align:center;
-    margin-top:8px;color:var(--green);letter-spacing:2px; line-height: 1;}
+    color:var(--green);letter-spacing:2px; line-height: 1; flex: 1;}
   .timer-display.urgent{color:var(--amber)}
   .timer-display.done{color:var(--red);font-size:clamp(24px,4vw,32px)}
+  
+  .btn-show-timer {
+    background: var(--card); color: var(--blue); border: 2px solid var(--blue); border-radius: 8px;
+    padding: 8px 16px; font-size: 13px; font-weight: bold; cursor: pointer; display: none; 
+  }
+  .btn-show-timer:hover { background: var(--blue); color: white; }
 
   .buzzer-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-    padding:8px 12px;border-radius:10px;background:var(--card-2);
-    border:2px dashed var(--line);font-weight:700;margin-bottom:10px; font-size: 13px;}
+    padding:10px 14px;border-radius:10px;background:var(--card-2);
+    border:2px dashed var(--line);font-weight:700;margin-bottom:12px; font-size: 13px;}
   .buzzer-status.armed{border-color:var(--green);color:var(--green);animation:pulse 2s ease-in-out infinite}
   .buzzer-status.locked{border-color:var(--amber);color:var(--amber)}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
 
   .team-card{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
-    padding:8px;margin-bottom:6px}
-  .team-title{font-weight:700;font-size:14px;margin-bottom:2px}
-  .team-title .badge{font-size:10px;background:var(--line);padding:2px 6px;
+    padding:10px;margin-bottom:6px; display: flex; justify-content: space-between; align-items: center;}
+  .team-title{font-weight:700;font-size:14px;}
+  .team-title .badge{font-size:11px;background:var(--line);padding:2px 8px;
     border-radius:20px;margin-left:6px;font-weight:600}
-  .team-members{color:var(--muted);font-size:12px}
+  .team-members{color:var(--muted);font-size:12px; text-align: right; max-width: 60%;}
 
-  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
-  .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:8px;
-    padding:8px;display:flex;flex-direction:column;align-items:center;}
-  .qr-label{font-weight:700;margin-bottom:4px;font-size:13px;width:100%;text-align:center;}
+  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+  .qr-item{background:var(--card-2);border:1px solid var(--line);border-radius:10px;
+    padding:10px;display:flex;flex-direction:column;align-items:center;}
+  .qr-label{font-weight:700;margin-bottom:8px;font-size:13px;width:100%;text-align:center;}
   
-  .qr-canvas-container { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 100px;}
-  .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; border-radius: 4px; }
+  .qr-canvas-container { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 120px; background: #ffffff; border-radius: 8px; padding: 8px;}
+  .qr-canvas-container img, .qr-canvas-container canvas { max-width: 100%; height: auto; }
 
   .qr-toggle-btn {
-    margin-top: 8px; padding: 4px 8px; font-size: 11px; border-radius: 6px;
+    margin-top: 10px; padding: 6px 8px; font-size: 11px; border-radius: 6px;
     border: none; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
   }
   
-  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .chat-panel { display: flex; flex-direction: column; height: 240px; }
-  .chat-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;}
+  
+  .right-column { display: flex; flex-direction: column; gap: 12px; height: 100%; min-height: 550px;}
+  
+  .chat-panel { display: flex; flex-direction: column; flex: 1; transition: flex 0.3s ease; }
+  .qr-panel { display: flex; flex-direction: column; flex-shrink: 0; transition: all 0.3s ease; }
+
   .chat-list{flex:1;overflow-y:auto;background:var(--card-2);
-    border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;font-size:12px}
-  .chat-msg{padding:4px 0;border-bottom:1px solid var(--line)}
+    border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px}
+  .chat-msg{padding:6px 0;border-bottom:1px solid var(--line)}
   .chat-msg:last-child{border-bottom:none}
-  .chat-who{font-weight:700;color:var(--blue);font-size:11px;margin-bottom:1px}
+  .chat-who{font-weight:700;color:var(--blue);font-size:11px;margin-bottom:2px; display:flex; justify-content: space-between;}
+  .chat-time{font-size:9px;color:var(--muted);font-weight:normal;}
   .chat-text{color:var(--text)}
-  .chat-time{font-size:9px;color:var(--muted);margin-left:4px}
   .chat-input{display:flex;gap:6px}
-  .chat-input input{flex:1;padding:8px;border-radius:8px;border:1px solid var(--line);
-    background:var(--card-2);color:var(--text);font-size:12px;min-width:0}
-  .chat-input button{padding:8px 12px;border-radius:8px;border:none;
-    background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:12px;flex-shrink:0}
+  .chat-input input{flex:1;padding:10px;border-radius:8px;border:1px solid var(--line);
+    background:var(--card-2);color:var(--text);font-size:13px;min-width:0}
+  .chat-input button{padding:10px 16px;border-radius:8px;border:none;
+    background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:13px;flex-shrink:0}
   
   .btn-clear-chat {
-    padding: 4px 8px; font-size: 10px; border-radius: 4px; background: var(--line);
-    color: var(--text); border: none; cursor: pointer; font-weight: bold;
+    padding:4px 8px; font-size:11px; border-radius:6px; background:var(--red);
+    color:white; border:none; cursor:pointer; font-weight:bold;
   }
-  .btn-clear-chat:hover { background: var(--red); color: white; }
+  .btn-clear-chat:hover { filter: brightness(1.2); }
 
   .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:9999;padding:20px;animation:fadeIn .25s}
@@ -144,20 +161,26 @@
 
   @media (max-width: 900px){
     .dashboard-grid { grid-template-columns: 1fr; }
-    .row button{flex:1 1 auto;min-width:0;padding:8px 10px;font-size:12px}
+    .right-column { height: auto; min-height: auto;}
+    .chat-panel { height: 300px; flex: none; }
   }
 </style>
 </head>
 <body>
 
+<!-- LOGIN VIEW -->
 <div id="loginView" class="center-panel">
   <h1 style="text-align:center">🎯 Host Login</h1>
   <input id="email" type="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
+  <div style="text-align: center; margin-top: 12px;">
+    <a href="#" onclick="lupaPassword()" style="font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 600;">Lupa Password?</a>
+  </div>
   <div id="loginMsg" class="err"></div>
 </div>
 
+<!-- SETTINGS VIEW -->
 <div id="settingsView" class="center-panel" style="display:none">
   <h1 style="text-align:center">⚙ Settings Room</h1>
   <label for="settingRoomId">Room ID (huruf kecil & angka, 3–20 karakter)</label>
@@ -171,6 +194,7 @@
   <div id="settingsMsg" class="err"></div>
 </div>
 
+<!-- HOST VIEW -->
 <div id="hostView" style="display:none;max-width:1400px;margin:0 auto">
   
   <header>
@@ -178,7 +202,7 @@
       <span>Room:</span><span class="room" id="roomId">-</span>
       <span class="team-count" id="teamCountLabel">- tim</span>
     </div>
-    <div class="row">
+    <div class="controls-group" style="flex:unset; justify-content:flex-end; margin-top:0;">
       <button onclick="toggleTheme()" id="themeBtn">☀ Light</button>
       <button onclick="openSettings()">⚙ Settings</button>
       <button onclick="resetAllAndLogout()" class="btn-reset" title="Hapus semua state, chat, & cache lalu Logout">⚠ Reset Total</button>
@@ -190,39 +214,47 @@
   <div id="timerModal" class="popup" style="display:none; z-index: 10000;">
     <div class="popup-content" style="border-color:var(--blue); max-width: 800px; padding: 40px;">
       <div class="popup-label" style="color:var(--blue); font-size: 20px; margin-bottom: 20px;">WAKTU TERSISA</div>
-      
-      <!-- Angka Digital Raksasa -->
       <div id="modalTimerText" style="font-family:ui-monospace,Consolas,monospace; font-size:clamp(80px, 15vw, 180px); font-weight:900; color:var(--green); line-height: 1; margin-bottom: 30px; letter-spacing: 5px;">
         30.0
       </div>
-      
       <button class="popup-btn" onclick="tutupPopupTimer()" style="background:var(--red); box-shadow:0 8px 24px rgba(239,68,68,.4); font-size:18px; padding:16px 32px;">Sembunyikan Timer</button>
     </div>
   </div>
 
   <div class="dashboard-grid">
     
-    <!-- Kiri: Timer, Buzzer, Pemain -->
+    <!-- KIRI: Timer, Buzzer, Pemain -->
     <div style="display:flex; flex-direction:column; gap:12px;">
       
       <section class="panel" style="margin-bottom:0;">
-        <h2>⏱ Timer Quiz</h2>
-        <div class="row">
-          <input id="duration" type="number" min="5" max="600" value="30"> <span>detik</span>
-          <button class="primary" onclick="startTimer()">▶ Start</button>
-          <button onclick="stopTimer()">⏸ Stop</button>
-          <button class="danger" onclick="resetTimer()">↺ Reset</button>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;margin-left:auto;">
+        <div class="panel-header-row">
+          <h2>⏱ Timer Quiz</h2>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;color:var(--muted);">
             <input type="checkbox" id="tickSoundToggle" checked onchange="toggleTickSound()"> Suara Tik
           </label>
         </div>
-        <div id="timerDisplay" class="timer-display">—</div>
+        <div class="controls-group">
+          <input id="duration" class="input-time" type="number" min="5" max="600" value="30"> <span style="font-size:13px;color:var(--muted);">detik</span>
+          <button class="primary" onclick="startTimer()">▶ Start</button>
+          <button onclick="stopTimer()">⏸ Stop</button>
+          <button class="danger" onclick="resetTimer()">↺ Reset</button>
+        </div>
+        
+        <div class="timer-display-wrapper">
+          <div style="width: 130px; display:flex; justify-content:flex-start;">
+            <button class="btn-show-timer" id="btnShowTimer" onclick="bukaPopupTimer()">🔍 Munculkan</button>
+          </div>
+          <div id="timerDisplay" class="timer-display" style="text-align: center;">—</div>
+          <div style="width: 130px;"></div>
+        </div>
       </section>
 
       <section class="panel" style="margin-bottom:0;">
-        <h2>🔔 Tombol Cepat</h2>
+        <div class="panel-header-row">
+          <h2>🔔 Tombol Cepat</h2>
+        </div>
         <div id="buzzerStatus" class="buzzer-status">Status: <span id="buzzerText">TERTUTUP</span></div>
-        <div class="row">
+        <div class="controls-group">
           <button class="success" onclick="armBuzzer()">🔓 Buka</button>
           <button onclick="disarmBuzzer()">🔒 Tutup</button>
           <button class="danger" onclick="resetState()">↺ Reset</button>
@@ -230,24 +262,19 @@
       </section>
 
       <section class="panel" style="margin-bottom:0; flex:1;">
-        <h2>👥 Pemain</h2>
-        <div id="playersList" style="max-height:220px;overflow-y:auto;padding-right:5px;"></div>
+        <div class="panel-header-row">
+          <h2>👥 Pemain</h2>
+        </div>
+        <div id="playersList" style="max-height:250px;overflow-y:auto;padding-right:5px;"></div>
       </section>
     </div>
 
-    <!-- Kanan: Pemenang, Live Chat, QR -->
-    <div style="display:flex; flex-direction:column; gap:12px;">
+    <!-- KANAN: Live Chat (Atas) & QR (Bawah) -->
+    <div class="right-column">
       
-      <section class="panel" style="margin-bottom:0; text-align:center;">
-        <h2>🏆 Siapa Cepat Tekan?</h2>
-        <div id="fastestDisplay" style="padding:10px;font-size:18px;font-weight:bold;">
-          <em style="color:var(--muted);font-size:14px;font-weight:normal;">Menunggu…</em>
-        </div>
-      </section>
-
-      <section class="panel chat-panel" style="margin-bottom:0;">
-        <div class="chat-header-row">
-          <h2 style="margin:0;">💬 Live Chat</h2>
+      <section class="panel chat-panel" id="chatPanel" style="margin-bottom:0;">
+        <div class="panel-header-row">
+          <h2>💬 Live Chat</h2>
           <button class="btn-clear-chat" onclick="clearChat()">Hapus Chat</button>
         </div>
         <div id="chatList" class="chat-list"></div>
@@ -257,11 +284,14 @@
         </div>
       </section>
 
-      <section class="panel" style="margin-bottom:0; flex:1;">
-        <h2>📱 QR Code Registrasi</h2>
+      <section class="panel qr-panel" id="qrPanel" style="margin-bottom:0;">
+        <div class="panel-header-row">
+          <h2>📱 QR Code Registrasi</h2>
+        </div>
         <div id="qrList" class="qr-grid"></div>
       </section>
     </div>
+
   </div>
 </div>
 
@@ -278,7 +308,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, onValue, set, remove, get, push, serverTimestamp,
          query, limitToLast, update }
@@ -315,6 +345,7 @@ let listenersReady = false;
 let lastChatCount = 0;
 let isTickSoundOn = true;
 let qrVisibleState = {}; 
+let isTimerModalManuallyClosed = false; 
 
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
@@ -331,21 +362,47 @@ applyTheme(localStorage.getItem('cc_theme_host') || 'dark');
 window.login = async () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('password').value;
+  const msg = document.getElementById('loginMsg');
+  msg.textContent = '';
   try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch (e) { document.getElementById('loginMsg').textContent = e.message; }
+  catch (e) { msg.textContent = "Login Gagal: " + e.message; }
 };
 
-// --- FITUR CLEAR & LOGOUT ---
+window.lupaPassword = async () => {
+  const email = document.getElementById('email').value.trim();
+  const msg = document.getElementById('loginMsg');
+  
+  if (!email) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = 'Masukkan email Anda terlebih dahulu di kolom Email.';
+    return;
+  }
+  
+  try {
+    await sendPasswordResetEmail(auth, email);
+    msg.style.color = 'var(--green)';
+    msg.textContent = '✅ Tautan reset password telah dikirim ke email Anda. Silakan cek Kotak Masuk atau Spam.';
+  } catch (error) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = 'Gagal mengirim email: ' + error.message;
+  }
+};
+
 window.clearChat = async () => {
   if (!confirm('Hapus semua riwayat chat?')) return;
-  await remove(ref(db, `rooms/${roomId}/chat`));
+  try {
+    await set(ref(db, `rooms/${roomId}/chat`), null);
+    document.getElementById('chatList').innerHTML = '';
+  } catch(e) {
+    alert("Gagal menghapus chat. Pastikan aturan Firebase Rules mengizinkan penghapusan data.");
+  }
 };
 
 window.logout = async () => {
   try {
     await signOut(auth);
-    localStorage.removeItem('cc_theme_host'); // Bersihkan cache tema
-    window.location.reload(); // Refresh agar kembali ke halaman login bersih
+    localStorage.removeItem('cc_theme_host');
+    window.location.reload();
   } catch(e) { alert('Gagal logout: ' + e.message); }
 };
 
@@ -353,29 +410,21 @@ window.resetAllAndLogout = async () => {
   if (!confirm('⚠ PERINGATAN ⚠\nIni akan menghapus Timer, Status Buzzer, Data Pemenang, Semua Chat, dan Cache Memori.\n\nLanjutkan Reset Total?')) return;
   
   try {
-    // 1. Hapus state di Firebase
     if (roomId) {
-      await remove(ref(db, `rooms/${roomId}/timer`));
-      await remove(ref(db, `rooms/${roomId}/buzzer`));
-      await remove(ref(db, `rooms/${roomId}/state`));
-      await remove(ref(db, `rooms/${roomId}/chat`));
+      await set(ref(db, `rooms/${roomId}/timer`), null);
+      await set(ref(db, `rooms/${roomId}/buzzer`), null);
+      await set(ref(db, `rooms/${roomId}/state`), null);
+      await set(ref(db, `rooms/${roomId}/chat`), null);
     }
-    
-    // 2. Logout
     await signOut(auth);
-    
-    // 3. Bersihkan localStorage (Cache)
     localStorage.removeItem('cc_room');
     localStorage.removeItem('cc_team_count');
     localStorage.removeItem('cc_theme_host');
-    
-    // 4. Reload
     window.location.reload();
   } catch (e) {
     alert('Gagal reset total: ' + e.message);
   }
 };
-// ----------------------------
 
 onAuthStateChanged(auth, u => {
   user = u;
@@ -410,7 +459,7 @@ async function showHostView(){
   document.getElementById('teamCountLabel').textContent = `${teamCount} tim`;
   
   if(user) {
-     await remove(ref(db, `rooms/${roomId}/timer`));
+     await set(ref(db, `rooms/${roomId}/timer`), null);
      await set(ref(db, `rooms/${roomId}/buzzer`), {armed:false});
   }
 
@@ -421,7 +470,6 @@ async function showHostView(){
   
   if (!listenersReady){ initListeners(); listenersReady = true; }
   renderPlayers();
-  renderFastest();
   renderBuzzerStatus();
 }
 
@@ -467,7 +515,6 @@ function initListeners(){
     if (isLocked && !wasLocked){ showFastestPopup(val); playHorn(); }
     if (!isLocked && wasLocked){ hideFastestPopup(); }
     wasLocked = isLocked;
-    renderFastest();
     renderBuzzerStatus();
   });
   onValue(ref(db, `rooms/${roomId}/players`), snap => {
@@ -487,14 +534,6 @@ function initListeners(){
   });
 }
 
-function renderFastest(){
-  const el = document.getElementById('fastestDisplay');
-  if (!fastestState || !fastestState.locked){
-    el.innerHTML = '<em style="color:var(--muted);font-size:14px;font-weight:normal;">Menunggu…</em>';
-    return;
-  }
-  el.innerHTML = `<span style="color:var(--green)">🏆 Tim ${fastestState.team} — ${esc(fastestState.name)}</span>`;
-}
 function renderBuzzerStatus(){
   const s = document.getElementById('buzzerStatus');
   const t = document.getElementById('buzzerText');
@@ -533,12 +572,15 @@ function renderQRs(){
   }
 
   const baseUrl = new URL('player.html', location.href);
-  
+  let adaYangTampil = false;
+
   for (let t=1; t<=teamCount; t++){
     const div = document.createElement('div');
     div.className = 'qr-item';
     
     const isVisible = qrVisibleState[t];
+    if(isVisible) adaYangTampil = true;
+
     const btnText = isVisible ? 'Sembunyikan' : 'Tampilkan';
     const btnClass = isVisible ? 'danger' : 'primary';
     const displayStyle = isVisible ? 'flex' : 'none';
@@ -566,6 +608,13 @@ function renderQRs(){
       });
     }
   }
+
+  const qrPanel = document.getElementById('qrPanel');
+  if (adaYangTampil) {
+    qrPanel.style.minHeight = '250px'; 
+  } else {
+    qrPanel.style.minHeight = 'auto'; 
+  }
 }
 
 function renderChat(msgs){
@@ -587,17 +636,23 @@ function startCountdown(timer){
   const el = document.getElementById('timerDisplay');
   const modal = document.getElementById('timerModal');
   const modalText = document.getElementById('modalTimerText');
+  const btnShow = document.getElementById('btnShowTimer');
   
   if (!timer || !timer.running || !timer.startedAt){
     el.textContent = '—'; el.className = 'timer-display'; 
     modal.style.display = 'none';
+    if (btnShow) btnShow.style.display = 'none';
     return;
+  }
+  
+  if (btnShow) btnShow.style.display = 'inline-block';
+
+  if (!isTimerModalManuallyClosed) {
+      modal.style.display = 'flex';
   }
   
   const totalDuration = timer.duration * 1000;
   const endAt = timer.startedAt + totalDuration;
-  
-  modal.style.display = 'flex';
   
   const scheduleTick = () => {
       if(!isTickSoundOn) return;
@@ -634,6 +689,7 @@ function startCountdown(timer){
       clearInterval(timerInterval);
       clearTimeout(tickInterval); 
       playHorn(); 
+      if (btnShow) btnShow.style.display = 'none'; 
     }
   };
   tick();
@@ -642,6 +698,12 @@ function startCountdown(timer){
 
 window.tutupPopupTimer = () => {
   document.getElementById('timerModal').style.display = 'none';
+  isTimerModalManuallyClosed = true;
+};
+
+window.bukaPopupTimer = () => {
+  isTimerModalManuallyClosed = false;
+  document.getElementById('timerModal').style.display = 'flex';
 };
 
 window.toggleTickSound = () => {
@@ -653,6 +715,7 @@ window.toggleTickSound = () => {
 };
 
 window.startTimer = async () => {
+  isTimerModalManuallyClosed = false; 
   const dur = parseInt(document.getElementById('duration').value) || 30;
   await set(ref(db, `rooms/${roomId}/timer`), { running: true, duration: dur, startedAt: serverTimestamp() });
 };
@@ -683,9 +746,6 @@ window.kirimChat = async () => {
   input.focus();
 };
 
-// ==========================================
-// SISTEM SUARA (Horn Bass, Tik Keras, Vol Max)
-// ==========================================
 let actx;
 function getAC(){
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -717,7 +777,7 @@ function playHorn(){
     gain.connect(ctx.destination);
     
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(1.0, now + 0.05); // VOLUME MAX
+    gain.gain.linearRampToValueAtTime(1.0, now + 0.05); 
     gain.gain.setValueAtTime(1.0, now + 0.4);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
     
@@ -736,7 +796,7 @@ function playTick(){
     osc.frequency.exponentialRampToValueAtTime(300, now + 0.03);
     osc.connect(gain); gain.connect(ctx.destination);
     
-    gain.gain.setValueAtTime(1.0, now); // VOLUME MAX
+    gain.gain.setValueAtTime(1.0, now); 
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
     osc.start(now); osc.stop(now + 0.04);
   } catch(e){}
