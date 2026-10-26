@@ -19,10 +19,11 @@
     background: var(--bg-main); color: var(--text-main);
   }
 
-  /* LAYAR LOGIN & SETUP ROOM */
-  #loginScreen, #setupScreen {
+  /* LAYAR SETUP ROOM */
+  #setupScreen {
     display: none; flex-direction: column; align-items: center; justify-content: center;
-    height: 100%; width: 100%; padding: 20px; background: var(--bg-main);
+    height: 100vh; width: 100vw; padding: 20px; background: var(--bg-main);
+    position: fixed; top: 0; left: 0; z-index: 1000;
   }
   .login-box {
     background: var(--bg-panel); padding: 30px; border-radius: 12px;
@@ -41,7 +42,7 @@
     font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
   }
   .login-box button:hover { background: #2563eb; }
-  #loginError { color: #ef4444; font-size: 13px; text-align: center; display: none; font-weight: bold;}
+  .btn-logout-setup { background: #ef4444 !important; margin-top: 10px; font-size: 14px !important;}
 
   /* PANEL HOST UTAMA */
   #appContainer { display: none; flex-direction: column; height: 100%; padding: 12px; gap: 12px; }
@@ -129,18 +130,6 @@
 </head>
 <body>
 
-<!-- LAYAR LOGIN -->
-<div id="loginScreen">
-  <div class="login-box">
-    <h1>🔐 Host Login</h1>
-    <p>Masuk untuk mengelola kuis</p>
-    <input type="email" id="loginEmail" placeholder="Email Host" value="host@cerdascermat.cloud">
-    <input type="password" id="loginPassword" placeholder="Password" value="Secret123">
-    <button onclick="prosesLogin()">Masuk Panel Host</button>
-    <div id="loginError">Email atau Password salah!</div>
-  </div>
-</div>
-
 <!-- LAYAR SETUP ROOM -->
 <div id="setupScreen">
   <div class="login-box">
@@ -148,6 +137,7 @@
     <p>Masukkan ID Room (tanpa spasi)</p>
     <input type="text" id="newRoomId" placeholder="Contoh: CCA2026" value="CCA2026" style="text-transform: uppercase;">
     <button onclick="buatRoom()">Buat & Mulai Kuis</button>
+    <button class="btn-logout-setup" onclick="logoutHost()">Logout</button>
   </div>
 </div>
 
@@ -228,7 +218,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getDatabase, ref, onValue, set, remove, push, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
@@ -252,109 +242,52 @@
   let playerListenerRef = null;
   let isTimerHidden = false;
 
-  // FUNGSI OVERLAY
-  window.sembunyikanTimer = () => {
-    document.getElementById('timerOverlay').style.display = 'none';
-    document.getElementById('btnShowTimer').style.display = 'inline-block';
-    isTimerHidden = true;
-  };
-
-  window.tampilkanTimer = () => {
-    document.getElementById('timerOverlay').style.display = 'flex';
-    document.getElementById('btnShowTimer').style.display = 'none';
-    isTimerHidden = false;
-  };
-
-  // SUARA
-  let actx;
-  document.addEventListener('click', () => {
-    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-    if (actx.state === 'suspended') actx.resume();
-  }, { once: true });
-
-  function playSound(freq = 880, dur = 0.1, vol = 1.0, type = 'sine') {
-    try {
-      if (!actx) return;
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; o.frequency.value = freq;
-      o.connect(g); g.connect(actx.destination);
-      g.gain.setValueAtTime(vol, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
-      o.start(); o.stop(actx.currentTime + dur);
-    } catch (e) {}
-  }
-
-  function playHorn() {
-    try {
-      if (!actx) return;
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = 'sawtooth'; 
-      o.frequency.setValueAtTime(600, actx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(300, actx.currentTime + 0.4);
-      o.connect(g); g.connect(actx.destination);
-      g.gain.setValueAtTime(1.0, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.5);
-      o.start(); o.stop(actx.currentTime + 0.5);
-    } catch (e) {}
-  }
-
-  function getPlayerBaseUrl() {
-    let url = window.location.origin + window.location.pathname;
-    url = url.substring(0, url.lastIndexOf('/') + 1);
-    return url + 'player.html';
-  }
-
-  // AUTENTIKASI
+  // ==========================================
+  // CEK SESI LOGIN (Mencegah akses langsung)
+  // ==========================================
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-      document.getElementById('loginScreen').style.display = 'none';
-      const savedRoom = sessionStorage.getItem('hostRoomId');
-      if (savedRoom) {
-        roomId = savedRoom;
-        mulaiHost();
-      } else {
-        document.getElementById('setupScreen').style.display = 'flex';
-      }
-    } else {
-      document.getElementById('loginScreen').style.display = 'flex';
+    if (!user) {
+      // Jika tidak ada sesi Firebase Auth, tendang ke login.html
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Cek apakah Room ID ada di session browser
+    const savedRoom = sessionStorage.getItem('hostRoomId');
+    if (savedRoom) {
+      roomId = savedRoom;
       document.getElementById('setupScreen').style.display = 'none';
+      mulaiHost();
+    } else {
+      document.getElementById('setupScreen').style.display = 'flex';
       document.getElementById('appContainer').style.display = 'none';
     }
   });
 
-  window.prosesLogin = async () => {
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass = document.getElementById('loginPassword').value;
-    const errEl = document.getElementById('loginError');
-    
-    if (!email || !pass) { errEl.textContent = 'Email dan Password wajib diisi!'; errEl.style.display = 'block'; return; }
-    
-    try {
-      errEl.style.display = 'none';
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) {
-      errEl.textContent = 'Login Gagal: ' + (e.message.includes('auth/invalid-credential') ? 'Email atau Password salah.' : e.message);
-      errEl.style.display = 'block';
-    }
-  };
-
+  // Logout: Hapus semua memori lokal, hapus sesi Firebase, lalu tendang ke login.html
   window.logoutHost = () => {
-    if (confirm('Logout dari Host?')) {
-      sessionStorage.removeItem('hostRoomId');
-      signOut(auth);
+    if (confirm('Logout dari Host? (Sesi Room akan berakhir)')) {
+      sessionStorage.clear(); // HAPUS SEMUA CACHE SESI
+      localStorage.clear();   // HAPUS SEMUA LOCAL STORAGE
+      signOut(auth).then(() => {
+        window.location.href = 'login.html'; // Redirect paksa ke halaman login
+      });
     }
   };
 
   window.buatRoom = () => {
     const newId = document.getElementById('newRoomId').value.trim().toUpperCase();
     if (!newId) { alert('ID Room tidak boleh kosong!'); return; }
+    
     roomId = newId;
-    sessionStorage.setItem('hostRoomId', roomId);
+    sessionStorage.setItem('hostRoomId', roomId); // Simpan ID room
     document.getElementById('setupScreen').style.display = 'none';
     mulaiHost();
   };
 
+  // ==========================================
   // LOGIKA HOST UTAMA
+  // ==========================================
   function mulaiHost() {
     document.getElementById('appContainer').style.display = 'flex';
     document.getElementById('roomIdLabel').textContent = roomId;
@@ -452,7 +385,57 @@
     });
   }
 
-  // FUNGSI SINKRON PEMAIN
+  // ... (Fungsi sound, qr, dll sama seperti sebelumnya)
+  window.sembunyikanTimer = () => {
+    document.getElementById('timerOverlay').style.display = 'none';
+    document.getElementById('btnShowTimer').style.display = 'inline-block';
+    isTimerHidden = true;
+  };
+
+  window.tampilkanTimer = () => {
+    document.getElementById('timerOverlay').style.display = 'flex';
+    document.getElementById('btnShowTimer').style.display = 'none';
+    isTimerHidden = false;
+  };
+
+  let actx;
+  document.addEventListener('click', () => {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+  }, { once: true });
+
+  function playSound(freq = 880, dur = 0.1, vol = 1.0, type = 'sine') {
+    try {
+      if (!actx) return;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.value = freq;
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(vol, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
+      o.start(); o.stop(actx.currentTime + dur);
+    } catch (e) {}
+  }
+
+  function playHorn() {
+    try {
+      if (!actx) return;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sawtooth'; 
+      o.frequency.setValueAtTime(600, actx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(300, actx.currentTime + 0.4);
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(1.0, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.5);
+      o.start(); o.stop(actx.currentTime + 0.5);
+    } catch (e) {}
+  }
+
+  function getPlayerBaseUrl() {
+    let url = window.location.origin + window.location.pathname;
+    url = url.substring(0, url.lastIndexOf('/') + 1);
+    return url + 'player.html';
+  }
+
   function loadDataPemain() {
     if (playerListenerRef) playerListenerRef();
     playerListenerRef = onValue(ref(db, `rooms/${roomId}/players`), snap => {
@@ -484,13 +467,8 @@
     setTimeout(() => { btn.textContent = '🔄 Paksa Sinkron'; }, 800);
   };
 
-  // ==========================================
-  // PERBAIKAN: BUZZER DISESUAIKAN DENGAN RULES
-  // ==========================================
   window.bukaBuzzer = async () => { 
-    // Hapus state. Pemain akan mendeteksi state kosong = buzzer terbuka.
     await remove(ref(db, `rooms/${roomId}/state`)); 
-    // Opsional: Beri nilai false ke path buzzer jika nanti diperlukan
     await set(ref(db, `rooms/${roomId}/buzzer`), { armed: false });
   };
 
