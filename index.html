@@ -74,7 +74,7 @@
   .btn-primary { background: #3b82f6; } .btn-success { background: #22c55e; } .btn-warning { background: #f59e0b; } .btn-danger { background: #ef4444; }
 
   /* ========================================== */
-  /* TIMER PANEL (DENGAN IKON MAXIMIZE)         */
+  /* TIMER PANEL (JAM, MENIT, DETIK)            */
   /* ========================================== */
   .timer-panel { flex: 0 0 auto; }
   
@@ -87,9 +87,19 @@
   }
   .btn-maximize:hover { background: #cbd5e1; color: #0f172a; }
 
-  .input-group { display: flex; gap: 10px; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-wrap: wrap; margin-top: 5px;}
-  .input-group input { padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); width: 80px; text-align: center; font-size: 22px; font-weight: 800;}
-  
+  /* Desain Input Waktu */
+  .time-input-group { 
+    display: flex; gap: 10px; align-items: center; justify-content: center; 
+    margin: 10px 0; 
+  }
+  .time-input-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .time-input-box input {
+    width: 65px; height: 60px; text-align: center; font-size: 28px; font-weight: 900;
+    border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-card); color: var(--text-main);
+  }
+  .time-input-box input:focus { border-color: #3b82f6; }
+  .time-input-box span { font-size: 12px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
+
   /* Tombol Ikon Play, Pause, Stop */
   .btn-icon {
     width: 50px; height: 50px; border-radius: 10px; border: none; cursor: pointer;
@@ -149,13 +159,16 @@
   .btn-close-winner { background: #ef4444; color: white; border: none; padding: 15px 40px; font-size: 24px; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 20px; transition: 0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
   .btn-close-winner:hover { background: #dc2626; transform: scale(1.05); }
 
-  /* POP-UP TIMER WINDOW */
+  /* ========================================== */
+  /* POP-UP TIMER (AUTO-RESIZE TEXT)            */
+  /* ========================================== */
   #timerOverlay {
     display: none; position: fixed; top: 20%; left: 20%;
-    width: 300px; height: 250px; 
+    width: 400px; height: 250px; 
     background: rgba(255, 255, 255, 0.98); z-index: 500;
     flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #cbd5e1; border-radius: 12px; overflow: hidden; resize: both;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #cbd5e1; border-radius: 12px; 
+    overflow: hidden; resize: both;
   }
   #timerHeader {
     width: 100%; padding: 8px 12px; background: #e2e8f0; cursor: grab;
@@ -175,7 +188,14 @@
   .btn-header-ctrl.close:hover { background: #ef4444; color: white; }
 
   .timer-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding-top: 30px; overflow: hidden; }
-  #popupTimerValue { font-size: 72px; font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; }
+  
+  /* AUTO-RESIZE FONT UNTUK JJ:MM:SS */
+  #popupTimerValue { 
+    font-size: clamp(3rem, 12vw, 8rem); 
+    width: 100%; text-align: center;
+    font-weight: 900; color: #3b82f6; font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s; 
+    letter-spacing: 2px;
+  }
   #timerOverlay.urgent #popupTimerValue { color: #ef4444; animation: pulse 1s infinite alternate; }
   @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
 
@@ -219,17 +239,27 @@
   <div class="grid-container">
     <div class="column">
       
-      <!-- TIMER PANEL -->
+      <!-- TIMER PANEL DENGAN JAM, MENIT, DETIK -->
       <div class="panel timer-panel">
-        <!-- Tombol Maximize di pojok kanan atas panel -->
         <button class="btn-maximize" onclick="tampilkanTimer()" title="Tampilkan Pop-up Timer">⛶</button>
         <p class="panel-title">⏱ Timer Kuis</p>
         
-        <div class="input-group">
-          <input type="number" id="timerInput" value="30" min="1" max="300"> <span>detik</span>
+        <div class="time-input-group">
+          <div class="time-input-box">
+            <input type="number" id="timerHour" value="0" min="0" max="99">
+            <span>Jam</span>
+          </div>
+          <div class="time-input-box">
+            <input type="number" id="timerMin" value="0" min="0" max="59">
+            <span>Menit</span>
+          </div>
+          <div class="time-input-box">
+            <input type="number" id="timerSec" value="30" min="0" max="59">
+            <span>Detik</span>
+          </div>
         </div>
         
-        <div class="input-group" style="gap: 15px; margin-top: 10px;">
+        <div class="input-group" style="gap: 15px; margin-top: 5px;">
           <button class="btn-icon play" onclick="startTimer()" title="Play">▶</button>
           <button class="btn-icon pause" onclick="pauseTimer()" title="Pause">⏸</button>
           <button class="btn-icon stop" onclick="stopTimer()" title="Stop / Reset">⏹</button>
@@ -286,14 +316,12 @@
   <div id="timerHeader">
     <span>⏱ TIMER</span>
     <div class="header-controls">
-      <!-- Tombol Minimize -->
       <button class="btn-header-ctrl" onclick="minimizeTimer()" title="Minimize">—</button>
-      <!-- Tombol Close & Reset -->
       <button class="btn-header-ctrl close" onclick="stopTimer()" title="Close & Reset">✕</button>
     </div>
   </div>
   <div class="timer-content">
-    <div id="popupTimerValue">—</div>
+    <div id="popupTimerValue">00:00</div>
   </div>
 </div>
 
@@ -334,11 +362,9 @@
   let currentWinnerKey = ""; 
   let isPopupVisible = false;
   
-  // State untuk Pause
   let isPaused = false;
   let pausedTimeRemaining = 0;
 
-  // FITUR DRAG AND DROP UNTUK POP-UP TIMER
   const dragItem = document.getElementById('timerOverlay');
   const dragHandle = document.getElementById('timerHeader');
   let active = false;
@@ -462,8 +488,7 @@
       clearInterval(timerInterval);
       const overlay = document.getElementById('timerOverlay');
       
-      // Reset Pause state saat timer berubah
-      isPaused = false;
+      isPaused = false; // Reset pause saat ada perubahan database
       
       if (!timer || !timer.running) { 
         overlay.style.display = 'none'; 
@@ -480,17 +505,30 @@
       const endAt = timer.startedAt + timer.duration * 1000;
       
       timerInterval = setInterval(() => {
-        if (isPaused) return; // Jika pause, jangan update
+        if (isPaused) return;
 
         const remainingMs = Math.max(0, endAt - serverNow());
         const remainingSec = Math.ceil(remainingMs / 1000);
         
-        document.getElementById('popupTimerValue').textContent = (remainingMs / 1000).toFixed(1);
+        // Format HH:MM:SS
+        const h = Math.floor(remainingMs / 3600000);
+        const m = Math.floor((remainingMs % 3600000) / 60000);
+        const s = Math.floor((remainingMs % 60000) / 1000);
+        
+        let timeString = "";
+        if (h > 0) {
+           timeString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        } else {
+           timeString = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+        
+        document.getElementById('popupTimerValue').textContent = timeString;
+
         if (remainingMs <= 10000) overlay.classList.add('urgent');
 
         if (remainingMs <= 0) {
           clearInterval(timerInterval);
-          document.getElementById('popupTimerValue').textContent = '0.0';
+          document.getElementById('popupTimerValue').textContent = (h > 0) ? '00:00:00' : '00:00';
           playSound(200, 0.8, 1.0, 'sawtooth');
           return;
         }
@@ -555,13 +593,11 @@
     setTimeout(() => { if(btn) { btn.textContent = '🔄 Paksa Sinkron'; btn.disabled = false; } }, 800);
   };
 
-  // Minimize Pop-Up Timer (Timer tetap jalan)
   window.minimizeTimer = () => {
     document.getElementById('timerOverlay').style.display = 'none';
     isTimerHidden = true;
   };
 
-  // Maximize Pop-Up Timer
   window.tampilkanTimer = () => {
     document.getElementById('timerOverlay').style.display = 'flex';
     isTimerHidden = false;
@@ -636,7 +672,6 @@
     }
   };
 
-  // --- LOGIKA TOMBOL BUZZER ---
   window.bukaBuzzer = async () => { 
     document.getElementById('winnerPopup').style.display = 'none';
     isPopupVisible = false;
@@ -677,18 +712,22 @@
     location.reload();
   };
 
-  // --- LOGIKA TIMER (PLAY, PAUSE, STOP) ---
+  // --- LOGIKA TIMER (PLAY, PAUSE, STOP) DENGAN FORMAT JJ:MM:SS ---
   window.startTimer = async () => {
-    const dur = parseInt(document.getElementById('timerInput').value) || 30;
+    const h = parseInt(document.getElementById('timerHour').value) || 0;
+    const m = parseInt(document.getElementById('timerMin').value) || 0;
+    const s = parseInt(document.getElementById('timerSec').value) || 0;
+    const dur = (h * 3600) + (m * 60) + s;
+    
+    if (dur <= 0) { alert("Waktu harus lebih dari 0 detik!"); return; }
+    
     if (actx && actx.state === 'suspended') actx.resume();
     
     if (isPaused) {
-      // Jika di-pause, lanjutkan dari waktu berhenti
       const newStartedAt = Date.now() + serverOffset - (dur * 1000) + pausedTimeRemaining;
       await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: newStartedAt, duration: dur });
       isPaused = false;
     } else {
-      // Start baru
       isTimerHidden = false;
       xOffset = 0; yOffset = 0;
       dragItem.style.transform = `translate3d(0px, 0px, 0px)`;
@@ -697,15 +736,19 @@
   };
   
   window.pauseTimer = () => {
-    // Kita tidak menghentikan timer di database, hanya menghentikan update di layar Host
-    // (Catatan: Untuk pause yang sinkron di semua HP, butuh state 'paused' di DB. 
-    // Tapi untuk kepraktisan Host, kita gunakan logika lokal ini agar tampilan berhenti)
     if (isPaused) return;
-    
-    const popupVal = parseFloat(document.getElementById('popupTimerValue').textContent);
-    if (isNaN(popupVal)) return;
-    
-    pausedTimeRemaining = popupVal * 1000; // Simpan sisa waktu dalam milidetik
+    const popupVal = document.getElementById('popupTimerValue').textContent; 
+    const parts = popupVal.split(':');
+    if (parts.length === 3) {
+      const h = parseInt(parts[0]) || 0;
+      const m = parseInt(parts[1]) || 0;
+      const s = parseInt(parts[2]) || 0;
+      pausedTimeRemaining = (h * 3600000) + (m * 60000) + (s * 1000); 
+    } else if (parts.length === 2) {
+      const m = parseInt(parts[0]) || 0;
+      const s = parseInt(parts[1]) || 0;
+      pausedTimeRemaining = (m * 60000) + (s * 1000); 
+    }
     isPaused = true;
   };
 
@@ -713,7 +756,7 @@
     await remove(ref(db, `rooms/${roomId}/timer`));
     minimizeTimer(); 
     isPaused = false;
-    document.getElementById('popupTimerValue').textContent = '—';
+    document.getElementById('popupTimerValue').textContent = '00:00';
   };
 
   window.kirimChatHost = async () => {
