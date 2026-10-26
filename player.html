@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Pemain • Cerdas Cermat</title>
+<style>
+  :root, [data-theme="dark"]{
+    --bg-1:#1e293b; --bg-2:#070d19;
+    --card:#1e293b; --card-2:#0b1120; --line:#334155;
+    --text:#e2e8f0; --muted:#94a3b8;
+    --blue:#2563eb; --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+  }
+  [data-theme="light"]{
+    --bg-1:#e2e8f0; --bg-2:#f8fafc;
+    --card:#ffffff; --card-2:#f1f5f9; --line:#cbd5e1;
+    --text:#0f172a; --muted:#64748b;
+    --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html, body {
+    height:100%; height:100dvh; margin:0; padding:0;
+    overflow:hidden; overscroll-behavior:none;
+    user-select:none; -webkit-user-select:none;
+    font-family:system-ui,Segoe UI,Roboto,sans-serif;
+    background:radial-gradient(circle at 50% 20%, var(--bg-1), var(--bg-2) 70%);
+    color:var(--text); transition:background .3s, color .3s;
+  }
+  .center-panel{max-width:340px;margin:12vh auto;background:var(--card);
+    padding:24px;border-radius:16px;border:1px solid var(--line);text-align:center}
+  .center-panel h1{font-size:18px;margin:0 0 16px}
+  .center-panel input{width:100%;margin-bottom:14px;padding:14px;border-radius:10px;
+    border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:16px;text-align:center}
+  .center-panel button{width:100%;padding:14px;border-radius:10px;border:none;
+    background:var(--blue);color:#fff;font-weight:700;font-size:16px;cursor:pointer}
+
+  #mainView{
+    display:flex; flex-direction:column; height:100dvh;
+    padding:max(6px, env(safe-area-inset-top)) 8px max(6px, env(safe-area-inset-bottom)) 8px;
+    gap:6px; overflow:hidden;
+  }
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:6px 10px; background:var(--card); border:1px solid var(--line);
+    border-radius:10px; font-size:12px; flex-shrink:0;
+  }
+  #identity{font-weight:700; font-size:clamp(12px, 3.2vw, 14px)}
+  .hdr-actions{display:flex; gap:6px}
+  .hdr-actions button{
+    width:32px; height:32px; border-radius:8px; border:1px solid var(--line);
+    background:var(--line); color:var(--text); font-size:14px; cursor:pointer;
+    padding:0; display:flex; align-items:center; justify-content:center;
+  }
+  #timerPlayer{
+    text-align:center; font-family:ui-monospace,Consolas,monospace;
+    font-size:clamp(24px, 8vmin, 48px); font-weight:900; color:var(--green);
+    padding:4px; flex-shrink:0; line-height:1.1;
+  }
+  #timerPlayer.urgent{color:var(--amber)}
+  #timerPlayer.done{color:var(--red); font-size:clamp(18px, 5vmin, 28px)}
+
+  .btn-container{
+    flex:1 1 auto; min-height:0; min-width:0;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .push-btn{
+    aspect-ratio:1/1; max-width:100%; max-height:100%; width:auto; height:auto;
+    min-width:120px; min-height:120px;
+    border-radius:50%; border:clamp(5px, 1.5vmin, 9px) solid #1d4ed8;
+    background:radial-gradient(circle at 35% 30%, #60a5fa, #2563eb 60%, #1e40af);
+    color:#fff; font-size:clamp(24px, 8vmin, 48px); font-weight:900; letter-spacing:2px;
+    cursor:pointer; touch-action:manipulation;
+    transition:transform .08s, background .25s, border-color .25s, box-shadow .25s;
+    box-shadow:0 12px 40px rgba(37,99,235,.45), inset 0 -10px 24px rgba(0,0,0,.35);
+    padding:0; display:flex; align-items:center; justify-content:center;
+  }
+  .push-btn:active:not(:disabled){transform:scale(.96)}
+  .push-btn:disabled{cursor:not-allowed}
+  .push-btn.pressed{
+    border-color:#b45309;
+    background:radial-gradient(circle at 35% 30%, #fcd34d, #f59e0b 60%, #b45309);
+    box-shadow:0 12px 40px rgba(245,158,11,.5), inset 0 -10px 24px rgba(0,0,0,.35);
+  }
+  .push-btn.winner{
+    border-color:#4ade80;
+    background:radial-gradient(circle at 35% 30%, #86efac, #22c55e 60%, #15803d);
+    box-shadow:0 12px 40px rgba(34,197,94,.55), inset 0 -10px 24px rgba(0,0,0,.35);
+  }
+  .push-btn.loser{
+    border-color:#f87171;
+    background:radial-gradient(circle at 35% 30%, #fca5a5, #ef4444 60%, #991b1b);
+    box-shadow:0 12px 40px rgba(239,68,68,.5), inset 0 -10px 24px rgba(0,0,0,.35);
+  }
+  .push-btn.idle-off{
+    border-color:#475569;
+    background:radial-gradient(circle at 35% 30%, #64748b, #334155 60%, #1e293b);
+    box-shadow:0 8px 24px rgba(0,0,0,.4), inset 0 -8px 20px rgba(0,0,0,.35);
+  }
+  .status{
+    text-align:center; font-size:clamp(11px, 2.8vw, 14px);
+    color:var(--muted); min-height:1em; padding:0 8px; flex-shrink:0; line-height:1.2;
+  }
+
+  .chat-fab{
+    position:fixed; right:max(12px, env(safe-area-inset-right));
+    bottom:max(12px, env(safe-area-inset-bottom));
+    width:56px; height:56px; border-radius:50%;
+    background:var(--blue); color:#fff; border:none; font-size:22px;
+    cursor:pointer; z-index:900; box-shadow:0 6px 20px rgba(0,0,0,.4);
+    display:flex; align-items:center; justify-content:center; transition:opacity .2s, transform .15s;
+  }
+  .chat-fab:active{transform:scale(.94)}
+  .chat-unread{
+    position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff;
+    min-width:22px; height:22px; border-radius:11px; font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; padding:0 6px;
+    border:2px solid var(--bg-2);
+  }
+  .chat-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none;
+    transition:opacity .28s ease; z-index:950;
+  }
+  .chat-backdrop.show{opacity:1; pointer-events:auto}
+
+  .chat-drawer{
+    position:fixed; left:0; right:0; bottom:0; width:100%;
+    height:min(85dvh, 720px); background:var(--card);
+    border-top:1px solid var(--line);
+    border-top-left-radius:20px; border-top-right-radius:20px;
+    transform:translateY(100%);
+    transition:transform .32s cubic-bezier(.4,0,.2,1);
+    z-index:960; display:flex; flex-direction:column;
+    box-shadow:0 -8px 32px rgba(0,0,0,.5);
+    padding-bottom:env(safe-area-inset-bottom);
+    will-change:transform;
+  }
+  .chat-drawer.open{transform:translateY(0)}
+  .chat-drawer.dragging{transition:none}
+  .chat-drawer-handle{
+    width:44px; height:5px; border-radius:3px;
+    background:var(--muted); opacity:.45; margin:10px auto 0;
+    flex-shrink:0; cursor:grab; touch-action:none;
+  }
+  .chat-drawer-header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 18px 14px; border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .chat-drawer-header h3{margin:0; font-size:16px}
+  .chat-close{
+    width:32px; height:32px; border-radius:50%; border:none;
+    background:var(--line); color:var(--text); cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .chat-list{flex:1; overflow-y:auto; background:transparent; padding:12px 16px; font-size:14px}
+  .chat-msg{padding:6px 0; border-bottom:1px solid var(--line)}
+  .chat-msg:last-child{border-bottom:none}
+  .chat-who{font-weight:700; color:var(--blue); font-size:12px; margin-bottom:2px}
+  .chat-msg.mine .chat-who{color:var(--green)}
+  .chat-text{color:var(--text); word-break:break-word}
+  .chat-time{font-size:10px; color:var(--muted); margin-left:6px}
+  .chat-input{
+    display:flex; gap:8px; padding:12px 16px max(14px, env(safe-area-inset-bottom));
+    border-top:1px solid var(--line); flex-shrink:0;
+  }
+  .chat-input input{
+    flex:1; padding:10px; border-radius:9px; border:1px solid var(--line);
+    background:var(--card-2); color:var(--text); font-size:14px; min-width:0;
+  }
+  .chat-input button{
+    padding:10px 16px; border-radius:9px; border:none;
+    background:var(--blue); color:#fff; font-weight:700; cursor:pointer; font-size:14px; flex-shrink:0;
+  }
+  .chat-toast{
+    position:fixed; top:max(8px, env(safe-area-inset-top));
+    left:50%; transform:translateX(-50%) translateY(-120%);
+    background:var(--card); border:1px solid var(--blue); border-radius:12px;
+    padding:10px 14px; color:var(--text); font-size:13px; max-width:88vw;
+    box-shadow:0 8px 24px rgba(0,0,0,.4); z-index:100;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    pointer-events:none; text-align:center;
+  }
+  .chat-toast.show{transform:translateX(-50%) translateY(0)}
+  .chat-toast strong{color:var(--blue); display:block; font-size:11px; margin-bottom:2px}
+
+  @media (max-height: 480px){
+    #timerPlayer{font-size:clamp(16px, 5vmin, 26px)}
+    .status{font-size:11px}
+  }
+</style>
+</head>
+<body>
+
+<div id="nameView" class="center-panel" style="display:none">
+  <h1>Masukkan Nama Anda</h1>
+  <input id="nameInput" maxlength="20" placeholder="Nama" autocomplete="off">
+  <button onclick="simpanNama()">Lanjut</button>
+</div>
+
+<div id="mainView" style="display:none">
+  <header>
+    <div id="identity">-</div>
+    <div class="hdr-actions">
+      <button id="themeBtn" onclick="toggleTheme()">☀</button>
+      <button onclick="exitGame()" title="Keluar">✕</button>
+    </div>
+  </header>
+  <div id="timerPlayer">—</div>
+  <div class="btn-container">
+    <button id="btn" class="push-btn" onclick="tekan()">TEKAN</button>
+  </div>
+  <div id="status" class="status">Menghubungkan…</div>
+</div>
+
+<button id="chatFab" class="chat-fab" onclick="toggleChat()" title="Buka chat">
+  💬<span id="chatUnread" class="chat-unread" style="display:none">0</span>
+</button>
+<div id="chatBackdrop" class="chat-backdrop" onclick="toggleChat()"></div>
+<aside id="chatDrawer" class="chat-drawer" aria-hidden="true">
+  <div class="chat-drawer-handle" id="chatHandle"></div>
+  <header class="chat-drawer-header">
+    <h3>💬 Chat</h3>
+    <button class="chat-close" onclick="toggleChat()" title="Tutup">✕</button>
+  </header>
+  <div id="chatList" class="chat-list"></div>
+  <div class="chat-input">
+    <input id="chatInput" placeholder="Ketik pesan…" onkeypress="if(event.key==='Enter')kirimChat()">
+    <button onclick="kirimChat()">➤</button>
+  </div>
+</aside>
+
+<div id="chatToast" class="chat-toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, onValue, set, remove, push, runTransaction,
+         serverTimestamp, query, limitToLast, onDisconnect }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ============================================================
+   🔥 GANTI BLOK INI DENGAN firebaseConfig YANG SAMA (Langkah 6)
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "GANTI_API_KEY",
+  authDomain: "GANTI.firebaseapp.com",
+  databaseURL: "https://GANTI-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "GANTI",
+  storageBucket: "GANTI.appspot.com",
+  messagingSenderId: "GANTI",
+  appId: "GANTI"
+};
+/* ============================================================ */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+let serverOffset = 0;
+onValue(ref(db, '.info/serverTimeOffset'), s => serverOffset = s.val() || 0);
+const serverNow = () => Date.now() + serverOffset;
+
+const params = new URLSearchParams(location.search);
+const roomId = (params.get('room') || '').toLowerCase();
+const teamId = parseInt(params.get('team') || 0);
+
+if (!roomId || !teamId){
+  document.body.innerHTML = '<div class="center-panel"><h1>Link tidak valid</h1><p>Scan ulang QR dari host.</p></div>';
+  throw new Error('Invalid params');
+}
+
+let myName = null;
+let myPlayerKey = null;
+let state = 'idle';
+let stateData = null;
+let buzzerArmed = false;
+let timerInterval = null;
+let lastChatKey = null;
+let toastTimer = null;
+let chatOpen = false;
+let lastChatCount = 0;
+let unreadChat = 0;
+let chatMsgs = [];
+
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('cc_theme_player', t);
+  const b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '☀' : '🌙';
+}
+window.toggleTheme = () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+};
+applyTheme(localStorage.getItem('cc_theme_player') || 'dark');
+
+signInAnonymously(auth).catch(e => {
+  document.body.innerHTML = '<div class="center-panel"><h1>Gagal terhubung</h1><p>'+e.message+'</p></div>';
+});
+
+onAuthStateChanged(auth, u => {
+  if (!u) return;
+  const saved = localStorage.getItem(`cc_name_${roomId}_${teamId}`);
+  if (saved){ myName = saved; mulaiMain(); }
+  else { document.getElementById('nameView').style.display = 'block'; }
+});
+
+window.simpanNama = () => {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name){ alert('Nama wajib diisi'); return; }
+  if (name.length > 20){ alert('Maksimal 20 karakter'); return; }
+  myName = name;
+  localStorage.setItem(`cc_name_${roomId}_${teamId}`, myName);
+  document.getElementById('nameView').style.display = 'none';
+  mulaiMain();
+};
+
+async function mulaiMain(){
+  document.getElementById('mainView').style.display = 'flex';
+  document.getElementById('identity').textContent = `Tim ${teamId} • ${myName}`;
+
+  const playerRef = push(ref(db, `rooms/${roomId}/players`));
+  myPlayerKey = playerRef.key;
+  await set(playerRef, { team: teamId, name: myName, joinedAt: serverTimestamp() });
+  await onDisconnect(playerRef).remove();
+
+  onValue(ref(db, `rooms/${roomId}/state`), snap => {
+    stateData = snap.val();
+    syncButtonState();
+  });
+  onValue(ref(db, `rooms/${roomId}/buzzer`), snap => {
+    const b = snap.val() || {};
+    const prev = buzzerArmed;
+    buzzerArmed = !!b.armed;
+    if (buzzerArmed && !prev) beep(660, 0.15, 0.25);
+    syncButtonState();
+  });
+  onValue(ref(db, `rooms/${roomId}/timer`), snap => startCountdown(snap.val()));
+  onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
+    const data = snap.val() || {};
+    const msgs = Object.entries(data).map(([key, v]) => ({ key, ...v }))
+      .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+    const prevLen = lastChatCount;
+    lastChatCount = msgs.length;
+    chatMsgs = msgs;
+    if (chatOpen) renderChatList();
+    if (prevLen > 0 && msgs.length > prevLen){
+      const newMsgs = msgs.slice(prevLen);
+      const fromOthers = newMsgs.filter(m => !(m.team === teamId && m.name === myName));
+      if (fromOthers.length > 0 && !chatOpen){
+        showChatToast(fromOthers[fromOthers.length - 1]);
+        unreadChat += fromOthers.length;
+        updateUnreadBadge();
+      }
+    }
+  });
+}
+
+function syncButtonState(){
+  const btn = document.getElementById('btn');
+  const status = document.getElementById('status');
+
+  if (stateData && stateData.locked){
+    const amWinner = stateData.playerKey === myPlayerKey;
+    if (amWinner && state !== 'winner'){ state = 'winner'; playFanfare(); }
+    else if (!amWinner && state !== 'loser'){ state = 'loser'; beep(220, 0.3, 0.3); }
+  } else if (state === 'winner' || state === 'loser'){
+    state = 'idle';
+  }
+
+  btn.className = 'push-btn';
+  if (state === 'winner') btn.classList.add('winner');
+  else if (state === 'loser') btn.classList.add('loser');
+  else if (state === 'pressed') btn.classList.add('pressed');
+  else if (!buzzerArmed) btn.classList.add('idle-off');
+
+  if (state === 'winner'){ btn.textContent = 'TERCEPAT!'; btn.disabled = true; }
+  else if (state === 'loser'){ btn.textContent = 'TERKUNCI'; btn.disabled = true; }
+  else if (state === 'pressed'){ btn.textContent = '…'; btn.disabled = true; }
+  else if (!buzzerArmed){ btn.textContent = 'TUTUP'; btn.disabled = true; }
+  else { btn.textContent = 'TEKAN'; btn.disabled = false; }
+
+  if (state === 'winner') status.textContent = '🏆 Kamu tercepat!';
+  else if (state === 'loser') status.textContent =
+    `Tim ${stateData?.team} (${stateData?.name}) lebih cepat menekan.`;
+  else if (state === 'pressed') status.textContent = 'Menunggu konfirmasi…';
+  else if (!buzzerArmed) status.textContent = 'Buzzer belum dibuka host…';
+  else status.textContent = 'Siap! Tekan sekarang!';
+}
+
+window.tekan = async () => {
+  if (state !== 'idle' || !buzzerArmed || !myPlayerKey) return;
+  state = 'pressed'; syncButtonState();
+  beep(900, 0.08, 0.35);
+  try {
+    await runTransaction(ref(db, `rooms/${roomId}/state`), current => {
+      if (current) return;
+      return { locked: true, team: teamId, name: myName, playerKey: myPlayerKey, ts: Date.now() };
+    });
+  } catch (e){ console.log('abort', e.message); }
+  setTimeout(() => {
+    if (state === 'pressed'){ state = 'idle'; syncButtonState(); }
+  }, 3000);
+};
+
+function startCountdown(timer){
+  clearInterval(timerInterval);
+  const el = document.getElementById('timerPlayer');
+  if (!timer || !timer.running || !timer.startedAt){
+    el.textContent = '—'; el.className = ''; return;
+  }
+  const endAt = timer.startedAt + timer.duration * 1000;
+  const tick = () => {
+    const remaining = Math.max(0, endAt - serverNow());
+    el.textContent = (remaining/1000).toFixed(1);
+    el.className = '';
+    if (remaining < 5000) el.classList.add('urgent');
+    if (remaining <= 0){
+      el.textContent = 'TIME UP!'; el.classList.add('done');
+      clearInterval(timerInterval);
+    }
+  };
+  tick();
+  timerInterval = setInterval(tick, 100);
+}
+
+window.toggleChat = () => {
+  chatOpen = !chatOpen;
+  const drawer = document.getElementById('chatDrawer');
+  const backdrop = document.getElementById('chatBackdrop');
+  const fab = document.getElementById('chatFab');
+  drawer.classList.toggle('open', chatOpen);
+  backdrop.classList.toggle('show', chatOpen);
+  drawer.setAttribute('aria-hidden', chatOpen ? 'false' : 'true');
+  if (fab){
+    fab.style.opacity = chatOpen ? '0' : '1';
+    fab.style.pointerEvents = chatOpen ? 'none' : 'auto';
+  }
+  if (chatOpen){
+    document.getElementById('chatToast').classList.remove('show');
+    clearTimeout(toastTimer);
+    unreadChat = 0;
+    updateUnreadBadge();
+    renderChatList();
+    setTimeout(() => {
+      const el = document.getElementById('chatList');
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 350);
+  }
+};
+function updateUnreadBadge(){
+  const badge = document.getElementById('chatUnread');
+  if (!badge) return;
+  if (unreadChat > 0){ badge.style.display = 'flex'; badge.textContent = unreadChat > 99 ? '99+' : unreadChat; }
+  else { badge.style.display = 'none'; }
+}
+function renderChatList(){
+  const el = document.getElementById('chatList');
+  if (!el) return;
+  el.innerHTML = chatMsgs.map(m => {
+    const mine = (m.team === teamId && m.name === myName);
+    return `<div class="chat-msg ${mine ? 'mine' : ''}">
+      <div class="chat-who">Tim ${m.team}${m.name ? ' • '+esc(m.name) : ''}
+        <span class="chat-time">${m.ts ? new Date(m.ts).toLocaleTimeString() : ''}</span></div>
+      <div class="chat-text">${esc(m.text)}</div>
+    </div>`;
+  }).join('');
+  if (chatOpen) el.scrollTop = el.scrollHeight;
+}
+window.kirimChat = async () => {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !myPlayerKey) return;
+  await set(push(ref(db, `rooms/${roomId}/chat`)),
+    { name: myName, team: teamId, text, ts: serverTimestamp() });
+  input.value = '';
+  input.focus();
+};
+function showChatToast(msg){
+  if (chatOpen) return;
+  const el = document.getElementById('chatToast');
+  el.innerHTML = `<strong>Tim ${msg.team}${msg.name ? ' • '+esc(msg.name) : ''}</strong>${esc(msg.text)}`;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 4000);
+  beep(1200, 0.08, 0.15);
+}
+
+window.exitGame = async () => {
+  if (!confirm('Keluar dari permainan?')) return;
+  if (myPlayerKey){
+    try { await remove(ref(db, `rooms/${roomId}/players/${myPlayerKey}`)); } catch(e){}
+  }
+  localStorage.removeItem(`cc_name_${roomId}_${teamId}`);
+  document.body.innerHTML = '<div class="center-panel"><h1>Anda telah keluar</h1><p>Tutup tab ini atau scan QR lagi.</p></div>';
+};
+
+(function setupSwipeToClose(){
+  const drawer = document.getElementById('chatDrawer');
+  const handle = document.getElementById('chatHandle');
+  const header = drawer.querySelector('.chat-drawer-header');
+  let startY = 0, currentY = 0, dragging = false;
+
+  const start = (e) => {
+    if (!chatOpen) return;
+    startY = currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    dragging = true;
+    drawer.classList.add('dragging');
+  };
+  const move = (e) => {
+    if (!dragging) return;
+    currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    const delta = Math.max(0, currentY - startY);
+    drawer.style.transform = `translateY(${delta}px)`;
+    const backdrop = document.getElementById('chatBackdrop');
+    const total = drawer.offsetHeight;
+    backdrop.style.opacity = Math.max(0, 0.6 * (1 - delta / total));
+  };
+  const end = () => {
+    if (!dragging) return;
+    dragging = false;
+    drawer.classList.remove('dragging');
+    drawer.style.transform = '';
+    document.getElementById('chatBackdrop').style.opacity = '';
+    const delta = currentY - startY;
+    if (delta > 100) toggleChat();
+  };
+
+  [handle, header].forEach(el => {
+    if (!el) return;
+    el.addEventListener('touchstart', start, {passive:true});
+    el.addEventListener('touchmove', move, {passive:true});
+    el.addEventListener('touchend', end);
+    el.addEventListener('mousedown', start);
+  });
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', end);
+})();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && chatOpen) toggleChat();
+});
+
+let actx;
+function getAC(){
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function note(ctx, freq, start, dur, vol){
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'square'; osc.frequency.value = freq;
+  osc.connect(gain); gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0, start);
+  gain.gain.linearRampToValueAtTime(vol, start + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+  osc.start(start); osc.stop(start + dur);
+}
+function beep(freq, dur, vol=0.3){
+  try { const ctx = getAC(); note(ctx, freq, ctx.currentTime, dur, vol); } catch(e){}
+}
+function playFanfare(){
+  try {
+    const ctx = getAC();
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+    notes.forEach((f, i) => {
+      note(ctx, f, now + i*0.11, 0.28, 0.5);
+      note(ctx, f*2, now + i*0.11, 0.20, 0.18);
+    });
+    [523.25, 659.25, 783.99, 1046.5].forEach(f => note(ctx, f, now + notes.length*0.11, 0.6, 0.4));
+  } catch(e){}
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+</script>
+</body>
+</html>
