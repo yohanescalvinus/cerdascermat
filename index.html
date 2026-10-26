@@ -248,11 +248,37 @@
   let playerListenerRef = null;
   let isTimerHidden = false;
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = 'login.html';
-      return;
+  // ==========================================
+  // CEK SESI LOGIN (MENGGUNAKAN SESSION STORAGE)
+  // ==========================================
+  // Kita tidak memakai onAuthStateChanged lagi untuk redirect, 
+  // agar tidak terjadi race condition (bentrok waktu) dengan Firebase.
+  
+  const isLoggedIn = sessionStorage.getItem('isHostLoggedIn');
+  
+  if (!isLoggedIn) {
+    // Jika tidak ada tiket login, tendang paksa!
+    window.location.replace('login.html');
+  } else {
+    // Jika ada tiket login, jalankan aplikasi
+    const savedRoom = sessionStorage.getItem('hostRoomId');
+    const savedTeamCount = sessionStorage.getItem('hostTeamCount');
+    
+    if (savedTeamCount) {
+      teamCount = parseInt(savedTeamCount);
     }
+
+    document.getElementById('setupTeamInfo').textContent = `Kuis akan dimainkan oleh ${teamCount} Tim`;
+
+    if (savedRoom) {
+      roomId = savedRoom;
+      document.getElementById('setupScreen').style.display = 'none';
+      mulaiHost();
+    } else {
+      document.getElementById('setupScreen').style.display = 'flex';
+      document.getElementById('appContainer').style.display = 'none';
+    }
+  }
 
     const savedRoom = sessionStorage.getItem('hostRoomId');
     const savedTeamCount = sessionStorage.getItem('hostTeamCount');
@@ -275,12 +301,12 @@
     }
   });
 
-  window.logoutHost = () => {
+    window.logoutHost = () => {
     if (confirm('Logout dari Host? (Sesi Room akan berakhir)')) {
       sessionStorage.clear();
       localStorage.clear();
       signOut(auth).then(() => {
-        window.location.href = 'login.html';
+        window.location.replace('login.html'); // Gunakan replace agar tidak bisa di-back
       });
     }
   };
