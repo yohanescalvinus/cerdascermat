@@ -15,9 +15,12 @@
     --border-color: #cbd5e1;
   }
 
+  /* Mengizinkan scroll khusus jika layar HP sangat kecil */
   html, body {
-    margin: 0; padding: 0; height: 100dvh; width: 100vw; overflow: hidden;
-    font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-main);
+    margin: 0; padding: 0; height: 100%; min-height: 100dvh; width: 100vw; 
+    overflow-y: auto; overflow-x: hidden;
+    font-family: system-ui, -apple-system, sans-serif; 
+    background: var(--bg-main); color: var(--text-main);
   }
   
   .center-panel {
@@ -33,9 +36,10 @@
     border: none; background: #3b82f6; color: #fff; cursor: pointer; font-weight: 600;
   }
 
+  /* Container utama yang bisa fleksibel */
   #mainView { 
     display: none; flex-direction: column; 
-    height: 100dvh; /* Kunci tinggi layar HP */
+    min-height: 100dvh; /* Bisa lebih tinggi dari layar jika keyboard muncul */
     padding: 8px; gap: 8px; 
   }
   
@@ -47,14 +51,15 @@
   #identity { font-weight: 700; font-size: 14px; }
   .exit-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight:600; }
 
-  .timer-player { text-align: center; font-size: 40px; font-weight: 800; font-variant-numeric: tabular-nums; color: #64748b; padding: 2px 0; flex-shrink: 0;}
+  .timer-player { text-align: center; font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums; color: #64748b; padding: 2px 0; flex-shrink: 0;}
   .timer-player.urgent { color: #f59e0b; }
   .timer-player.done { color: #ef4444; }
 
-  /* TOMBOL TEKAN DIBUAT FLEKSIBEL (MENGISI SISA RUANG) */
+  /* TOMBOL TEKAN DIBERI BATAS MAKSIMAL AGAR TIDAK MENELAN LAYAR */
   .push-btn {
-    flex: 1; /* Mengisi semua sisa ruang di tengah */
-    min-height: 100px; /* Batas minimal tinggi */
+    flex: 1; 
+    min-height: 120px; 
+    max-height: 400px; /* Maksimal tinggi tombol */
     font-size: 36px; font-weight: 800; border-radius: 16px; border: none; cursor: pointer;
     background: #3b82f6; color: #fff; transition: transform 0.05s, background 0.2s; letter-spacing: 2px;
   }
@@ -65,14 +70,15 @@
 
   .status { text-align: center; font-size: 14px; font-weight:600; min-height: 18px; color: var(--text-muted); padding: 0 8px; flex-shrink: 0;}
 
-  /* KOTAK CHAT DIBERI UKURAN TETAP DI HP */
+  /* KOTAK CHAT */
   .chat-section { 
     display: flex; flex-direction: column; 
     background: var(--bg-panel); border-radius: 8px; 
     overflow: hidden; 
-    height: 180px; /* Ukuran pas untuk layar HP */
+    height: 200px; /* Tinggi pas */
     flex-shrink: 0;
     border: 1px solid var(--border-color);
+    margin-bottom: 8px; /* Jarak aman dari navigasi bawah HP */
   }
   .chat-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
   .chat-msg { background: var(--bg-main); padding: 8px 10px; border-radius: 6px; max-width: 90%; border: 1px solid var(--border-color);}
@@ -81,15 +87,8 @@
   .chat-text { word-wrap: break-word; color: var(--text-main);}
   
   .chat-input { display: flex; border-top: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-main);}
-  .chat-input input { flex: 1; border: none; background: transparent; color: var(--text-main); padding: 10px 12px; font-size: 14px; outline: none; }
+  .chat-input input { flex: 1; border: none; background: transparent; color: var(--text-main); padding: 12px; font-size: 14px; outline: none; }
   .chat-input button { border: none; background: #3b82f6; color: #fff; padding: 0 16px; cursor: pointer; font-weight: 600; }
-
-  /* Penyesuaian khusus jika keyboard HP muncul (opsional, agar input tidak tenggelam) */
-  @media (max-height: 500px) {
-    .timer-player { font-size: 24px; }
-    .push-btn { font-size: 24px; min-height: 70px; }
-    .chat-section { height: 120px; }
-  }
 </style>
 </head>
 <body>
