@@ -146,20 +146,17 @@
   .btn-ctrl.tutup { background: #fbbf24; }
   .btn-ctrl.reset { background: #f87171; }
 
-  /* PEMAIN */
-  .player-panel { flex: 1; overflow: hidden; }
-  .player-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 6px; flex: 1; margin-top: 5px;}
-  .player-row { background: rgba(255,255,255,0.6); padding: 10px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; border: 1px solid rgba(255,255,255,0.9); }
-  .player-row.t1 { border-left: 5px solid var(--tim1); } .player-row.t2 { border-left: 5px solid var(--tim2); }
-  .player-row.t3 { border-left: 5px solid var(--tim3); } .player-row.t4 { border-left: 5px solid var(--tim4); }
-  .player-row.t5 { border-left: 5px solid var(--tim5); } .player-row.t6 { border-left: 5px solid var(--tim6); }
-  .player-row.t7 { border-left: 5px solid var(--tim7); } .player-row.t8 { border-left: 5px solid var(--tim8); }
-  
-  .device-count { font-size: 12px; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 6px; color: #475569; font-weight: 800;}
-  .btn-del-player { background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 16px; margin-left: 8px; font-weight: bold;}
-  .btn-del-player:hover { color: #b91c1c; }
+  /* CHAT (KIRI BAWAH) */
+  .chat-panel { flex: 1; min-height: 0; }
+  .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px; }
+  .chat-msg { background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; font-size: 14px; max-width: 90%; border: 1px solid rgba(255,255,255,0.9);}
+  .chat-msg.host { background: rgba(224, 231, 255, 0.8); color: #1e3a8a; align-self: flex-end; text-align: right; border: 1px solid #c7d2fe;}
+  .chat-who { font-size: 11px; color: #64748b; margin-bottom: 4px; font-weight: 800;}
+  .chat-input { display: flex; gap: 8px; margin-top: 8px; flex-shrink: 0;}
+  .chat-input input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6); color: var(--text-main); font-size: 14px; outline: none;}
+  .chat-input button { border-radius: 8px; border: none; background: var(--blue-theme); color: white; padding: 0 20px; font-weight: bold; cursor: pointer;}
 
-  /* QR CODE & CHAT */
+  /* QR CODE (KANAN ATAS) */
   .qr-panel { flex-shrink: 0; }
   .qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; }
   .qr-card { background: #ffffff; padding: 12px; border-radius: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: none;}
@@ -173,14 +170,18 @@
   #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 32px;}
 
-  .chat-panel { flex: 1; min-height: 0; }
-  .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px; }
-  .chat-msg { background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; font-size: 14px; max-width: 90%; border: 1px solid rgba(255,255,255,0.9);}
-  .chat-msg.host { background: rgba(224, 231, 255, 0.8); color: #1e3a8a; align-self: flex-end; text-align: right; border: 1px solid #c7d2fe;}
-  .chat-who { font-size: 11px; color: #64748b; margin-bottom: 4px; font-weight: 800;}
-  .chat-input { display: flex; gap: 8px; margin-top: 8px; flex-shrink: 0;}
-  .chat-input input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6); color: var(--text-main); font-size: 14px; outline: none;}
-  .chat-input button { border-radius: 8px; border: none; background: var(--blue-theme); color: white; padding: 0 20px; font-weight: bold; cursor: pointer;}
+  /* PLAYER (KANAN BAWAH - LEBIH BESAR) */
+  .player-panel { flex: 1; overflow: hidden; }
+  .player-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 6px; flex: 1; margin-top: 5px;}
+  .player-row { background: rgba(255,255,255,0.6); padding: 10px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; border: 1px solid rgba(255,255,255,0.9); }
+  .player-row.t1 { border-left: 5px solid var(--tim1); } .player-row.t2 { border-left: 5px solid var(--tim2); }
+  .player-row.t3 { border-left: 5px solid var(--tim3); } .player-row.t4 { border-left: 5px solid var(--tim4); }
+  .player-row.t5 { border-left: 5px solid var(--tim5); } .player-row.t6 { border-left: 5px solid var(--tim6); }
+  .player-row.t7 { border-left: 5px solid var(--tim7); } .player-row.t8 { border-left: 5px solid var(--tim8); }
+  
+  .device-count { font-size: 12px; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 6px; color: #475569; font-weight: 800;}
+  .btn-del-player { background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 16px; margin-left: 8px; font-weight: bold;}
+  .btn-del-player:hover { color: #b91c1c; }
 
   /* POPUPS */
   #winnerPopup {
@@ -271,9 +272,9 @@
   </div>
 
   <div class="grid-container">
+    <!-- KOLOM KIRI (Timer, Buzzer, Chat) -->
     <div class="column">
       
-      <!-- TIMER PANEL YANG BISA DIEDIT LANGSUNG -->
       <div class="panel timer-panel">
         <button class="btn-maximize" onclick="tampilkanTimer()" title="Tampilkan Pop-up">⛶</button>
         <p class="panel-title">⏱ Timer Kuis</p>
@@ -308,7 +309,6 @@
         </div>
       </div>
 
-      <!-- BUZZER PANEL -->
       <div class="panel buzzer-panel">
         <div class="buzzer-header">
           <p class="panel-title" style="margin:0;">⚠ Tombol Cepat (Buzzer)</p>
@@ -323,20 +323,7 @@
         </div>
       </div>
 
-      <!-- PLAYER PANEL -->
-      <div class="panel player-panel">
-        <p class="panel-title">👥 Pemain Terhubung</p>
-        <div class="player-list" id="playerList"></div>
-      </div>
-    </div>
-
-    <!-- KOLOM KANAN -->
-    <div class="column">
-      <div class="panel qr-panel">
-        <p class="panel-title">📱 QR Code Registrasi Tim</p>
-        <div class="qr-grid" id="qrGrid"></div>
-      </div>
-
+      <!-- CHAT DIPINDAHKAN KE KIRI BAWAH -->
       <div class="panel chat-panel">
         <p class="panel-title">💬 Live Chat & Broadcast</p>
         <div class="chat-list" id="chatList"></div>
@@ -344,6 +331,20 @@
           <input id="hostChatInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')kirimChatHost()">
           <button onclick="kirimChatHost()">Kirim</button>
         </div>
+      </div>
+    </div>
+
+    <!-- KOLOM KANAN (QR Code, Pemain) -->
+    <div class="column">
+      <div class="panel qr-panel">
+        <p class="panel-title">📱 QR Code Registrasi Tim</p>
+        <div class="qr-grid" id="qrGrid"></div>
+      </div>
+
+      <!-- PEMAIN DIPINDAHKAN KE KANAN BAWAH (LEBIH BESAR) -->
+      <div class="panel player-panel">
+        <p class="panel-title">👥 Pemain Terhubung</p>
+        <div class="player-list" id="playerList"></div>
       </div>
     </div>
   </div>
@@ -547,7 +548,6 @@
         lastTickSecond = -1;
         isPaused = false;
         
-        // Aktifkan kembali mode edit
         document.getElementById('timerHour').disabled = false;
         document.getElementById('timerMin').disabled = false;
         document.getElementById('timerSec').disabled = false;
@@ -561,15 +561,13 @@
       overlay.classList.remove('urgent');
       const endAt = timer.startedAt + timer.duration * 1000;
       
-      // Matikan edit saat berjalan
       document.getElementById('timerHour').disabled = true;
       document.getElementById('timerMin').disabled = true;
       document.getElementById('timerSec').disabled = true;
       
       timerInterval = setInterval(() => {
-        // Jika Host melakukan pause, jangan update angka
         if (timer.isPaused) {
-           document.getElementById('timerSec').classList.add('urgent'); // beri efek visual
+           document.getElementById('timerSec').classList.add('urgent'); 
            return; 
         }
 
@@ -809,7 +807,6 @@
     }
   };
   
-  // PERBAIKAN: Simpan status PAUSE ke database agar pemain tahu
   window.pauseTimer = async () => {
     if (isPaused) return;
     
@@ -820,7 +817,6 @@
     
     isPaused = true;
     
-    // Beritahu database bahwa timer dijeda
     await set(ref(db, `rooms/${roomId}/timer`), { 
       running: true, 
       isPaused: true, 
