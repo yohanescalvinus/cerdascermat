@@ -60,7 +60,7 @@
 
   /* TIMER */
   .timer-panel { flex: 0.8; justify-content: center; }
-  .input-group { display: flex; gap: 6px; align-items: center; justify-content: center; font-size: 13px; color: var(--text-main);}
+  .input-group { display: flex; gap: 6px; align-items: center; justify-content: center; font-size: 13px; color: var(--text-main); flex-wrap: wrap;}
   .input-group input { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); width: 60px; text-align: center; font-size: 16px; font-weight: bold;}
 
   /* BUZZER */
@@ -94,25 +94,50 @@
   #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 28px;}
 
+  /* ========================================= */
   /* POP-UP TIMER RAKSASA */
+  /* ========================================= */
   #timerOverlay {
-    display: none; position: fixed; top: 0; left: 0; width: 65vw; height: 100vh; 
-    background: rgba(255, 255, 255, 0.95); z-index: 500;
+    display: none; position: fixed; 
+    top: 0; left: 0; 
+    width: 65vw; height: 100vh; 
+    background: rgba(255, 255, 255, 0.98); 
+    z-index: 500;
     flex-direction: column; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
   }
+  
+  /* Tombol Close di Pojok */
+  .btn-close-overlay {
+    position: absolute; top: 20px; right: 20px;
+    background: #e2e8f0; color: #0f172a; border: none;
+    width: 40px; height: 40px; border-radius: 50%;
+    font-size: 20px; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+  }
+  .btn-close-overlay:hover { background: #cbd5e1; }
+
   #timerOverlay h1 { font-size: 28px; color: var(--text-muted); margin-bottom: -10px; font-weight: 600;}
+  
+  /* Ukuran Font Proporsional */
   #popupTimerValue {
-    font-size: 25vw; font-weight: 900; color: #3b82f6;
-    font-variant-numeric: tabular-nums; line-height: 1; transition: color 0.3s, transform 0.1s;
+    font-size: 15vw; /* Ukuran disesuaikan agar tidak terpotong */
+    max-width: 100%;
+    font-weight: 900;
+    color: #3b82f6;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition: color 0.3s, transform 0.1s;
   }
-  #timerOverlay.urgent #popupTimerValue { color: #ef4444; transform: scale(1.05); animation: pulse 1s infinite alternate; }
-  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-  .btn-stop-overlay {
-    margin-top: 30px; padding: 12px 30px; font-size: 18px; font-weight: 800;
-    background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer;
-    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+  
+  #timerOverlay.urgent #popupTimerValue {
+    color: #ef4444;
+    transform: scale(1.05);
+    animation: pulse 1s infinite alternate;
   }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
 
   /* CHAT */
   .chat-panel { flex: 1; min-height: 0; }
@@ -127,12 +152,17 @@
 </head>
 <body>
 
+<!-- POP-UP TIMER -->
 <div id="timerOverlay">
+  <!-- Tombol Tutup Pop-up (TIDAK menghentikan timer) -->
+  <button class="btn-close-overlay" onclick="sembunyikanTimer()">✕</button>
+  
   <h1>SISA WAKTU</h1>
   <div id="popupTimerValue">—</div>
-  <button class="btn-stop-overlay" onclick="stopTimer()">■ Hentikan Waktu</button>
+  <button class="btn btn-danger" onclick="stopTimer()" style="margin-top: 30px; padding: 12px 30px; font-size: 18px;">■ Hentikan Waktu</button>
 </div>
 
+<!-- MODAL ZOOM QR -->
 <div id="qrModal" onclick="tutupModalQR()">
   <h2 id="qrModalTitle">Tim 1</h2>
   <div class="qr-wrapper" id="qrModalTarget"></div>
@@ -143,9 +173,7 @@
   <div class="header">
     <h1>Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
     <div class="header-actions">
-      <!-- Tombol Paksa Sinkronisasi (Solusi jika nama pemain tidak muncul) -->
       <button class="btn-sm btn-orange" onclick="paksaSinkron()">🔄 Paksa Sinkron</button>
-      
       <button class="btn-sm btn-blue" onclick="if(confirm('Hapus semua chat?')) remove(ref(db, 'rooms/'+roomId+'/chat'))">Hapus Chat</button>
       <button class="btn-sm btn-red" onclick="resetTotal()">Reset Total</button>
       <button class="btn-sm btn-gray" onclick="exitHost()">✕ Keluar</button>
@@ -160,6 +188,7 @@
         <div class="input-group">
           <input type="number" id="timerInput" value="30" min="1" max="300"> <span>detik</span>
           <button class="btn btn-primary" onclick="startTimer()">▶ Start</button>
+          <button class="btn btn-warning" onclick="tampilkanTimer()" id="btnShowTimer" style="display:none;">👁️ Tampilkan Timer</button>
           <button class="btn btn-danger" onclick="stopTimer()">■ Stop</button>
         </div>
       </div>
@@ -230,7 +259,8 @@
 
   let timerInterval = null;
   let lastTickSecond = -1;
-  let playerListenerRef = null; // Menyimpan referensi listener pemain
+  let playerListenerRef = null;
+  let isTimerHidden = false; // Menyimpan status pop-up disembunyikan manual
 
   // SISTEM SUARA HOST
   let actx;
@@ -265,7 +295,6 @@
     } catch (e) {}
   }
 
-  // URL ROUTING
   function getPlayerBaseUrl() {
     let url = window.location.origin + window.location.pathname;
     url = url.substring(0, url.lastIndexOf('/') + 1);
@@ -276,7 +305,7 @@
 
   function initHost() {
     generateQRs();
-    loadDataPemain(); // Panggil fungsi pemuat pemain
+    loadDataPemain();
 
     // STATE / BUZZER
     let prevLocked = null;
@@ -310,15 +339,23 @@
       const timer = snap.val();
       clearInterval(timerInterval);
       const overlay = document.getElementById('timerOverlay');
-      const popupVal = document.getElementById('popupTimerValue');
+      const btnShow = document.getElementById('btnShowTimer');
       
+      // Jika timer mati / di-reset
       if (!timer || !timer.running) { 
         overlay.style.display = 'none'; 
+        btnShow.style.display = 'none';
+        isTimerHidden = false;
         lastTickSecond = -1;
         return; 
       }
       
-      overlay.style.display = 'flex';
+      // Jika timer menyala dari database, tampilkan pop-up KECUALI jika Host baru saja menyembunyikannya
+      if (!isTimerHidden) {
+        overlay.style.display = 'flex';
+        btnShow.style.display = 'none';
+      }
+      
       overlay.classList.remove('urgent');
       
       const endAt = timer.startedAt + timer.duration * 1000;
@@ -327,12 +364,13 @@
         const remainingMs = Math.max(0, endAt - serverNow());
         const remainingSec = Math.ceil(remainingMs / 1000);
         
-        popupVal.textContent = (remainingMs / 1000).toFixed(1);
+        document.getElementById('popupTimerValue').textContent = (remainingMs / 1000).toFixed(1);
+
         if (remainingMs <= 10000) overlay.classList.add('urgent');
 
         if (remainingMs <= 0) {
           clearInterval(timerInterval);
-          popupVal.textContent = '0.0';
+          document.getElementById('popupTimerValue').textContent = '0.0';
           playSound(200, 0.8, 1.0, 'sawtooth');
           return;
         }
@@ -361,13 +399,25 @@
   }
 
   // ==========================================
-  // FUNGSI PEMUAT DATA PEMAIN & PAKSA SINKRON
+  // FUNGSI KONTROL POP-UP TIMER
+  // ==========================================
+  window.sembunyikanTimer = () => {
+    document.getElementById('timerOverlay').style.display = 'none';
+    document.getElementById('btnShowTimer').style.display = 'inline-block';
+    isTimerHidden = true;
+  };
+
+  window.tampilkanTimer = () => {
+    document.getElementById('timerOverlay').style.display = 'flex';
+    document.getElementById('btnShowTimer').style.display = 'none';
+    isTimerHidden = false;
+  };
+
+  // ==========================================
+  // FUNGSI SINKRONISASI & TOMBOL LAINNYA
   // ==========================================
   function loadDataPemain() {
-    // Lepas listener lama jika ada (mencegah penumpukan memori)
     if (playerListenerRef) playerListenerRef();
-
-    // Tarik data pemain baru
     playerListenerRef = onValue(ref(db, `rooms/${roomId}/players`), snap => {
       const players = snap.val() || {};
       const teams = {1: [], 2: [], 3: [], 4: []};
@@ -390,7 +440,6 @@
     });
   }
 
-  // Fungsi manual jika tombol Paksa Sinkron diklik
   window.paksaSinkron = () => {
     const btn = event.target;
     btn.textContent = '⏳ Memuat...';
@@ -398,9 +447,6 @@
     setTimeout(() => { btn.textContent = '🔄 Paksa Sinkron'; }, 800);
   };
 
-  // ==========================================
-  // FUNGSI TOMBOL LAINNYA
-  // ==========================================
   window.bukaBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
   window.tutupBuzzer = async () => { await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); };
   window.resetBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
@@ -420,6 +466,7 @@
   window.startTimer = async () => {
     const dur = parseInt(document.getElementById('timerInput').value) || 30;
     if (actx && actx.state === 'suspended') actx.resume();
+    isTimerHidden = false; // Paksa tampil saat start baru
     await set(ref(db, `rooms/${roomId}/timer`), { running: true, startedAt: serverNow(), duration: dur });
   };
   
@@ -452,7 +499,7 @@
       card.className = 'qr-card';
       card.innerHTML = `<h3 style="color:var(--tim${i}); font-weight:800;">Tim ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
       grid.appendChild(card);
-      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${teamNumber=i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
+      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
     }
   }
 
