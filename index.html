@@ -7,31 +7,26 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
-  /* TEMA WARNA (Default: Dark) */
+  /* TEMA TERANG (LIGHT MODE SAJA) */
   :root {
-    --bg-main: #0f172a;
-    --bg-panel: #1e293b;
-    --bg-card: #0f172a;
-    --text-main: #e2e8f0;
-    --text-muted: #94a3b8;
-    --border-color: #334155;
-  }
-
-  /* TEMA TERANG */
-  body.light-mode {
     --bg-main: #f1f5f9;
     --bg-panel: #ffffff;
     --bg-card: #f8fafc;
     --text-main: #0f172a;
     --text-muted: #475569;
     --border-color: #cbd5e1;
+    
+    /* Warna Tim Konsisten */
+    --tim1: #ef4444; /* Merah */
+    --tim2: #3b82f6; /* Biru */
+    --tim3: #22c55e; /* Hijau */
+    --tim4: #a855f7; /* Ungu */
   }
 
   html, body {
     height: 100vh; width: 100vw; overflow: hidden; 
     font-family: system-ui, -apple-system, sans-serif;
     background: var(--bg-main); color: var(--text-main);
-    transition: background 0.3s, color 0.3s;
   }
 
   .app-container {
@@ -44,6 +39,7 @@
     display: flex; justify-content: space-between; align-items: center;
     background: var(--bg-panel); padding: 10px 16px; border-radius: 10px; flex-shrink: 0;
     border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   .header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--text-main);}
   .header-actions { display: flex; gap: 8px; align-items: center; }
@@ -51,8 +47,7 @@
   
   .btn-blue { background: #3b82f6; } .btn-blue:hover { background: #2563eb; }
   .btn-red { background: #ef4444; } .btn-red:hover { background: #dc2626; }
-  .btn-gray { background: #475569; } .btn-gray:hover { background: #334155; }
-  .btn-toggle { background: #8b5cf6; } .btn-toggle:hover { background: #7c3aed; }
+  .btn-gray { background: #64748b; } .btn-gray:hover { background: #475569; }
   
   /* LAYOUT UTAMA */
   .grid-container {
@@ -63,6 +58,7 @@
     background: var(--bg-panel); border-radius: 10px; padding: 12px;
     display: flex; flex-direction: column; gap: 8px; position: relative;
     border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   .panel-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;}
   
@@ -84,16 +80,21 @@
   /* BUZZER */
   .buzzer-panel { flex: 0.9; justify-content: center; }
   .buzzer-status { text-align: center; font-size: 20px; font-weight: 800; padding: 12px; border-radius: 8px; border: 2px dashed var(--border-color); transition: 0.3s;}
-  .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-  .buzzer-status.open { color: #22c55e; border-color: #22c55e; background: rgba(34, 197, 94, 0.1); }
-  .winner-box { font-size: 22px; font-weight: bold; text-align: center; color: #fbbf24; min-height: 30px; margin: 8px 0; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);}
+  .buzzer-status.locked { color: #ef4444; border-color: #ef4444; background: #fee2e2; }
+  .buzzer-status.open { color: #16a34a; border-color: #22c55e; background: #dcfce7; }
+  .winner-box { font-size: 22px; font-weight: bold; text-align: center; color: #d97706; min-height: 30px; margin: 8px 0; }
 
   /* PEMAIN */
   .player-panel { flex: 1.5; overflow: hidden; }
   .player-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; padding-right: 4px; flex: 1;}
-  .player-row { background: var(--bg-card); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; border: 1px solid var(--border-color); border-left: 4px solid transparent; }
-  .player-row.t1 { border-left-color: #ef4444; } .player-row.t2 { border-left-color: #3b82f6; }
-  .player-row.t3 { border-left-color: #f59e0b; } .player-row.t4 { border-left-color: #22c55e; }
+  .player-row { background: var(--bg-card); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; border: 1px solid var(--border-color); border-left: 5px solid transparent; }
+  
+  /* Warna Border Kiri Tim */
+  .player-row.t1 { border-left-color: var(--tim1); } 
+  .player-row.t2 { border-left-color: var(--tim2); }
+  .player-row.t3 { border-left-color: var(--tim3); } 
+  .player-row.t4 { border-left-color: var(--tim4); }
+  
   .device-count { font-size: 11px; background: var(--border-color); padding: 4px 10px; border-radius: 12px; color: var(--text-main); white-space: nowrap;}
   .btn-del-player { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 11px; margin-left: 6px; }
   
@@ -103,13 +104,13 @@
   .qr-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border-color);}
   .qr-card h3 { margin: 0; font-size: 13px; color: var(--text-main);}
   
-  /* Kotak putih pelindung QR agar kamera HP mudah scan */
-  .qr-wrapper { background: #ffffff; padding: 8px; border-radius: 8px; display: inline-block; }
+  /* Kotak putih pelindung QR */
+  .qr-wrapper { background: #ffffff; padding: 8px; border-radius: 8px; display: inline-block; border: 1px solid #e2e8f0;}
   .qr-wrapper canvas, .qr-wrapper img { width: 80px !important; height: 80px !important; cursor: pointer; display: block;}
-  .btn-zoom { background: #475569; color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%;}
+  .btn-zoom { background: #64748b; color: white; font-size: 10px; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; width: 100%;}
   
   /* MODAL ZOOM QR */
-  #qrModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;}
+  #qrModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.8); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;}
   #qrModal .qr-wrapper { padding: 20px; border-radius: 12px; }
   #qrModal canvas, #qrModal img { width: 300px !important; height: 300px !important;}
   #qrModal h2 { color: white; margin: 0; font-size: 28px;}
@@ -118,9 +119,9 @@
   .chat-panel { flex: 1; min-height: 0; }
   .chat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
   .chat-msg { background: var(--bg-card); padding: 8px 12px; border-radius: 6px; font-size: 13px; max-width: 90%; border: 1px solid var(--border-color);}
-  .chat-msg.host { background: #1e3a8a; color: white; align-self: flex-end; text-align: right; border: none;}
+  .chat-msg.host { background: #e0e7ff; color: #1e3a8a; align-self: flex-end; text-align: right; border-color: #c7d2fe;}
   .chat-who { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;}
-  .chat-msg.host .chat-who { color: #93c5fd; }
+  .chat-msg.host .chat-who { color: #4338ca; }
   .chat-input { display: flex; gap: 6px; margin-top: 6px; flex-shrink: 0;}
   .chat-input input { flex: 1; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;}
 </style>
@@ -131,14 +132,13 @@
 <div id="qrModal" onclick="tutupModalQR()">
   <h2 id="qrModalTitle">Tim 1</h2>
   <div class="qr-wrapper" id="qrModalTarget"></div>
-  <p style="color:#94a3b8; font-size:14px;">Klik di mana saja untuk menutup</p>
+  <p style="color:#cbd5e1; font-size:14px;">Klik di mana saja untuk menutup</p>
 </div>
 
 <div class="app-container">
   <div class="header">
     <h1>Host Panel <span style="color:var(--border-color)">|</span> Room: <span id="roomIdLabel" style="color: #3b82f6;">...</span></h1>
     <div class="header-actions">
-      <button class="btn-sm btn-toggle" onclick="toggleTheme()" id="btnTheme">☀️ Light Mode</button>
       <button class="btn-sm btn-blue" onclick="if(confirm('Hapus semua chat?')) remove(ref(db, 'rooms/'+roomId+'/chat'))">Hapus Chat</button>
       <button class="btn-sm btn-red" onclick="resetTotal()">Reset Total</button>
       <button class="btn-sm btn-gray" onclick="exitHost()">✕ Keluar</button>
@@ -179,9 +179,7 @@
     <div class="column">
       <div class="panel qr-panel">
         <p class="panel-title">📱 QR Code Registrasi Tim</p>
-        <div class="qr-grid" id="qrGrid">
-          <!-- Diisi JS -->
-        </div>
+        <div class="qr-grid" id="qrGrid"></div>
       </div>
 
       <div class="panel chat-panel">
@@ -226,30 +224,12 @@
 
   let timerInterval = null;
 
-  // ============ FITUR TEMA (DARK / LIGHT) ============
-  window.toggleTheme = () => {
-    document.body.classList.toggle('light-mode');
-    const isLight = document.body.classList.contains('light-mode');
-    document.getElementById('btnTheme').textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
-    localStorage.setItem('cc_theme', isLight ? 'light' : 'dark');
-  };
-  
-  if (localStorage.getItem('cc_theme') === 'light') {
-    document.body.classList.add('light-mode');
-    document.getElementById('btnTheme').textContent = '🌙 Dark Mode';
-  }
-
-  // ============ FUNGSI URL PLAYER YANG KEBAL GITHUB ============
   function getPlayerBaseUrl() {
-    // Mengambil origin (https://domain.com) dan path (folder)
     let url = window.location.origin + window.location.pathname;
-    // Hapus nama file html di belakang jika ada (misal /index.html atau /host.html)
     url = url.substring(0, url.lastIndexOf('/') + 1);
-    // Gabungkan dengan player.html
     return url + 'player.html';
   }
 
-  // Audio Context untuk Suara Host
   let actx;
   function playHorn() {
     try {
@@ -270,7 +250,6 @@
   function initHost() {
     generateQRs();
 
-    // STATE / BUZZER
     let prevLocked = false;
     onValue(ref(db, `rooms/${roomId}/state`), snap => {
       const state = snap.val();
@@ -288,14 +267,13 @@
         if (state.name === 'Ditutup Host') {
           winnerEl.innerHTML = `🔒 Buzzer Ditutup Manual`;
         } else {
-          winnerEl.innerHTML = `🏆 <span style="color:#22c55e">Tim ${state.team}</span> (${state.name})!`;
+          winnerEl.innerHTML = `🏆 <span style="color:var(--tim${state.team}); font-weight:800;">Tim ${state.team}</span> (${state.name})!`;
           if (!prevLocked) playHorn();
         }
       }
       prevLocked = isLocked;
     });
 
-    // TIMER
     onValue(ref(db, `rooms/${roomId}/timer`), snap => {
       const timer = snap.val();
       clearInterval(timerInterval);
@@ -310,7 +288,6 @@
       tick(); timerInterval = setInterval(tick, 100);
     });
 
-    // PEMAIN
     onValue(ref(db, `rooms/${roomId}/players`), snap => {
       const players = snap.val() || {};
       const teams = {1: [], 2: [], 3: [], 4: []};
@@ -324,15 +301,14 @@
           : '-';
         listEl.innerHTML += `
           <div class="player-row t${i}">
-            <span style="color:#3b82f6; min-width:50px;">Tim ${i}</span>
-            <span style="font-size:12px; color:var(--text-main); flex:1; text-align:left; padding:0 10px;">${namesHTML}</span>
+            <span style="color:var(--tim${i}); min-width:50px; font-weight:800;">Tim ${i}</span>
+            <span style="font-size:13px; color:var(--text-main); flex:1; text-align:left; padding:0 10px;">${namesHTML}</span>
             <span class="device-count">${teams[i].length} device</span>
           </div>
         `;
       }
     });
 
-    // CHAT
     onValue(query(ref(db, `rooms/${roomId}/chat`), limitToLast(50)), snap => {
       const data = snap.val() || {};
       const msgs = Object.entries(data).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
@@ -347,7 +323,6 @@
     });
   }
 
-  // ============ FUNGSI ============
   window.bukaBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
   window.tutupBuzzer = async () => { await set(ref(db, `rooms/${roomId}/state`), { locked: true, team: '-', name: 'Ditutup Host' }); };
   window.resetBuzzer = async () => { await remove(ref(db, `rooms/${roomId}/state`)); };
@@ -378,27 +353,15 @@
     input.value = '';
   };
 
-  // ============ QR MODAL ============
   window.bukaModalQR = (teamNumber) => {
     const modal = document.getElementById('qrModal');
     const target = document.getElementById('qrModalTarget');
     document.getElementById('qrModalTitle').textContent = `Scan untuk Tim ${teamNumber}`;
     target.innerHTML = '';
-    
-    const baseUrl = getPlayerBaseUrl();
-    new QRCode(target, { 
-      text: `${baseUrl}?room=${roomId}&team=${teamNumber}`, 
-      width: 300, height: 300, 
-      colorDark: "#000000", colorLight: "#ffffff" 
-    });
-    
+    new QRCode(target, { text: `${getPlayerBaseUrl()}?room=${roomId}&team=${teamNumber}`, width: 300, height: 300, colorDark: "#000000", colorLight: "#ffffff" });
     modal.style.display = 'flex';
   };
-
-  window.tutupModalQR = () => {
-    document.getElementById('qrModal').style.display = 'none';
-    document.getElementById('qrModalTarget').innerHTML = '';
-  };
+  window.tutupModalQR = () => { document.getElementById('qrModal').style.display = 'none'; document.getElementById('qrModalTarget').innerHTML = ''; };
 
   function generateQRs() {
     const baseUrl = getPlayerBaseUrl();
@@ -407,14 +370,9 @@
     for (let i = 1; i <= 4; i++) {
       const card = document.createElement('div');
       card.className = 'qr-card';
-      card.innerHTML = `<h3>Tim ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
+      card.innerHTML = `<h3 style="color:var(--tim${i}); font-weight:800;">Tim ${i}</h3><div class="qr-wrapper" id="qr-mini-${i}"></div><button class="btn-zoom" onclick="bukaModalQR(${i})">🔍 Perbesar</button>`;
       grid.appendChild(card);
-      
-      new QRCode(document.getElementById(`qr-mini-${i}`), { 
-        text: `${baseUrl}?room=${roomId}&team=${i}`, 
-        width: 80, height: 80, 
-        colorDark: "#000000", colorLight: "#ffffff" 
-      });
+      new QRCode(document.getElementById(`qr-mini-${i}`), { text: `${baseUrl}?room=${roomId}&team=${i}`, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff" });
     }
   }
 
